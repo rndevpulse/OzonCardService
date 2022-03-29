@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OzonCardService", "OzonCardService\OzonCardService.csproj", "{23E004A9-5346-4E89-AD45-383C5B53650C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Data", "OzonCard.Data\OzonCard.Data.csproj", "{E8C9DE0A-E5E4-4461-9647-B8E27DC6D701}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Context", "OzonCard.Context\OzonCard.Context.csproj", "{19E9A309-CA2B-4C2A-9243-786DF33F0C92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Common", "OzonCard.Common\OzonCard.Common.csproj", "{0E9BB7F7-3769-45AD-958E-0C7FA7D212AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23E004A9-5346-4E89-AD45-383C5B53650C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23E004A9-5346-4E89-AD45-383C5B53650C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23E004A9-5346-4E89-AD45-383C5B53650C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23E004A9-5346-4E89-AD45-383C5B53650C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8C9DE0A-E5E4-4461-9647-B8E27DC6D701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C9DE0A-E5E4-4461-9647-B8E27DC6D701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C9DE0A-E5E4-4461-9647-B8E27DC6D701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8C9DE0A-E5E4-4461-9647-B8E27DC6D701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19E9A309-CA2B-4C2A-9243-786DF33F0C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19E9A309-CA2B-4C2A-9243-786DF33F0C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19E9A309-CA2B-4C2A-9243-786DF33F0C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19E9A309-CA2B-4C2A-9243-786DF33F0C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E9BB7F7-3769-45AD-958E-0C7FA7D212AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9BB7F7-3769-45AD-958E-0C7FA7D212AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9BB7F7-3769-45AD-958E-0C7FA7D212AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9BB7F7-3769-45AD-958E-0C7FA7D212AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {24E66748-315F-40D3-9C4F-DFF1516F675D}
+	EndGlobalSection
+EndGlobal
