@@ -23,6 +23,21 @@ namespace OzonCard.Context.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("CategoryCustomer", b =>
+                {
+                    b.Property<Guid>("CategoriesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CustomersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CategoriesId", "CustomersId");
+
+                    b.HasIndex("CustomersId");
+
+                    b.ToTable("CategoryCustomer");
+                });
+
             modelBuilder.Entity("OrganizationUser", b =>
                 {
                     b.Property<Guid>("OrganizationsId")
@@ -54,9 +69,11 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Number")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Track")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -72,21 +89,17 @@ namespace OzonCard.Context.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
 
                     b.HasIndex("OrganizationId");
 
@@ -100,9 +113,11 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("OrganizationId")
@@ -122,6 +137,7 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Comment")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Create")
@@ -131,18 +147,22 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Position")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TabNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("iikoBizId")
@@ -193,6 +213,7 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -210,19 +231,22 @@ namespace OzonCard.Context.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Mail")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("Password")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Rules")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -240,12 +264,15 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProgramType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -253,6 +280,21 @@ namespace OzonCard.Context.Migrations
                     b.HasIndex("CorporateNutritionId");
 
                     b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("CategoryCustomer", b =>
+                {
+                    b.HasOne("OzonCard.Data.Models.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OzonCard.Data.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OrganizationUser", b =>
@@ -279,10 +321,6 @@ namespace OzonCard.Context.Migrations
 
             modelBuilder.Entity("OzonCard.Data.Models.Category", b =>
                 {
-                    b.HasOne("OzonCard.Data.Models.Customer", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("CustomerId");
-
                     b.HasOne("OzonCard.Data.Models.Organization", null)
                         .WithMany("Categories")
                         .HasForeignKey("OrganizationId");
@@ -332,8 +370,6 @@ namespace OzonCard.Context.Migrations
             modelBuilder.Entity("OzonCard.Data.Models.Customer", b =>
                 {
                     b.Navigation("Cards");
-
-                    b.Navigation("Categories");
 
                     b.Navigation("Wallets");
                 });

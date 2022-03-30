@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OzonCard.Context.Migrations
 {
-    public partial class init : Migration
+    public partial class rev1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,7 +14,7 @@ namespace OzonCard.Context.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Login = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -29,11 +29,11 @@ namespace OzonCard.Context.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Mail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Mail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Rules = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Rules = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,12 +41,31 @@ namespace OzonCard.Context.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CorporateNutritions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -64,12 +83,12 @@ namespace OzonCard.Context.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TabNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Position = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TabNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Position = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Create = table.Column<DateTime>(type: "datetime2", nullable: false),
                     iikoBizId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
@@ -113,9 +132,9 @@ namespace OzonCard.Context.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProgramType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProgramType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CorporateNutritionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -133,8 +152,8 @@ namespace OzonCard.Context.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Track = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Track = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Create = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
@@ -150,28 +169,27 @@ namespace OzonCard.Context.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "CategoryCustomer",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CategoriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomersId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_CategoryCustomer", x => new { x.CategoriesId, x.CustomersId });
                     table.ForeignKey(
-                        name: "FK_Categories_Customers_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_CategoryCustomer_Categories_CategoriesId",
+                        column: x => x.CategoriesId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoryCustomer_Customers_CustomersId",
+                        column: x => x.CustomersId,
                         principalTable: "Customers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Categories_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -204,14 +222,14 @@ namespace OzonCard.Context.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_CustomerId",
-                table: "Categories",
-                column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Categories_OrganizationId",
                 table: "Categories",
                 column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryCustomer_CustomersId",
+                table: "CategoryCustomer",
+                column: "CustomersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateNutritions_OrganizationId",
@@ -244,6 +262,7 @@ namespace OzonCard.Context.Migrations
                 column: "CorporateNutritionId");
 
             RepositoryContext.InitializationValue(migrationBuilder);
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -252,13 +271,16 @@ namespace OzonCard.Context.Migrations
                 name: "Cards");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "CategoryCustomer");
 
             migrationBuilder.DropTable(
                 name: "CustomerWallets");
 
             migrationBuilder.DropTable(
                 name: "OrganizationUser");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Customers");
