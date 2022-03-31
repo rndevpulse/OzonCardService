@@ -2,12 +2,16 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using OzonCard.BizClient.HttpClients;
+using OzonCard.BizClient.Services.Implementation;
+using OzonCard.BizClient.Services.Interfaces;
 using OzonCard.Context;
 using OzonCard.Context.Interfaces;
 using OzonCard.Context.Repositories;
 using OzonCardService.Helpers;
 using OzonCardService.Services.Implementation;
 using OzonCardService.Services.Interfaces;
+using System;
 
 namespace OzonCardService
 {
@@ -49,6 +53,21 @@ namespace OzonCardService
                     ValidateIssuerSigningKey = true,
                 };
             });
+
+            return services;
+        }
+
+
+
+        public static IServiceCollection AddBizClient(this IServiceCollection services)
+        {
+            services.AddHttpClient<IClient, Client>(c =>
+            {
+                c.BaseAddress = new Uri(HttpClientService.URL);
+                c.Timeout = TimeSpan.FromMinutes(5);
+            });
+            services.AddScoped<IHttpClientService, HttpClientService>();
+            //services.AddScoped<IClient, Client>();
 
             return services;
         }

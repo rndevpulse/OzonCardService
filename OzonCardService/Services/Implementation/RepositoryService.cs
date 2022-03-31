@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using OzonCard.BizClient.Services.Interfaces;
 using OzonCard.Context.Interfaces;
 using OzonCard.Data.Models;
 using OzonCardService.Models.DTO;
@@ -12,13 +13,15 @@ namespace OzonCardService.Services.Implementation
 {
     public class RepositoryService : IRepositoryService
     {
-        IOrganizationRepository _repository;
-        IMapper _mapper;
+        readonly IOrganizationRepository _repository;
+        readonly IMapper _mapper;
+        readonly IHttpClientService _client;
 
-        public RepositoryService(IOrganizationRepository repository, IMapper mapper)
+        public RepositoryService(IOrganizationRepository repository, IMapper mapper, IHttpClientService httpClientService)
         {
             _repository = repository;
             _mapper = mapper;
+            _client = httpClientService;
         }
 
      
@@ -40,11 +43,9 @@ namespace OzonCardService.Services.Implementation
             organization.CorporateNutritions = cn;
             organization.Login = IdentityOrganization.Login;
             organization.Password = IdentityOrganization.Password;
-            organization.IsActive = true;
 
-            //test
-            var rand = new Random();
-            organization.Name = "Ololo #"+rand.Next(0,10);
+            var session = await _client.GetSession(IdentityOrganization.Login, IdentityOrganization.Password);
+            var response = await _client.GetOrganizations(session);
 
             //adding
             await _repository.AddOrganization(organization, userId);

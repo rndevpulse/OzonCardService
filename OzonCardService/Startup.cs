@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OzonCardService.Helpers;
+using Serilog;
 
 namespace OzonCardService
 {
@@ -19,6 +20,8 @@ namespace OzonCardService
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Log.Logger);
+
             services.AddControllersWithViews();
             services.AddAuthorization(Configuration);
 
@@ -30,6 +33,7 @@ namespace OzonCardService
             services.AddMvc();
             services.AddContext(Configuration);
             services.AddAutoMapper(typeof(MappingProfile));
+            services.AddBizClient();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -43,6 +47,7 @@ namespace OzonCardService
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

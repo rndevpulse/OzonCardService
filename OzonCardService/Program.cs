@@ -4,13 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OzonCard.Context.Interfaces;
-using System;
-using System.Collections.Generic;
+using OzonCard.Logger;
+using Serilog;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OzonCardService
 {
@@ -18,6 +15,9 @@ namespace OzonCardService
     {
         public static void Main(string[] args)
 		{
+			new InitialSerilogger();
+
+
 			var host = BuildWebHost(args);
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
@@ -31,6 +31,7 @@ namespace OzonCardService
 				var services = scope.ServiceProvider;
 				var factory = services.GetRequiredService<IRepositoryContextFactory>();
 				factory.CreateDbContext(config.GetConnectionString("DefaultConnection")).Database.Migrate();
+				
 			}
 
 			host.Run();
@@ -38,6 +39,7 @@ namespace OzonCardService
 
 		public static IWebHost BuildWebHost(string[] args) =>
 		   WebHost.CreateDefaultBuilder(args)
+			.UseSerilog()
 			.UseStartup<Startup>()
 			.Build();
 	}
