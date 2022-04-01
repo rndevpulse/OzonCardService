@@ -7,6 +7,16 @@ using Microsoft.Extensions.Hosting;
 using OzonCardService.Helpers;
 using Serilog;
 
+/// <summary>
+/// TODO 
+/// Добавить кварцы для очистки:
+/// загружиемых файлов по прошествию 3х дней с момента их загрузки
+/// логов по прошествию месяца самого старого файла
+/// Добавить кварцы для бекапы базы
+/// </summary>
+
+
+
 namespace OzonCardService
 {
     public class Startup
@@ -32,10 +42,9 @@ namespace OzonCardService
             services.AddSingleton(Configuration);
             services.AddMvc();
             services.AddContext(Configuration);
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(MappingProfileContext), typeof(MappingProfileBiz));
             services.AddBizClient();
         }
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

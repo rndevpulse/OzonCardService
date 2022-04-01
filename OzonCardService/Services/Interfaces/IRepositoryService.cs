@@ -11,7 +11,16 @@ namespace OzonCardService.Services.Interfaces
     {
         //взаимодействие с организациями
         Task<IEnumerable<Organization_dto>> GetMyOrganizations(Guid userId);
-        Task<bool> AddOrganization(Identity_vm IdentityOrganization, Guid userId);
+        Task<IEnumerable<Organization_dto>> AddOrganizations(Identity_vm IdentityOrganization, Guid userId);
+        Task<Organization_dto> UpdateOrganization(Guid organizationId, Guid userId);
+        Task<bool> AddUser(Identity_vm identity, string rules);
+        Task<IEnumerable<User_dto>> GetUsers();
+
+
+        Task<bool> AddUserForOrganization(Guid userId, Guid organizationId);
+        Task<bool> DelUserForOrganization(Guid userId, Guid organizationId);
+        Task SaveFile(Guid id, string format);
+        Task RemoveFiles(DateTime dateTime);
 
     }
 }

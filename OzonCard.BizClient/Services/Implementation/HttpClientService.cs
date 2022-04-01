@@ -17,6 +17,7 @@ namespace OzonCard.BizClient.Services.Implementation
             _client = httpClient;
         }
 
+        #region Сервис методы
         async Task<Session> SessionAlive(Session session)
         {
             if (session.Created.AddMinutes(TimeLife) > DateTime.UtcNow)
@@ -69,14 +70,6 @@ namespace OzonCard.BizClient.Services.Implementation
             return token;   
         }
 
-
-        public async Task<IEnumerable<Organization>> GetOrganizations(Session session)
-        {
-            session = await SessionAlive(session);
-            return await _client.Send<IEnumerable<Organization>>($"organization/list?access_token={session.Token}")
-                ?? throw new HttpRequestException();
-        }
-
         public async Task<Session?> GetSession(string login, string password)
         {
             return await GetSession(new Identification()
@@ -84,6 +77,51 @@ namespace OzonCard.BizClient.Services.Implementation
                 Login = login,
                 Password = password
             });
+        }
+        #endregion
+
+
+        public async Task<IEnumerable<Organization>> GetOrganizations(Session access_session)
+        {
+            try
+            {
+                return await _client.Send<IEnumerable<Organization>>($"organization/list?access_token={access_session.Token}")
+                    ?? throw new HttpRequestException();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetOrganizations(access_session);
+            }
+        }
+
+
+        public async Task<IEnumerable<Category>> GetOrganizationCategories(Session access_session, Guid organizationId)
+        {
+            try
+            {
+                return await _client.Send<IEnumerable<Category>>($"organization/{organizationId}/guest_categories?access_token={access_session.Token}")
+                    ?? throw new HttpRequestException();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetOrganizationCategories(access_session, organizationId);
+            }
+        }
+
+        public async Task<IEnumerable<CorporateNutrition>> GetOrganizationCorporateNutritions(Session access_session, Guid organizationId)
+        {
+            try
+            {
+                return await _client.Send<IEnumerable<CorporateNutrition>>($"organization/{organizationId}/corporate_nutritions?access_token={access_session.Token}")
+                    ?? throw new HttpRequestException();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetOrganizationCorporateNutritions(access_session, organizationId);
+            }
         }
     }
 }

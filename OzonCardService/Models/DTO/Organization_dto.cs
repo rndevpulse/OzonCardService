@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OzonCardService.Models.DTO
 {
@@ -6,5 +7,10 @@ namespace OzonCardService.Models.DTO
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public IEnumerable<Category_dto> Categories { get; set; }
+        public IEnumerable<CorporateNutrition_dto> CorporateNutritions { get; set; }
+
     }
+    
+    
 }

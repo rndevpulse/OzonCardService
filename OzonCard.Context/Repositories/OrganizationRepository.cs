@@ -2,12 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using OzonCard.Context.Interfaces;
 using OzonCard.Data.Models;
+using Serilog;
 
 namespace OzonCard.Context.Repositories
 {
     public class OrganizationRepository : BaseRepository, IOrganizationRepository
     {
+        private readonly ILogger log = Log.ForContext(typeof(OrganizationRepository));
+
+
         public OrganizationRepository(string connectionString, IRepositoryContextFactory contextFactory) : base(connectionString, contextFactory) { }
+
 
 
         #region Взаимодействие с категориями
@@ -23,7 +28,7 @@ namespace OzonCard.Context.Repositories
                 if (organization == null)
                     return;
                 if (organization.Categories.Contains(category))
-                    organization.Categories.Find(x => x.Equals(category)).IsActive = category.IsActive;
+                    organization.Categories.Find(x => x.Equals(category)).isActive = category.isActive;
                 else
                     organization.Categories.Add(category);
                 await context.SaveChangesAsync();
@@ -43,7 +48,7 @@ namespace OzonCard.Context.Repositories
                 var olds = categories.Except(result);
                 foreach (var category in organization?.Categories)
                 {
-                    category.IsActive = olds.FirstOrDefault(x => x.Equals(category))?.IsActive ?? category.IsActive;
+                    category.isActive = olds.FirstOrDefault(x => x.Equals(category))?.isActive ?? category.isActive;
                 }
                 organization?.Categories.AddRange(result);
                 await context.SaveChangesAsync();
@@ -59,7 +64,7 @@ namespace OzonCard.Context.Repositories
                     .Include(x => x.Categories)
                     .Select(x => x.Categories)
                     .FirstOrDefaultAsync();
-                return Categories ?? new List<Category>();
+                return Categories?.Where(x => x.isActive) ?? new List<Category>();
             }
         }
 
@@ -68,7 +73,7 @@ namespace OzonCard.Context.Repositories
 
         #region Взаимодействие с организациями
 
-        public async Task AddOrganization(Organization organization, Guid userId)
+        public async Task AddOrganizations(IEnumerable<Organization> organizations, Guid userId)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
@@ -77,9 +82,17 @@ namespace OzonCard.Context.Repositories
                     .FirstOrDefaultAsync();
                 if (user != null)
                 {
-                    organization.Users.Add(user);
-                    context.Organizations.Add(organization);
-                    await context.SaveChangesAsync();
+                    foreach (var organization in organizations)
+                        organization.Users.Add(user);
+                    context.Organizations.AddRange(organizations);
+                    try
+                    {
+                        await context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Warning(ex, "SQL AddOrganizations");
+                    }
                 }
             }
         }
@@ -105,6 +118,8 @@ namespace OzonCard.Context.Repositories
                    .Where(x => x.Id == userId)
                    .Include(x => x.Organizations)
                    .SelectMany(x => x.Organizations)
+                   .Include(x => x.CorporateNutritions.Where(c => c.isActive))
+                   .Include(x => x.Categories.Where(c => c.isActive))
                    .ToListAsync();
                 return organizations;
             }
@@ -153,19 +168,18 @@ namespace OzonCard.Context.Repositories
                     .Include(x => x.CorporateNutritions)
                     .Select(x => x.CorporateNutritions)
                     .FirstOrDefaultAsync();
-                return corporateNutritions ?? new List<CorporateNutrition>();
+                return corporateNutritions?.Where(x => x.isActive) ?? new List<CorporateNutrition>();
             }
         }
 
 
 
-       
+
 
 
 
 
         #endregion
-
 
 
         #region Взаимодействие с пользователями организаций
@@ -204,10 +218,56 @@ namespace OzonCard.Context.Repositories
             }
         }
 
+        public async Task AddUser(User user)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                if (context.Users.Any(x => x.Mail == user.Mail))
+                    throw new NullReferenceException("User login is olready use");
+                context.Users.Add(user);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<User>> GetUsers()
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var users = await context.Users
+                    .Where(x => x.Mail != "admin")
+                    .Include(x => x.Organizations)
+                    .ToListAsync();
+                return users;
+            }
+        }
+
+
         #endregion
 
 
-        #region ----------
+        #region Файлы
+
+
+        public async Task AddFile(FileReport file)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                context.FileReports.Add(file);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RemoveFiles(DateTime dateTime)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var remove = await context.FileReports
+                    .Where(x => x.Created < dateTime)
+                    .ToListAsync();
+                context.FileReports.RemoveRange(remove);
+                await context.SaveChangesAsync();
+            }
+        }
         #endregion
 
 

@@ -8,6 +8,7 @@ namespace OzonCard.BizClient.HttpClients
     {
         private readonly ILogger log = Log.ForContext(typeof(Client));
         private readonly HttpClient _httpClient;
+        readonly int TimeDelayThread = 500;
         public Client(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -33,13 +34,24 @@ namespace OzonCard.BizClient.HttpClients
                     if (!string.IsNullOrWhiteSpace(valueContent))
                         return JsonConvert.DeserializeObject<T>(valueContent);
                 }
-
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    throw new UnauthorizedAccessException();
+                if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                {
+                    log.Debug("TooManyRequests api to {0}: {1}", method, query);
+                    Thread.Sleep(TimeDelayThread);
+                    return await Send<T>(query, method, body);
+                }
                 return default;
             }
-            catch (Exception ex) 
-            { 
-                log.Error(ex, "Request api to {0}: {1}", method, query);
-                return default; 
+            catch (UnauthorizedAccessException) { 
+                log.Error("UnauthorizedAccessException Request api to {0}: {1}", method, query);
+                throw new UnauthorizedAccessException(); 
+            }
+            catch (Exception ex)
+            {
+                log.Fatal(ex, "Request api to {0}: {1}", method, query);
+                return default;
             }
         }
 

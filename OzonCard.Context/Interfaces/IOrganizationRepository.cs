@@ -7,7 +7,7 @@ namespace OzonCard.Context.Interfaces
         //взаимодействие с организациями
         Task<IEnumerable<Organization>> GetMyOrganizations(Guid userId);
         Task<Organization?> GetMyOrganization(Guid userId, Guid organizationId);
-        Task AddOrganization(Organization organization, Guid userId);
+        Task AddOrganizations(IEnumerable<Organization> organizations, Guid userId);
 
         //взаимодействие с категориями
         Task<IEnumerable<Category>> GetCategories(Guid organizationId);
@@ -22,12 +22,14 @@ namespace OzonCard.Context.Interfaces
 
 
         //взаимодействие с пользователями организаций
+        Task AddUser(User user);
         Task AddUserForOrganization(Guid userId, Guid organizationId);
         Task DelUserForOrganization(Guid userId, Guid organizationId);
-
-
-
-
+        Task<IEnumerable<User>> GetUsers();
+        
+        
+        Task AddFile(FileReport file);
+        Task RemoveFiles(DateTime dateTime);
 
     }
 }

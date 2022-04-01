@@ -7,7 +7,7 @@ namespace OzonCard.Data.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public List<Wallet> Wallets { get; set; }
-
+        public bool isActive { get; set; }
         public CorporateNutrition()
         {
             Name = String.Empty;

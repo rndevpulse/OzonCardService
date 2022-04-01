@@ -5,6 +5,7 @@ using OzonCardService.Attributes;
 using OzonCardService.Models.DTO;
 using OzonCardService.Models.View;
 using OzonCardService.Services.Interfaces;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -17,11 +18,12 @@ namespace OzonCardService.Controllers
     public class OrganizationController : Controller
     {
         IRepositoryService _service;
+        private readonly ILogger log = Log.ForContext(typeof(OrganizationController));
+
         public OrganizationController(IRepositoryService repositoryService) =>
             _service = repositoryService;
 
-        [Route("list")]
-        [HttpGet]
+        [HttpGet("list")]
         [AuthorizeRoles(EnumRules.Basic)]
         public async Task<IEnumerable<Organization_dto>> GetMyOrganizations()
         {
@@ -29,21 +31,60 @@ namespace OzonCardService.Controllers
             await Task.Run(() => Guid.TryParse(
                     User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
             );
+            log.Verbose("GetMyOrganizations {@userId}", userId);
             return await _service.GetMyOrganizations(userId);
         }
 
 
-        [Route("create")]
-        [HttpPost]
-        [AuthorizeRoles(EnumRules.Admin)]
-        [Consumes("application/json")]
-        public async Task<object> CreateOrganization(Identity_vm identity)
+        [HttpGet("{organizationId}/update")]
+        [AuthorizeRoles(EnumRules.Basic)]
+        public async Task<ActionResult<Organization_dto>> UpdateOrganization(Guid organizationId)
         {
             Guid userId = new Guid();
             await Task.Run(() => Guid.TryParse(
                     User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
             );
-            return await _service.AddOrganization(identity, userId);
+            log.Verbose("UpdateOrganization = {@organizationId}, user = {@userId}", organizationId, userId);
+            try
+            {
+                return new OkObjectResult(await _service.UpdateOrganization(userId, organizationId));
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "UpdateOrganization = {@organizationId}, user = {@userId}", organizationId, userId);
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 404,
+                    Message = "Wrong login or password",
+                    Description = ex.Message + " " + ex.InnerException?.ToString()
+                });
+            }
+        }
+
+        [HttpPost("create")]
+        [AuthorizeRoles(EnumRules.Admin)]
+        [Consumes("application/json")]
+        public async Task<ActionResult<IEnumerable<Organization_dto>>> CreateOrganization(Identity_vm identity)
+        {
+            Guid userId = new Guid();
+            await Task.Run(() => Guid.TryParse(
+                    User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
+            );
+            log.Verbose("CreateOrganization {@identity}", identity);
+            try
+            {
+                return new OkObjectResult(await _service.AddOrganizations(identity, userId));
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "CreateOrganization {@identity}", identity);
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 404,
+                    Message = "Wrong login or password",
+                    Description = ex.Message + " " + ex.InnerException?.ToString()
+                });
+            }
         }
     }
 }

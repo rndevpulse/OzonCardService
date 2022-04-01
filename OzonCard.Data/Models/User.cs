@@ -6,7 +6,6 @@ namespace OzonCard.Data.Models
     public  class User :  EqualsId<User>
     {
         override public Guid Id { get; set; }
-        public string Name { get; set; }
         public string Mail { get; set; }
         public Guid Password { get; set; }
         public List<Organization> Organizations { get; set; }
@@ -15,7 +14,6 @@ namespace OzonCard.Data.Models
 
         public User()
         {
-            Name = String.Empty;
             Mail = String.Empty;
             Organizations = new List<Organization>();
             Rules = String.Empty;

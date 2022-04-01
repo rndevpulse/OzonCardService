@@ -67,7 +67,6 @@ namespace OzonCardService
                 c.Timeout = TimeSpan.FromMinutes(5);
             });
             services.AddScoped<IHttpClientService, HttpClientService>();
-            //services.AddScoped<IClient, Client>();
 
             return services;
         }

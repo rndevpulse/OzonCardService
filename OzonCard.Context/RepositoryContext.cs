@@ -22,7 +22,9 @@ namespace OzonCard.Context
 		public DbSet<Organization> Organizations { get; set; }
 		public DbSet<CustomerWallet> CustomerWallets { get; set; }
 		public DbSet<Wallet> Wallets { get; set; }
+		public DbSet<FileReport> FileReports { get; set; }
 		public DbSet<User> Users { get; set; }
+		
 		public static void InitializationValue(MigrationBuilder migrationBuilder)
 		{
             var rules = string.Join(',', EnumUtil.GetAllValues<EnumRules>().Select(x=>(int)x));
@@ -34,13 +36,9 @@ namespace OzonCard.Context
         }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //log.Information("Creating context configuration");
             modelBuilder.HasAnnotation("Relational:Collation", "Cyrillic_General_CI_AS");
 			modelBuilder.Entity<Organization>().Property(u=>u.Login).IsRequired();
 			modelBuilder.Entity<Organization>().Property(u=>u.Password).IsRequired();
-
-
-
 		}
 
     }
