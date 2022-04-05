@@ -33,6 +33,8 @@ namespace OzonCard.BizClient.HttpClients
                     var valueContent = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrWhiteSpace(valueContent))
                         return JsonConvert.DeserializeObject<T>(valueContent);
+                    else
+                        return default;
                 }
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     throw new UnauthorizedAccessException();
@@ -42,6 +44,7 @@ namespace OzonCard.BizClient.HttpClients
                     Thread.Sleep(TimeDelayThread);
                     return await Send<T>(query, method, body);
                 }
+                log.Error($"request to {request.RequestUri} with {JsonConvert.SerializeObject(body)} \n {await response.Content.ReadAsStringAsync()}");
                 return default;
             }
             catch (UnauthorizedAccessException) { 
@@ -50,7 +53,7 @@ namespace OzonCard.BizClient.HttpClients
             }
             catch (Exception ex)
             {
-                log.Fatal(ex, "Request api to {0}: {1}", method, query);
+                log.Error(ex, "Request api to {0}: {1}", method, query);
                 return default;
             }
         }

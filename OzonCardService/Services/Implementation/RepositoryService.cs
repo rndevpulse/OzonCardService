@@ -3,9 +3,11 @@ using OzonCard.BizClient.Services.Interfaces;
 using OzonCard.Common;
 using OzonCard.Context.Interfaces;
 using OzonCard.Data.Models;
+using OzonCard.Excel;
 using OzonCardService.Models.DTO;
 using OzonCardService.Models.View;
 using OzonCardService.Services.Interfaces;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace OzonCardService.Services.Implementation
         readonly IOrganizationRepository _repository;
         readonly IMapper _mapper;
         readonly IHttpClientService _client;
+        private readonly ILogger log = Log.ForContext(typeof(RepositoryService));
 
         public RepositoryService(IOrganizationRepository repository, IMapper mapper, IHttpClientService httpClientService)
         {
@@ -126,5 +129,96 @@ namespace OzonCardService.Services.Implementation
         }
 
 
+        /// <summary>
+        /// Выгрузка списка пользователей в биз
+        /// </summary>
+        public async Task<InfoDataUpload_dto> UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers_excel)
+        {
+            var info = new InfoDataUpload_dto();
+            info.CountCustomersAll = customers_excel.Count();
+            var organization = await _repository.GetOrganization(infoUpload.OrganizationId) ??
+                throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found");
+            if (!organization.Users.Any(x => x.Id == userId))
+                throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found in current user");
+            var rep_customers = _repository.GetCustomersForTabNumber(customers_excel.Select(x => x.TabNumber))
+                .Result.ToList();
+
+            var category = organization.Categories.First(x=>x.Id == infoUpload.CategoryId);
+            var corporateNutrition = organization.CorporateNutritions.First(x=>x.Id == infoUpload.CorporateNutritionId);
+            var wallet = corporateNutrition.Wallets.First();
+
+            var session = await _client.GetSession(organization.Login, organization.Password);
+            ///1. Находим разницу customers - rep_customers = получим новых пользователей, которых нет в бд
+            ///=> для каждого из нового списка выполняем
+            ///1.1 Создаем нового гостя в бизе с картой
+            ///1.2 Присваиваем гостю категорию
+            ///1.3 Назначаем гостю кошелек в программе
+            ///1.4 Изменяем при необходимости баланс
+            ///1.5 Сохраняем его в бд
+            ///2. Проходимся по списку rep_customers
+            ///2.1 Если у пользователя нет категории присваиваем ее
+            ///2.2 Если у пользователя не кашелька создаем
+            ///2.3 Изменяем при необходимости баланс
+            ///2.4 Изменяем имя если необходимо
+            ///3. Сохраняем в базу rep_customers со всеми изменениями
+            
+            //1
+            var rep_customers_tabNumbers = rep_customers.Select(x => x.TabNumber).ToList();
+   
+            customers_excel.RemoveAll(x => rep_customers_tabNumbers.Contains(x.TabNumber));
+            var new_customers = new List<Customer>();
+            foreach (var customer_excel in customers_excel)
+            {
+                var customer = new Customer();
+                //1.1
+                customer.iikoBizId = await _client.CreateCustomer(session, customer_excel.Name, customer_excel.Card, organization.Id);
+                if (customer.iikoBizId == Guid.Empty)
+                {
+                    info.CountCustomersFail++;
+                    log.Error($"Customer {customer_excel.Name} {customer_excel.Card} not create in biz");
+                    continue;
+                }
+                customer.Name = customer_excel.Name;         
+                customer.TabNumber = customer_excel.TabNumber;
+                customer.Position = customer_excel.Position;
+                customer.Organization = organization;
+                customer.Cards.Add(new Card(customer_excel.Card));
+                
+                info.CountCustomersUpload++;
+                //1.2
+                if (await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id))   
+                {
+                    customer.Categories.Add(category);         
+                    info.CountCustomersCategory++;
+                }
+                //1.3
+                var customerWallet = new CustomerWallet();  
+                customerWallet.Id = await _client.AddCorporateNutritionCustomer(session, customer.iikoBizId, organization.Id, corporateNutrition.Id);
+                info.CountCustomersCorporateNutritions++;
+                customerWallet.Wallet = wallet;
+                //1.4
+                if (infoUpload.Options.RefreshBalance)
+                {
+                    var customer_balance = await _client.GetCustomerBalanceForId(session, customer.iikoBizId, organization.Id, wallet.Id);
+                    if (customer_balance != null && customer_balance != infoUpload.Balance)
+                    {
+                        var balance = (double)customer_balance;
+                        if (customer_balance < infoUpload.Balance)
+                            await _client.AddBalanceByCustomer(session, customer.iikoBizId, organization.Id, wallet.Id, (infoUpload.Balance - balance));
+                        else
+                            await _client.DelBalanceByCustomer(session, customer.iikoBizId, organization.Id, wallet.Id, (balance - infoUpload.Balance));
+                        info.CountCustomersBalance++;
+                        customerWallet.Balance = infoUpload.Balance;
+                    }
+                }
+                customer.Wallets.Add(customerWallet);
+                new_customers.Add(customer);
+            }
+            await _repository.AddRangeCustomer(new_customers);
+
+            return info;
+        }
+
+        
     }
 }

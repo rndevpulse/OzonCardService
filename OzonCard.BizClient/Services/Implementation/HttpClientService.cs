@@ -1,6 +1,7 @@
 ﻿using OzonCard.BizClient.HttpClients;
 using OzonCard.BizClient.Models;
 using OzonCard.BizClient.Models.Data;
+using OzonCard.BizClient.Models.DTO;
 using OzonCard.BizClient.Services.Interfaces;
 
 namespace OzonCard.BizClient.Services.Implementation
@@ -11,7 +12,7 @@ namespace OzonCard.BizClient.Services.Implementation
         readonly IClient _client;
         static Dictionary<Identification, Session> TokenOrganizations = new Dictionary<Identification, Session>();
         const int TimeLife = 14;
-        public const string URL = "https://iiko.biz:9900//api/0/";
+        public const string URL = "https://iiko.biz:9900/api/0/";
         public HttpClientService(IClient httpClient)
         {
             _client = httpClient;
@@ -121,6 +122,129 @@ namespace OzonCard.BizClient.Services.Implementation
             {
                 access_session = await SessionAlive(access_session);
                 return await GetOrganizationCorporateNutritions(access_session, organizationId);
+            }
+        }
+
+
+
+
+
+        public async Task<Guid> CreateCustomer(Session access_session, string name, string card, Guid organizationId)
+        {
+            try
+            {
+                var customer = new CustomerBiz_dto
+                {
+                    customer = new Customer_dto
+                    {
+                        name = name,
+                        magnetCardNumber = card,
+                        magnetCardTrack = card
+                    }
+                };
+                return await _client.Send<Guid>($"customers/create_or_update?access_token={access_session.Token}&organization={organizationId}", "POST", customer);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await CreateCustomer(access_session, name, card, organizationId);
+            }
+        }
+
+        public async Task<bool> AddCategotyCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid categoryId)
+        {
+            try
+            {
+                await _client.Send<object>($"customers/{iikoBizId}/add_category?access_token={access_session.Token}&organization={organizationId}&categoryId={categoryId}", "POST");
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await AddCategotyCustomer(access_session, iikoBizId, organizationId, categoryId);
+            }
+        }
+
+        public async Task<Guid> AddCorporateNutritionCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid corporateNutritionId)
+        {
+            try
+            {
+                return await _client.Send<Guid>($"customers/{iikoBizId}/add_to_nutrition_organization?access_token={access_session.Token}&organization={organizationId}&corporate_nutrition_id={corporateNutritionId}", "POST");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await AddCorporateNutritionCustomer(access_session, iikoBizId, organizationId, corporateNutritionId);
+            }
+        }
+
+        public async Task<Customer?> GetCustomerForId(Session access_session, Guid iikoBizId, Guid organizationId)
+        {
+            try
+            {
+                return await _client.Send<Customer>($"customers/get_customer_by_id?access_token={access_session.Token}&organization={organizationId}&id={iikoBizId}");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetCustomerForId(access_session, iikoBizId, organizationId);
+            }
+        }
+
+        public async Task<double?> GetCustomerBalanceForId(Session access_session, Guid iikoBizId, Guid organizationId, Guid walletId)
+        {
+            try
+            {
+                var customer = await GetCustomerForId(access_session, iikoBizId, organizationId);
+                return customer?.walletBalances?.
+                    FirstOrDefault(x => x.wallet.id == walletId)
+                    ?.balance ?? null;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetCustomerBalanceForId(access_session, iikoBizId, organizationId, walletId);
+            }
+        }
+
+        public async Task<bool> AddBalanceByCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance)
+        {
+            try
+            {
+                var balance_dto = new Balance_dto()
+                {
+                    organizationId = organizationId,
+                    walletId = walletId,
+                    customerId = iikoBizId,
+                    sum = balance
+                };
+                await _client.Send<object>($"customers/refill_balance?access_token={access_session.Token}", "POST", balance_dto);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await AddBalanceByCustomer(access_session, iikoBizId, organizationId, walletId, balance);
+            }
+        }
+
+        public async Task<bool> DelBalanceByCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance)
+        {
+            try
+            {
+                var balance_dto = new Balance_dto()
+                {
+                    organizationId = organizationId,
+                    walletId = walletId,
+                    customerId = iikoBizId,
+                };
+                await _client.Send<object>($"customers/withdraw_balance?access_token={access_session.Token}", "POST", balance_dto);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await AddBalanceByCustomer(access_session, iikoBizId, organizationId, walletId, balance);
             }
         }
     }

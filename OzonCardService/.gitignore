@@ -23,6 +23,9 @@ bin/
 Bin/
 obj/
 Obj/
+[Ll]ogs/
+FileReports/
+
 
 # Visual Studio 2015 cache/options directory
 .vs/

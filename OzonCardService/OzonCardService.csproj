@@ -32,7 +32,8 @@
   <ItemGroup>
     <ProjectReference Include="..\OzonCard.BizClient\OzonCard.BizClient.csproj" />
     <ProjectReference Include="..\OzonCard.Context\OzonCard.Context.csproj" />
-    <ProjectReference Include="..\OzonCard.Logger\OzonCard.Logger.csproj" />
+	<ProjectReference Include="..\OzonCard.Logger\OzonCard.Logger.csproj" />
+	<ProjectReference Include="..\OzonCard.Excel\OzonCard.Excel.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

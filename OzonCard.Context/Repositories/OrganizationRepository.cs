@@ -101,11 +101,11 @@ namespace OzonCard.Context.Repositories
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
                 var organizations = await context.Users
-                    .Where(x => x.Id == userId)
-                    .Include(x => x.Organizations)
-                    .SelectMany(x => x.Organizations)
-                    .Where(x => x.Id == organizationId)
-                    .FirstOrDefaultAsync();
+                   .Where(x => x.Id == userId)
+                   .Include(x => x.Organizations)
+                   .SelectMany(x => x.Organizations)
+                   .Where(x => x.Id == organizationId)
+                   .FirstOrDefaultAsync();
                 return organizations;
             }
         }
@@ -121,6 +121,21 @@ namespace OzonCard.Context.Repositories
                    .Include(x => x.CorporateNutritions.Where(c => c.isActive))
                    .Include(x => x.Categories.Where(c => c.isActive))
                    .ToListAsync();
+                return organizations;
+            }
+        }
+
+        public async Task<Organization?> GetOrganization(Guid organizationId)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var organizations = await context.Organizations
+                   .Where(x => x.Id == organizationId)
+                   .Include(x => x.Users)
+                   .Include(x => x.Categories)
+                   .Include(x => x.CorporateNutritions)
+                   .ThenInclude(x => x.Wallets)
+                   .FirstOrDefaultAsync();
                 return organizations;
             }
         }
@@ -152,8 +167,18 @@ namespace OzonCard.Context.Repositories
                     .Where(x => x.Id == organizationId)
                     .Include(x => x.CorporateNutritions)
                     .FirstOrDefaultAsync();
-                var result = сorporateNutrition.Except(organization?.CorporateNutritions ?? new List<CorporateNutrition>());
+
+
+                var result = сorporateNutrition.Except(organization?.CorporateNutritions ?? new List<CorporateNutrition>()).ToList();
                 organization?.CorporateNutritions.AddRange(result);
+                
+
+                var olds = organization?.CorporateNutritions.Except(сorporateNutrition);
+                foreach (var corpNut in olds)
+                {
+                    corpNut.isActive = false;
+                }
+
                 await context.SaveChangesAsync();
             }
         }
@@ -268,10 +293,41 @@ namespace OzonCard.Context.Repositories
                 await context.SaveChangesAsync();
             }
         }
+
+
         #endregion
 
 
+        #region Покупатели
 
 
+
+        public async Task<IEnumerable<Customer>> GetCustomersForTabNumber(IEnumerable<string> tabnumbers)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var customers = await context.Customers
+                    .Where(x => tabnumbers.Contains(x.TabNumber))
+                    .Include(x => x.Cards)
+                    .Include(x => x.Categories)
+                    .Include(x =>x.Wallets)
+                    .ThenInclude(x=>x.Wallet)
+                    .ToListAsync();
+                return customers;
+            }
+        }
+
+        public async Task AddRangeCustomer(IEnumerable<Customer> customers)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                context.CustomerWallets.AttachRange(customers.SelectMany(x => x.Wallets));
+                context.Customers.AttachRange(customers);
+                await context.SaveChangesAsync();
+            }
+        }
+
+
+        #endregion
     }
 }

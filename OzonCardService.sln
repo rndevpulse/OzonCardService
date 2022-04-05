@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OzonCardService", "OzonCardService\OzonCardService.csproj", "{23E004A9-5346-4E89-AD45-383C5B53650C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6AC597F0-256D-4737-B838-633932E88A10} = {6AC597F0-256D-4737-B838-633932E88A10}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Data", "OzonCard.Data\OzonCard.Data.csproj", "{E8C9DE0A-E5E4-4461-9647-B8E27DC6D701}"
 EndProject
@@ -14,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.BizClient", "OzonCard.BizClient\OzonCard.BizClient.csproj", "{3C3B7420-38D6-4B95-99D4-1CB7377D54BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Logger", "OzonCard.Logger\OzonCard.Logger.csproj", "{8A425937-C0E3-48DB-8B24-01056377F255}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Excel", "OzonCard.Excel\OzonCard.Excel.csproj", "{6AC597F0-256D-4737-B838-633932E88A10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +50,10 @@ Global
 		{8A425937-C0E3-48DB-8B24-01056377F255}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A425937-C0E3-48DB-8B24-01056377F255}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A425937-C0E3-48DB-8B24-01056377F255}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AC597F0-256D-4737-B838-633932E88A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC597F0-256D-4737-B838-633932E88A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC597F0-256D-4737-B838-633932E88A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC597F0-256D-4737-B838-633932E88A10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -29,6 +29,9 @@ namespace OzonCard.Data.Models
             Cards = new List<Card>();
             Categories = new List<Category>();
             Wallets = new List<CustomerWallet>();
+
+            Create = DateTime.UtcNow;
+            IsActive = true;
         }
 
     }
