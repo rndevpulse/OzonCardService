@@ -44,6 +44,7 @@ namespace OzonCardService
             services.AddContext(Configuration);
             services.AddAutoMapper(typeof(MappingProfileContext), typeof(MappingProfileBiz));
             services.AddBizClient();
+            services.AddManagerTasksProgress();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

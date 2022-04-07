@@ -30,8 +30,8 @@ namespace OzonCard.Context
             var rules = string.Join(',', EnumUtil.GetAllValues<EnumRules>().Select(x=>(int)x));
 			migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Name", "Mail", "Rules", "CreatedDate", "Password" },
-                values: new object[] { Guid.NewGuid(), "admin", "admin", rules, DateTime.UtcNow, "b02a44c9-774d-cdbb-fbac-f2d424c0625c" });
+                columns: new[] { "Id", "Mail", "Rules", "CreatedDate", "Password" },
+                values: new object[] { Guid.NewGuid(), "admin", rules, DateTime.UtcNow, "b02a44c9-774d-cdbb-fbac-f2d424c0625c" });
 
         }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

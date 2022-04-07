@@ -311,21 +311,22 @@ namespace OzonCard.Context.Repositories
                     .Include(x => x.Cards)
                     .Include(x => x.Categories)
                     .Include(x =>x.Wallets)
-                    .ThenInclude(x=>x.Wallet)
+                    .ThenInclude(x => x.Wallet)
                     .ToListAsync();
                 return customers;
             }
         }
 
-        public async Task AddRangeCustomer(IEnumerable<Customer> customers)
+        public async Task AttachRangeCustomer(IEnumerable<Customer> customers)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
-                context.CustomerWallets.AttachRange(customers.SelectMany(x => x.Wallets));
                 context.Customers.AttachRange(customers);
                 await context.SaveChangesAsync();
             }
         }
+
+       
 
 
         #endregion

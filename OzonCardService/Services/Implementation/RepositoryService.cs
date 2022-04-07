@@ -132,93 +132,150 @@ namespace OzonCardService.Services.Implementation
         /// <summary>
         /// Выгрузка списка пользователей в биз
         /// </summary>
-        public async Task<InfoDataUpload_dto> UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers_excel)
+        public async Task<Task> UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers_excel, IProgress<Helpers.ProgressInfo> progress)
         {
             var info = new InfoDataUpload_dto();
             info.CountCustomersAll = customers_excel.Count();
+            progress.Report(new Helpers.ProgressInfo(info));
             var organization = await _repository.GetOrganization(infoUpload.OrganizationId) ??
                 throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found");
             if (!organization.Users.Any(x => x.Id == userId))
                 throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found in current user");
-            var rep_customers = _repository.GetCustomersForTabNumber(customers_excel.Select(x => x.TabNumber))
+            var customers_rep = _repository.GetCustomersForTabNumber(customers_excel.Select(x => x.TabNumber))
                 .Result.ToList();
 
             var category = organization.Categories.First(x=>x.Id == infoUpload.CategoryId);
             var corporateNutrition = organization.CorporateNutritions.First(x=>x.Id == infoUpload.CorporateNutritionId);
-            var wallet = corporateNutrition.Wallets.First();
 
             var session = await _client.GetSession(organization.Login, organization.Password);
             ///1. Находим разницу customers - rep_customers = получим новых пользователей, которых нет в бд
-            ///=> для каждого из нового списка выполняем
-            ///1.1 Создаем нового гостя в бизе с картой
-            ///1.2 Присваиваем гостю категорию
-            ///1.3 Назначаем гостю кошелек в программе
-            ///1.4 Изменяем при необходимости баланс
-            ///1.5 Сохраняем его в бд
-            ///2. Проходимся по списку rep_customers
-            ///2.1 Если у пользователя нет категории присваиваем ее
-            ///2.2 Если у пользователя не кашелька создаем
-            ///2.3 Изменяем при необходимости баланс
-            ///2.4 Изменяем имя если необходимо
-            ///3. Сохраняем в базу rep_customers со всеми изменениями
-            
-            //1
-            var rep_customers_tabNumbers = rep_customers.Select(x => x.TabNumber).ToList();
-   
+            var rep_customers_tabNumbers = customers_rep.Select(x => x.TabNumber).ToList();
             customers_excel.RemoveAll(x => rep_customers_tabNumbers.Contains(x.TabNumber));
             var new_customers = new List<Customer>();
             foreach (var customer_excel in customers_excel)
             {
-                var customer = new Customer();
-                //1.1
-                customer.iikoBizId = await _client.CreateCustomer(session, customer_excel.Name, customer_excel.Card, organization.Id);
-                if (customer.iikoBizId == Guid.Empty)
+                ///=> для каждого из нового списка выполняем
+                ///0.1 Ищем гостя в бизе по карте
+                ///0.2 Если нашли, то берем все данные оттуда
+                ///0.3 Если не нашли то -> 1.1
+                ///1.1 Создаем нового гостя в бизе с картой
+                ///1.2 Присваиваем гостю категорию
+                ///1.3 Назначаем гостю кошелек в программе
+                ///1.4 Изменяем при необходимости баланс
+                var res = await UploadCustomerInBiz(infoUpload, session, customer_excel, organization, category, corporateNutrition);
+                info += res.Value;
+                progress.Report(new Helpers.ProgressInfo(info));
+
+                if (res.Key != null)
+                    new_customers.Add(res.Key);
+
+
+                System.Threading.Thread.Sleep(1000);
+            }
+            ///1.5 Сохраняем новых в бд
+            if (new_customers.Count > 0)
+                await _repository.AttachRangeCustomer(new_customers);
+            ///2. Проходимся по списку rep_customers
+            ///3. Сохраняем в базу rep_customers со всеми изменениями
+            foreach (var customer in customers_rep)
+            {
+                System.Threading.Thread.Sleep(1000);
+
+
+                ///2.0 Изменяем имя если необходимо
+                if (infoUpload.Options.Rename)
+                    await _client.UpdateCustomer(session, customer.Name, customer.iikoBizId, organization.Id);
+                ///2.1 Если у пользователя нет категории присваиваем ее
+                if (!customer.Categories.Contains(category) )
                 {
-                    info.CountCustomersFail++;
-                    log.Error($"Customer {customer_excel.Name} {customer_excel.Card} not create in biz");
-                    continue;
-                }
-                customer.Name = customer_excel.Name;         
-                customer.TabNumber = customer_excel.TabNumber;
-                customer.Position = customer_excel.Position;
-                customer.Organization = organization;
-                customer.Cards.Add(new Card(customer_excel.Card));
-                
-                info.CountCustomersUpload++;
-                //1.2
-                if (await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id))   
-                {
-                    customer.Categories.Add(category);         
+                    await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id);
+                    customer.Categories.Add(category);
                     info.CountCustomersCategory++;
                 }
-                //1.3
-                var customerWallet = new CustomerWallet();  
-                customerWallet.Id = await _client.AddCorporateNutritionCustomer(session, customer.iikoBizId, organization.Id, corporateNutrition.Id);
-                info.CountCustomersCorporateNutritions++;
-                customerWallet.Wallet = wallet;
-                //1.4
+                ///2.2 Если у пользователя нет кошелька создаем
+                var wallet = corporateNutrition.Wallets.First();
+                if (!customer.Wallets.Select(x=>x.Wallet).Any(x => wallet.Equals(x)))
+                {
+                    CustomerWallet customerWallet = new CustomerWallet();
+                    await _client.AddCorporateNutritionCustomer(session, customer.iikoBizId, organization.Id, corporateNutrition.Id);
+                    info.CountCustomersCorporateNutritions++;
+                    customerWallet.Wallet = wallet;
+                    customer.Wallets.Add(customerWallet);
+                }
+                ///2.3 Изменяем при необходимости баланс
                 if (infoUpload.Options.RefreshBalance)
                 {
-                    var customer_balance = await _client.GetCustomerBalanceForId(session, customer.iikoBizId, organization.Id, wallet.Id);
-                    if (customer_balance != null && customer_balance != infoUpload.Balance)
-                    {
-                        var balance = (double)customer_balance;
-                        if (customer_balance < infoUpload.Balance)
-                            await _client.AddBalanceByCustomer(session, customer.iikoBizId, organization.Id, wallet.Id, (infoUpload.Balance - balance));
-                        else
-                            await _client.DelBalanceByCustomer(session, customer.iikoBizId, organization.Id, wallet.Id, (balance - infoUpload.Balance));
-                        info.CountCustomersBalance++;
-                        customerWallet.Balance = infoUpload.Balance;
-                    }
+                    await UpdateBalance(infoUpload.Balance, session, organization, customer.iikoBizId, wallet.Id);
+                    info.CountCustomersBalance++;
                 }
-                customer.Wallets.Add(customerWallet);
-                new_customers.Add(customer);
-            }
-            await _repository.AddRangeCustomer(new_customers);
+                progress.Report(new Helpers.ProgressInfo(info));
 
-            return info;
+            }
+            await _repository.AttachRangeCustomer(customers_rep);
+            return Task.CompletedTask;
         }
 
-        
+        async Task<KeyValuePair<Customer, InfoDataUpload_dto>> UploadCustomerInBiz(InfoCustomersUpload_vm infoUpload,
+            OzonCard.BizClient.Models.Data.Session session, ShortCustomerInfo_excel customer_excel, 
+            Organization organization, Category category, CorporateNutrition corporateNutrition)
+        {
+            var customer = new Customer();
+            var info = new InfoDataUpload_dto();
+
+            //1.1
+            customer.iikoBizId = await _client.CreateCustomer(session, customer_excel.Name, customer_excel.Card, organization.Id);
+            if (customer.iikoBizId == Guid.Empty)
+            {
+                info.CountCustomersFail++;
+                log.Error($"Customer {customer_excel.Name} {customer_excel.Card} not create in biz");
+                return new KeyValuePair<Customer, InfoDataUpload_dto>(null, info);
+            }
+
+            customer.Name = customer_excel.Name;
+            customer.TabNumber = customer_excel.TabNumber;
+            customer.Position = customer_excel.Position;
+            customer.Organization = organization;
+            customer.Cards.Add(new Card(customer_excel.Card));
+
+            info.CountCustomersUpload++;
+            //1.2
+            if (await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id))
+            {
+                customer.Categories.Add(category);
+                info.CountCustomersCategory++;
+            }
+            //1.3
+            CustomerWallet customerWallet = new CustomerWallet();
+            await _client.AddCorporateNutritionCustomer(session, customer.iikoBizId, organization.Id, corporateNutrition.Id);
+            info.CountCustomersCorporateNutritions++;
+            customerWallet.Wallet = corporateNutrition.Wallets.First();
+            //1.4
+            if (infoUpload.Options.RefreshBalance)
+            {
+                await UpdateBalance(infoUpload.Balance, session, organization, customer.iikoBizId, customerWallet.Wallet.Id);
+                customerWallet.Balance = infoUpload.Balance;
+                info.CountCustomersBalance++;
+            }
+            customer.Wallets.Add(customerWallet);
+            return new KeyValuePair<Customer, InfoDataUpload_dto>(customer, info);
+        }
+
+        async Task UpdateBalance(double new_balance,
+            OzonCard.BizClient.Models.Data.Session session, Organization organization, Guid iikoBizId, Guid WalletId)
+        {
+            var customer_balance = await _client.GetCustomerBalanceForId(session, iikoBizId, organization.Id, WalletId);
+            if (customer_balance != null && customer_balance != new_balance)
+            {
+                var balance = (double)customer_balance;
+                if (customer_balance != new_balance)
+                {
+                    if (customer_balance < new_balance)
+                        await _client.AddBalanceByCustomer(session, iikoBizId, organization.Id, WalletId, new_balance - balance);
+                    else
+                        await _client.DelBalanceByCustomer(session, iikoBizId, organization.Id, WalletId, balance - new_balance);
+                }
+            }
+        }
+
     }
 }

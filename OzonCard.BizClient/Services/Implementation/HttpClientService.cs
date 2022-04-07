@@ -151,6 +151,28 @@ namespace OzonCard.BizClient.Services.Implementation
             }
         }
 
+        public async Task<Guid> UpdateCustomer(Session access_session, string name, Guid iikoBizId, Guid organizationId)
+        {
+            try
+            {
+                var customer = new CustomerBiz_dto
+                {
+                    customer = new Customer_dto
+                    {
+                        name = name,
+                        id = iikoBizId
+                    }
+                };
+                return await _client.Send<Guid>($"customers/create_or_update?access_token={access_session.Token}&organization={organizationId}", "POST", customer);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await UpdateCustomer(access_session, name, iikoBizId, organizationId);
+            }
+        }
+
+
         public async Task<bool> AddCategotyCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid categoryId)
         {
             try
@@ -207,6 +229,21 @@ namespace OzonCard.BizClient.Services.Implementation
             }
         }
 
+        public async Task<Customer?> GetCustomerForCard(Session access_session, string card, Guid organizationId)
+        {
+            try
+            {
+                return await _client.Send<Customer>($"customers/get_customer_by_card?access_token={access_session.Token}&organization={organizationId}&card={card}");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetCustomerForCard(access_session, card, organizationId);
+            }
+        }
+
+
+
         public async Task<bool> AddBalanceByCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance)
         {
             try
@@ -247,5 +284,7 @@ namespace OzonCard.BizClient.Services.Implementation
                 return await AddBalanceByCustomer(access_session, iikoBizId, organizationId, walletId, balance);
             }
         }
+
+        
     }
 }

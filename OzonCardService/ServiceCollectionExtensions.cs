@@ -64,10 +64,16 @@ namespace OzonCardService
             services.AddHttpClient<IClient, Client>(c =>
             {
                 c.BaseAddress = new Uri(HttpClientService.URL);
-                c.Timeout = TimeSpan.FromMinutes(5);
+                //c.Timeout = TimeSpan.FromSeconds(10);
             });
             services.AddScoped<IHttpClientService, HttpClientService>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddManagerTasksProgress(this IServiceCollection services)
+        {
+            services.AddScoped<ITasksManagerProgress, TasksManagerProgress>();
             return services;
         }
     }

@@ -12,13 +12,14 @@ namespace OzonCard.BizClient.HttpClients
         public Client(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            
         }
 
         public async Task<T?> Send<T>(string query = "", string method = "GET", object? body = null)
         {
             log.Debug("Request api to {0}: {1}", method, query);
             var request = new HttpRequestMessage(new HttpMethod(method), query);
-
+            
             if (body != null)
             {
                 request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");

@@ -35,7 +35,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasIndex("CustomersId");
 
-                    b.ToTable("CategoryCustomer");
+                    b.ToTable("CategoryCustomer", (string)null);
                 });
 
             modelBuilder.Entity("OrganizationUser", b =>
@@ -50,7 +50,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("OrganizationUser");
+                    b.ToTable("OrganizationUser", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Card", b =>
@@ -80,7 +80,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Cards");
+                    b.ToTable("Cards", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Category", b =>
@@ -103,7 +103,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.CorporateNutrition", b =>
@@ -130,7 +130,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("CorporateNutritions");
+                    b.ToTable("CorporateNutritions", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Customer", b =>
@@ -175,7 +175,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.CustomerWallet", b =>
@@ -190,16 +190,14 @@ namespace OzonCard.Context.Migrations
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("WalletId")
+                    b.Property<Guid>("WalletId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("WalletId");
-
-                    b.ToTable("CustomerWallets");
+                    b.ToTable("CustomerWallets", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.FileReport", b =>
@@ -217,7 +215,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FileReports");
+                    b.ToTable("FileReports", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Organization", b =>
@@ -243,7 +241,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.User", b =>
@@ -268,7 +266,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Wallet", b =>
@@ -296,7 +294,7 @@ namespace OzonCard.Context.Migrations
 
                     b.HasIndex("CorporateNutritionId");
 
-                    b.ToTable("Wallets");
+                    b.ToTable("Wallets", (string)null);
                 });
 
             modelBuilder.Entity("CategoryCustomer", b =>
@@ -364,12 +362,6 @@ namespace OzonCard.Context.Migrations
                     b.HasOne("OzonCard.Data.Models.Customer", null)
                         .WithMany("Wallets")
                         .HasForeignKey("CustomerId");
-
-                    b.HasOne("OzonCard.Data.Models.Wallet", "Wallet")
-                        .WithMany()
-                        .HasForeignKey("WalletId");
-
-                    b.Navigation("Wallet");
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Wallet", b =>

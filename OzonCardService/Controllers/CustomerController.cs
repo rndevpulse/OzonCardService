@@ -20,17 +20,20 @@ namespace OzonCardService.Controllers
     public class CustomerController : Controller
     {
         IRepositoryService _service;
+        ITasksManagerProgress _tasksManager;
         private readonly ILogger log = Log.ForContext(typeof(OrganizationController));
 
-        public CustomerController(IRepositoryService repositoryService) =>
+        public CustomerController(IRepositoryService repositoryService, ITasksManagerProgress tasksManager)
+        {
             _service = repositoryService;
-
+            _tasksManager = tasksManager;
+        }
 
 
         [HttpPost("upload")]
         [AuthorizeRoles(EnumRules.Basic)]
         [Consumes("application/json")]
-        public async Task<ActionResult<InfoDataUpload_dto>> UploadCustomersReport(InfoCustomersUpload_vm infoUpload)
+        public async Task<ActionResult<object>> UploadCustomersReport(InfoCustomersUpload_vm infoUpload)
         {
             try
             {
@@ -39,22 +42,26 @@ namespace OzonCardService.Controllers
                 await Task.Run(() => Guid.TryParse(
                         User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
                 );
-
+               
                 var customers = new ExcelManager(new FileManager().GetFile(infoUpload.FileReport))
                     .GetClients();
-                InfoDataUpload_dto info = await _service.UploadCustomers(
+                var progress = new Helpers.Progress<ProgressInfo>();
+
+                var t = 
+                    _service.UploadCustomers(
                     userId,
                     infoUpload,
-                    customers.ToList());
-
-                return info;
+                    customers.ToList(), progress);
+                
+                progress.SetTask(t);
+                return _tasksManager.AddTask(progress);
             }
             catch (Exception ex)
             {
                 log.Error(ex, "UploadCustomersReport {@customers}", infoUpload);
                 return new BadRequestObjectResult(new Error_dto
                 {
-                    Code = 404,
+                    Code = 400,
                     Message = ex.Message,
                     Description = ex.InnerException?.ToString()
                 });

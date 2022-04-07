@@ -1,9 +1,8 @@
 ﻿
 namespace OzonCard.Data.Models
 {
-    public class Wallet
+    public class Wallet : EqualsId<Wallet>
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string ProgramType { get; set; }
         public string Type { get; set; }
@@ -14,5 +13,8 @@ namespace OzonCard.Data.Models
             ProgramType = String.Empty; 
             Type = String.Empty;
         }
+
+
+        
     }
 }

@@ -22,6 +22,6 @@ namespace OzonCardService.Services.Interfaces
         Task<bool> DelUserForOrganization(Guid userId, Guid organizationId);
         Task SaveFile(Guid id, string format);
         Task RemoveFiles(DateTime dateTime);
-        Task<InfoDataUpload_dto> UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers);
+        Task<Task> UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers, IProgress<Helpers.ProgressInfo> progress);
     }
 }

@@ -12,8 +12,8 @@ using OzonCard.Context;
 namespace OzonCard.Context.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220330133454_rev1")]
-    partial class rev1
+    [Migration("20220406092837_rev2")]
+    partial class rev2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -91,15 +91,15 @@ namespace OzonCard.Context.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -124,6 +124,9 @@ namespace OzonCard.Context.Migrations
 
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -189,16 +192,32 @@ namespace OzonCard.Context.Migrations
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("WalletId")
+                    b.Property<Guid>("WalletId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("WalletId");
-
                     b.ToTable("CustomerWallets");
+                });
+
+            modelBuilder.Entity("OzonCard.Data.Models.FileReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileReports");
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Organization", b =>
@@ -237,10 +256,6 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Mail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -349,12 +364,6 @@ namespace OzonCard.Context.Migrations
                     b.HasOne("OzonCard.Data.Models.Customer", null)
                         .WithMany("Wallets")
                         .HasForeignKey("CustomerId");
-
-                    b.HasOne("OzonCard.Data.Models.Wallet", "Wallet")
-                        .WithMany()
-                        .HasForeignKey("WalletId");
-
-                    b.Navigation("Wallet");
                 });
 
             modelBuilder.Entity("OzonCard.Data.Models.Wallet", b =>

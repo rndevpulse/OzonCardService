@@ -12,8 +12,8 @@ using OzonCard.Context;
 namespace OzonCard.Context.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220401104349_rev3")]
-    partial class rev3
+    [Migration("20220406091520_rev1")]
+    partial class rev1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -204,6 +204,24 @@ namespace OzonCard.Context.Migrations
                     b.ToTable("CustomerWallets");
                 });
 
+            modelBuilder.Entity("OzonCard.Data.Models.FileReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileReports");
+                });
+
             modelBuilder.Entity("OzonCard.Data.Models.Organization", b =>
                 {
                     b.Property<Guid>("Id")
@@ -240,10 +258,6 @@ namespace OzonCard.Context.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Mail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

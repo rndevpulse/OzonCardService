@@ -10,6 +10,19 @@ namespace OzonCard.Context.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "FileReports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Format = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileReports", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Organizations",
                 columns: table => new
                 {
@@ -29,7 +42,6 @@ namespace OzonCard.Context.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Mail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Rules = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -46,7 +58,7 @@ namespace OzonCard.Context.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    isActive = table.Column<bool>(type: "bit", nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -66,6 +78,7 @@ namespace OzonCard.Context.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    isActive = table.Column<bool>(type: "bit", nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -261,8 +274,8 @@ namespace OzonCard.Context.Migrations
                 table: "Wallets",
                 column: "CorporateNutritionId");
 
-            RepositoryContext.InitializationValue(migrationBuilder);
 
+            RepositoryContext.InitializationValue(migrationBuilder);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -275,6 +288,9 @@ namespace OzonCard.Context.Migrations
 
             migrationBuilder.DropTable(
                 name: "CustomerWallets");
+
+            migrationBuilder.DropTable(
+                name: "FileReports");
 
             migrationBuilder.DropTable(
                 name: "OrganizationUser");

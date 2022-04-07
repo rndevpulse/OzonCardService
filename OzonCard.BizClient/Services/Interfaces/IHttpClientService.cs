@@ -16,11 +16,12 @@ namespace OzonCard.BizClient.Services.Interfaces
 
 
         Task<Guid> CreateCustomer(Session access_session, string name, string card, Guid organizationId);
+        Task<Guid> UpdateCustomer(Session access_session, string name, Guid iikoBizId, Guid organizationId);
         Task<bool> AddCategotyCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid categoryId);
         Task<Guid> AddCorporateNutritionCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid corporateNutritionId);
         Task<Customer?> GetCustomerForId(Session session, Guid iikoBizId, Guid organizationId);
         Task<double?> GetCustomerBalanceForId(Session session, Guid iikoBizId, Guid organizationId, Guid walletId);
-
+        Task<Customer?> GetCustomerForCard(Session access_session, string card, Guid organizationId);
         Task<bool> AddBalanceByCustomer(Session session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance);
         Task<bool> DelBalanceByCustomer(Session session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance);
     }
