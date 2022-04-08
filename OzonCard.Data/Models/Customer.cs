@@ -13,7 +13,7 @@ namespace OzonCard.Data.Models
         public DateTime Create { get; set; }
         public Guid iikoBizId { get; set; }
 
-        public Organization? Organization { get; set; }
+        public Organization Organization { get; set; }
         public List<Card> Cards { get; set; }
         public List<Category> Categories { get; set; }
         public List<CustomerWallet> Wallets { get; set; }
@@ -29,6 +29,7 @@ namespace OzonCard.Data.Models
             Cards = new List<Card>();
             Categories = new List<Category>();
             Wallets = new List<CustomerWallet>();
+            Organization = new Organization();
 
             Create = DateTime.UtcNow;
             IsActive = true;

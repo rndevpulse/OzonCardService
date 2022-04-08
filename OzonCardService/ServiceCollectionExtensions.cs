@@ -11,6 +11,8 @@ using OzonCard.Context.Repositories;
 using OzonCardService.Helpers;
 using OzonCardService.Services.Implementation;
 using OzonCardService.Services.Interfaces;
+using OzonCardService.Services.TasksManagerProgress.Implementation;
+using OzonCardService.Services.TasksManagerProgress.Interfaces;
 using System;
 
 namespace OzonCardService

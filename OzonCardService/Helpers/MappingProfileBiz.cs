@@ -14,6 +14,7 @@ namespace OzonCardService.Helpers
 				.ForMember(m => m.isActive, opt => opt.MapFrom(b => b.serviceTo == null || b.serviceTo > System.DateTime.UtcNow ? true : false))
 				.ForMember(m => m.Description, opt => opt.MapFrom(b => b.description == null ? string.Empty : b.description));
 			CreateMap<BizModel.Wallet, RepModel.Wallet>();
+			CreateMap<BizModel.ReportCN, Models.DTO.ReportCN_dto>();
 
 		}
 	}

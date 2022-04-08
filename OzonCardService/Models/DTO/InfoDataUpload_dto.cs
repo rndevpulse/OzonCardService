@@ -1,11 +1,12 @@
-﻿using System;
+﻿using OzonCardService.Services.TasksManagerProgress.Interfaces;
+using System;
 
 namespace OzonCardService.Models.DTO
 {
-    public class InfoDataUpload_dto
+    public class InfoDataUpload_dto : IInfoData
     {
         public int CountCustomersAll { get; set; }
-        public int CountCustomersUpload { get; set; }
+        public int CountCustomersNew { get; set; }
         public int CountCustomersFail { get; set; }
         public int CountCustomersBalance { get; set; }
         public int CountCustomersCategory { get; set; }
@@ -16,26 +17,14 @@ namespace OzonCardService.Models.DTO
 
         public static InfoDataUpload_dto operator +(InfoDataUpload_dto left, InfoDataUpload_dto right)  
         {
-            var a = new InfoDataUpload_dto();
-            a.CountCustomersAll = left.CountCustomersAll;
-            a.CountCustomersUpload = left.CountCustomersUpload + right.CountCustomersUpload;
-            a.CountCustomersFail = left.CountCustomersFail + right.CountCustomersFail;
-            a.CountCustomersBalance = left.CountCustomersBalance + right.CountCustomersBalance;
-            a.CountCustomersCategory = left.CountCustomersCategory + right.CountCustomersCategory;
-            a.CountCustomersCorporateNutritions = left.CountCustomersCorporateNutritions + right.CountCustomersCorporateNutritions;
-            return a;
+            left.CountCustomersNew += right.CountCustomersNew;
+            left.CountCustomersFail += right.CountCustomersFail;
+            left.CountCustomersBalance += right.CountCustomersBalance;
+            left.CountCustomersCategory += right.CountCustomersCategory;
+            left.CountCustomersCorporateNutritions += right.CountCustomersCorporateNutritions;
+            return left;
         }
-        public static InfoDataUpload_dto operator -(InfoDataUpload_dto left, InfoDataUpload_dto right)
-        {
-            var a = new InfoDataUpload_dto();
-            a.CountCustomersAll = left.CountCustomersAll;
-            a.CountCustomersUpload = left.CountCustomersUpload - right.CountCustomersUpload;
-            a.CountCustomersFail = left.CountCustomersFail - right.CountCustomersFail;
-            a.CountCustomersBalance = left.CountCustomersBalance - right.CountCustomersBalance;
-            a.CountCustomersCategory = left.CountCustomersCategory - right.CountCustomersCategory;
-            a.CountCustomersCorporateNutritions = left.CountCustomersCorporateNutritions - right.CountCustomersCorporateNutritions;
-            return a;
-        }
+        
 
     }
 }

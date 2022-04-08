@@ -9,6 +9,7 @@ namespace OzonCard.Data.Models
         public string Number { get; set; }
         public bool IsActive { get; set; }
         public DateTime Create { get; set; }
+        public Customer Customer { get; set; }
 
         public Card(string track)
         {

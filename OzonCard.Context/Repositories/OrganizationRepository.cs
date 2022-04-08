@@ -302,31 +302,60 @@ namespace OzonCard.Context.Repositories
 
 
 
-        public async Task<IEnumerable<Customer>> GetCustomersForTabNumber(IEnumerable<string> tabnumbers)
+        public async Task<IEnumerable<Customer>> GetCustomersForCardNumber(IEnumerable<string> cardnumbers)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var customers = await context.Cards
+                    .Where(x => cardnumbers.Contains(x.Track))
+                    .Include(x =>x.Customer)
+                    .Select(x=>x.Customer)
+                    .ToListAsync();
+
+                customers = await context.Customers
+                    .Where(x => customers.Contains(x))
+                    .Include(x => x.Categories)
+                    .Include(x => x.Wallets)
+                    .ThenInclude(x => x.Wallet)
+                    .Include(x => x.Cards)
+                    .ToListAsync();
+
+                return customers;
+            }
+        }
+        public async Task<IEnumerable<Customer>> GetCustomersForOrganization(Guid organizationId)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
                 var customers = await context.Customers
-                    .Where(x => tabnumbers.Contains(x.TabNumber))
-                    .Include(x => x.Cards)
-                    .Include(x => x.Categories)
-                    .Include(x =>x.Wallets)
-                    .ThenInclude(x => x.Wallet)
+                    .Where(x => x.Organization.Id == organizationId)
                     .ToListAsync();
                 return customers;
             }
         }
-
         public async Task AttachRangeCustomer(IEnumerable<Customer> customers)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
                 context.Customers.AttachRange(customers);
+                
+                await context.SaveChangesAsync();
+            }
+        }
+        public async Task UpdateCustomer(Customer customer)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                context.Customers.AttachRange(customer);
+                context.Entry(customer).Property(e => e.TabNumber).IsModified = true;
+                context.Entry(customer).Property(e => e.Name).IsModified = true;
+                context.Entry(customer).Property(e => e.Position).IsModified = true;
                 await context.SaveChangesAsync();
             }
         }
 
-       
+        
+
 
 
         #endregion

@@ -15,7 +15,7 @@ namespace OzonCardService.Helpers
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
         }
-
+        public string GetDirectory() { return path; }
         public async Task<bool> Save(Guid id, IFormFile file)
         {
             try

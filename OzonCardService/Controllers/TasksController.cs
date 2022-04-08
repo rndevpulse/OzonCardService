@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OzonCard.Data.Enums;
 using OzonCardService.Attributes;
-using OzonCardService.Helpers;
 using OzonCardService.Models.DTO;
+using OzonCardService.Services.TasksManagerProgress.Interfaces;
 using Serilog;
 using System;
-using System.Threading.Tasks;
 
 namespace OzonCardService.Controllers
 {
@@ -28,7 +27,7 @@ namespace OzonCardService.Controllers
             try
             {
                 log.Information("GetTaskInformation {@taskId}", taskId);
-                return _tasksManager.GetStatusTask(taskId);
+                return (InfoDataUpload_dto)_tasksManager.GetStatusTask(taskId);
             }
             catch (Exception ex)
             {

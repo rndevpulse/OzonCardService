@@ -34,9 +34,9 @@ namespace OzonCardService.Controllers
                 log.Verbose("POST /files/create: {0}", file.FileName);
                 if (!await new FileManager().Save(id, file))
                     throw new Exception("File format not correct");
-                
-                var format = file.FileName.Split(".").Last().Trim().ToLower();
-                await _service.SaveFile(id, format);
+                var str = file.FileName.Split(".");
+                var format = str.Last().Trim().ToLower();
+                await _service.SaveFile(id, format, str.First());
                 return new OkObjectResult(new
                 {
                     id = id,

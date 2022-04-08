@@ -35,7 +35,9 @@ namespace OzonCard.Context.Interfaces
 
 
         //взаимодействие с покупателями
-        Task<IEnumerable<Customer>> GetCustomersForTabNumber(IEnumerable<string> enumerable);
+        Task<IEnumerable<Customer>> GetCustomersForCardNumber(IEnumerable<string> enumerable);
+        Task<IEnumerable<Customer>> GetCustomersForOrganization(Guid organizationId);
         Task AttachRangeCustomer(IEnumerable<Customer> customers);
+        Task UpdateCustomer(Customer customer);
     }
 }

@@ -1,7 +1,9 @@
-﻿using OzonCard.Data.Models;
+﻿
 using OzonCard.Excel;
 using OzonCardService.Models.DTO;
 using OzonCardService.Models.View;
+using OzonCardService.Services.TasksManagerProgress.Implementation;
+using OzonCardService.Services.TasksManagerProgress.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,8 +22,10 @@ namespace OzonCardService.Services.Interfaces
 
         Task<bool> AddUserForOrganization(Guid userId, Guid organizationId);
         Task<bool> DelUserForOrganization(Guid userId, Guid organizationId);
-        Task SaveFile(Guid id, string format);
+        Task SaveFile(Guid id, string format, string name);
         Task RemoveFiles(DateTime dateTime);
-        Task<Task> UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers, IProgress<Helpers.ProgressInfo> progress);
+        Task UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers, 
+            IProgress<ProgressInfo<IInfoData>> progress);
+        Task<IEnumerable<ReportCN_dto>> CreateReportBiz(Guid userId, ReportOption_vm reportOption);
     }
 }

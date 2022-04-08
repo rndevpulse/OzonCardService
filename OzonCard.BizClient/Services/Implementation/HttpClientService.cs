@@ -274,6 +274,7 @@ namespace OzonCard.BizClient.Services.Implementation
                     organizationId = organizationId,
                     walletId = walletId,
                     customerId = iikoBizId,
+                    sum = balance
                 };
                 await _client.Send<object>($"customers/withdraw_balance?access_token={access_session.Token}", "POST", balance_dto);
                 return true;
@@ -285,6 +286,18 @@ namespace OzonCard.BizClient.Services.Implementation
             }
         }
 
-        
+        public async Task<IEnumerable<ReportCN>> GerReportCN(Session access_session, Guid organizationId, Guid corporateNutritionId, string dateFrom, string dateTo)
+        {
+            try
+            {
+                return await _client.Send<IEnumerable<ReportCN>>($"organization/{organizationId}/corporate_nutrition_report?corporate_nutrition_id={corporateNutritionId}&date_from={dateFrom}&date_to={dateTo}&access_token={access_session.Token}")
+                ?? new List<ReportCN>();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GerReportCN(access_session, organizationId, corporateNutritionId, dateFrom, dateTo);
+            }
+        }
     }
 }
