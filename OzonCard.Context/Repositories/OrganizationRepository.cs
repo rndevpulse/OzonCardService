@@ -290,17 +290,6 @@ namespace OzonCard.Context.Repositories
                     .ToListAsync();
             }
         }
-        public async Task RemoveFiles(DateTime dateTime)
-        {
-            using (var context = ContextFactory.CreateDbContext(ConnectionString))
-            {
-                var remove = await context.FileReports
-                    .Where(x => x.Created < dateTime)
-                    .ToListAsync();
-                context.FileReports.RemoveRange(remove);
-                await context.SaveChangesAsync();
-            }
-        }
 
 
         #endregion

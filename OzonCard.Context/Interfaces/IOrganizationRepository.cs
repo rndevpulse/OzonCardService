@@ -31,7 +31,6 @@ namespace OzonCard.Context.Interfaces
         
         Task AddFile(FileReport file);
         Task<IEnumerable<FileReport>> GetFiles(Guid userId);
-        Task RemoveFiles(DateTime dateTime);
 
 
 

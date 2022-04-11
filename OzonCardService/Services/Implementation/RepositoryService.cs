@@ -132,10 +132,6 @@ namespace OzonCardService.Services.Implementation
             return _mapper.Map<IEnumerable<File_dto>>(files);
         }
 
-        public async Task RemoveFiles(DateTime dateTime)
-        {
-            await _repository.RemoveFiles(dateTime);
-        }
 
 
         /// <summary>
