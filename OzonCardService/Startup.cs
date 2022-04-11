@@ -7,13 +7,7 @@ using Microsoft.Extensions.Hosting;
 using OzonCardService.Helpers;
 using Serilog;
 
-/// <summary>
-/// TODO 
-/// Добавить кварцы для очистки:
-/// загружиемых файлов по прошествию 3х дней с момента их загрузки
-/// логов по прошествию месяца самого старого файла
-/// Добавить кварцы для бекапы базы
-/// </summary>
+
 
 
 
@@ -45,6 +39,8 @@ namespace OzonCardService
             services.AddAutoMapper(typeof(MappingProfileContext), typeof(MappingProfileBiz));
             services.AddBizClient();
             services.AddManagerTasksProgress();
+            services.AddQuartz(Configuration);
+
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

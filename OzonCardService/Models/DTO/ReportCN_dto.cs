@@ -6,7 +6,7 @@ namespace OzonCardService.Models.DTO
     public class ReportCN_dto
     {
         [Ignore]
-        public Guid Id { get; set; }
+        public Guid guestId { get; set; }
 
         [Name("Имя гостя")]
         public string guestName { get; set; }

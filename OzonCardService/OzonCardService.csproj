@@ -18,14 +18,28 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Quartz.AspNetCore" Version="3.4.0" />
+    <PackageReference Include="Quartz.Plugins.TimeZoneConverter" Version="3.4.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="Backup\**" />
+    <Compile Remove="FileReports\**" />
+    <Compile Remove="logs\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="Backup\**" />
+    <Content Remove="FileReports\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="Backup\**" />
+    <EmbeddedResource Remove="FileReports\**" />
+    <EmbeddedResource Remove="logs\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="Backup\**" />
+    <None Remove="FileReports\**" />
+    <None Remove="logs\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 

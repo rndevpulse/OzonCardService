@@ -38,30 +38,32 @@ namespace OzonCardService.Controllers
         [HttpPost]
         [AuthorizeRoles(EnumRules.Report)]
         [Consumes("application/json")]
-        public async Task<ActionResult<object>> UploadCustomersReport(ReportOption_vm reportOption)
+        public async Task<ActionResult<object>> ReportIkoBiz(ReportOption_vm reportOption)
         {
             try
             {
-                log.Information("UploadCustomersReport {@reportOption}", reportOption);
+                log.Information("ReportIkoBiz {@reportOption}", reportOption);
                 Guid userId = new Guid();
                 await Task.Run(() => Guid.TryParse(
                         User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
                 );
 
                 
-                var progress = new ProgressTask<ProgressInfo<IInfoData>>();
+                var progress = new ProgressTask<ProgressInfo>();
+                progress.Report(new ProgressInfo(new InfoData()));
                 var path = new FileManager().GetDirectory();
                 var id = Guid.NewGuid();
                 var title = $"{reportOption.Title} from {reportOption.DateFrom} to {reportOption.DateTo}";
-                var t = new Task(async () =>
+                var t = Task.Factory.StartNew(async () =>
                 {
                     ExcelManager.CreateWorkbook(
-                        Path.Combine(path, id.ToString() + ".xlsx"),
+                        Path.Combine(path, id.ToString() + ".xls"),
                         _service.CreateReportBiz(userId, reportOption).Result.ToList(),
                         title);
-                    await _service.SaveFile(id, ".xlsx", title);
+                    await _service.SaveFile(id, "xls", title, userId);
                 });
                 progress.SetTask(t);
+                
                 return _tasksManager.AddTask(progress);
             }
             catch (Exception ex)

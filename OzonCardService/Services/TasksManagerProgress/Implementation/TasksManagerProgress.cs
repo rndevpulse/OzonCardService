@@ -6,9 +6,9 @@ namespace OzonCardService.Services.TasksManagerProgress.Implementation
 {
     public class TasksManagerProgress : ITasksManagerProgress
     {
-        static Dictionary<Guid, ProgressTask<ProgressInfo<IInfoData>>> DictionaryTasks = new Dictionary<Guid, ProgressTask<ProgressInfo<IInfoData>>>();
+        static Dictionary<Guid, ProgressTask<ProgressInfo>> DictionaryTasks = new Dictionary<Guid, ProgressTask<ProgressInfo>>();
 
-        public Guid AddTask(ProgressTask<ProgressInfo<IInfoData>> progress)
+        public Guid AddTask(ProgressTask<ProgressInfo> progress)
         {
             var guid = Guid.NewGuid();
             DictionaryTasks.Add(guid, progress);
@@ -17,9 +17,9 @@ namespace OzonCardService.Services.TasksManagerProgress.Implementation
 
         public IInfoData GetStatusTask(Guid taskId)
         {
-            ProgressTask<ProgressInfo<IInfoData>> progress;
+            ProgressTask<ProgressInfo> progress;
             DictionaryTasks.TryGetValue(taskId, out progress);
-            var status = progress?.Vallue.Status ?? null;
+            var status = progress?.Vallue?.Status ?? null;
             if (status != null && status.isCompleted)
             {
                 DictionaryTasks.Remove(taskId);

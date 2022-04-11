@@ -281,7 +281,15 @@ namespace OzonCard.Context.Repositories
                 await context.SaveChangesAsync();
             }
         }
-
+        public async Task<IEnumerable<FileReport>> GetFiles(Guid userId)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                return await context.FileReports
+                    .Where(x => x.UserId == userId)
+                    .ToListAsync();
+            }
+        }
         public async Task RemoveFiles(DateTime dateTime)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
@@ -355,6 +363,8 @@ namespace OzonCard.Context.Repositories
         }
 
         
+
+
 
 
 

@@ -114,15 +114,22 @@ namespace OzonCardService.Services.Implementation
             return true;
         }
 
-        public async Task SaveFile(Guid id, string format, string name)
+        public async Task SaveFile(Guid id, string format, string name, Guid UserId)
         {
             var file = new FileReport()
             {
                 Id = id,
                 Format = format,
-                Name = name
+                Name = name,
+                UserId = UserId
             };
             await _repository.AddFile(file);
+        }
+
+        public async Task<IEnumerable<File_dto>> GetFiles(Guid userId)
+        {
+            var files = await _repository.GetFiles(userId);
+            return _mapper.Map<IEnumerable<File_dto>>(files);
         }
 
         public async Task RemoveFiles(DateTime dateTime)
@@ -134,11 +141,11 @@ namespace OzonCardService.Services.Implementation
         /// <summary>
         /// Выгрузка списка пользователей в биз
         /// </summary>
-        public async Task UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers_excel, IProgress<ProgressInfo<IInfoData>> progress)
+        public async Task UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers_excel, IProgress<ProgressInfo> progress)
         {
             var info = new InfoDataUpload_dto();
             info.CountCustomersAll = customers_excel.Count();
-            progress.Report(new ProgressInfo<IInfoData>(info));
+            progress.Report(new ProgressInfo(info));
             var organization = await _repository.GetOrganization(infoUpload.OrganizationId) ??
                 throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found");
             if (!organization.Users.Any(x => x.Id == userId))
@@ -170,7 +177,7 @@ namespace OzonCardService.Services.Implementation
                 ///1.4 Изменяем при необходимости баланс
                 var res = await UploadCustomerInBiz(infoUpload, session, customer_excel, organization, category, corporateNutrition);
                 info += res.Value;
-                progress.Report(new ProgressInfo<IInfoData>(info));
+                progress.Report(new ProgressInfo(info));
 
                 if (res.Key != null)
                     new_customers.Add(res.Key);
@@ -223,7 +230,7 @@ namespace OzonCardService.Services.Implementation
                     await UpdateBalance(infoUpload.Balance, session, organization, customer.iikoBizId, wallet.Id);
                     info.CountCustomersBalance++;
                 }
-                progress.Report(new ProgressInfo<IInfoData>(info));
+                progress.Report(new ProgressInfo(info));
 
                 await _repository.UpdateCustomer(customer);
             }
@@ -296,7 +303,7 @@ namespace OzonCardService.Services.Implementation
 
         public async Task<IEnumerable<ReportCN_dto>> CreateReportBiz(Guid userId, ReportOption_vm reportOption)
         {
-            reportOption.DateTo.AddDays(1);
+            reportOption.DateTo = Convert.ToDateTime(reportOption.DateTo).AddDays(1).ToString("yyyy-MM-dd");
 
             var organization = await _repository.GetOrganization(reportOption.OrganizationId) ??
                 throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found");
@@ -307,17 +314,16 @@ namespace OzonCardService.Services.Implementation
 
 
             var session = await _client.GetSession(organization.Login, organization.Password);
-
             var report = _mapper.Map<IEnumerable<ReportCN_dto>>(
                 await _client.GerReportCN(
                     session,
                     reportOption.OrganizationId, reportOption.CorporateNutritionId,
-                    reportOption.DateFrom.ToString("yyyy-MM-dd"),
-                    reportOption.DateTo.ToString("yyyy-MM-dd")));
+                    reportOption.DateFrom,
+                    reportOption.DateTo));
             var customers = await _repository.GetCustomersForOrganization(organization.Id);
             foreach (var row in report)
             {
-                var customer = customers.FirstOrDefault(x => x.Id == row.Id);
+                var customer = customers.FirstOrDefault(x => x.iikoBizId == row.guestId);
                 if (customer != null)
                 {
                     row.position = customer.Position;
@@ -326,5 +332,6 @@ namespace OzonCardService.Services.Implementation
             }
             return report;
         }
+
     }
 }

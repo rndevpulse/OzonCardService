@@ -8,6 +8,7 @@ using OzonCardService.Services.Interfaces;
 using Serilog;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OzonCardService.Controllers
@@ -30,13 +31,17 @@ namespace OzonCardService.Controllers
         {
             try
             {
+                Guid userId = new Guid();
+                await Task.Run(() => Guid.TryParse(
+                        User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
+                );
                 var id = Guid.NewGuid();
-                log.Verbose("POST /files/create: {0}", file.FileName);
+                log.Verbose("POST /files/create: {0} user {1}", file.FileName);
                 if (!await new FileManager().Save(id, file))
                     throw new Exception("File format not correct");
                 var str = file.FileName.Split(".");
                 var format = str.Last().Trim().ToLower();
-                await _service.SaveFile(id, format, str.First());
+                await _service.SaveFile(id, format, str.First(), userId);
                 return new OkObjectResult(new
                 {
                     id = id,
@@ -54,7 +59,31 @@ namespace OzonCardService.Controllers
             }
         }
 
+        [HttpGet("user")]
+        [AuthorizeRoles(EnumRules.Basic)]
+        public async Task<ActionResult<File_dto>> DocsUser()
+        {
+            try
+            {
+                Guid userId = new Guid();
+                await Task.Run(() => Guid.TryParse(
+                        User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
+                );
 
+                log.Verbose("POST /files/user: {0} ", userId);
+                
+                return new OkObjectResult(await _service.GetFiles(userId));
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 404,
+                    Message = ex.Message,
+                    Description = ex.InnerException?.ToString()
+                });
+            }
+        }
 
 
         [HttpGet("get/{name}")]

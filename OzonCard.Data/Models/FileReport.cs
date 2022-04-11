@@ -7,6 +7,7 @@ namespace OzonCard.Data.Models
         public string Format { get; set; }
         public DateTime Created { get; set; }
         public string Name { get; set; }
+        public Guid UserId { get; set; }
 
         public FileReport()
         {

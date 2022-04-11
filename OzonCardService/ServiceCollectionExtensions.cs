@@ -11,9 +11,14 @@ using OzonCard.Context.Repositories;
 using OzonCardService.Helpers;
 using OzonCardService.Services.Implementation;
 using OzonCardService.Services.Interfaces;
+using OzonCardService.Services.Quartzs.Jobs;
+using OzonCardService.Services.Quartzs.Workers;
 using OzonCardService.Services.TasksManagerProgress.Implementation;
 using OzonCardService.Services.TasksManagerProgress.Interfaces;
+using Quartz;
+using Quartz.Plugin.Interrupt;
 using System;
+using System.Globalization;
 
 namespace OzonCardService
 {
@@ -28,6 +33,10 @@ namespace OzonCardService
                 provider.GetService<IRepositoryContextFactory>())
             );
             services.AddScoped<IIdentityRepository>(provider => new IdentityRepository(
+                configuration.GetConnectionString("DefaultConnection"),
+                provider.GetService<IRepositoryContextFactory>())
+            );
+            services.AddScoped<IServiceRepository>(provider => new ServiceRepository(
                 configuration.GetConnectionString("DefaultConnection"),
                 provider.GetService<IRepositoryContextFactory>())
             );
@@ -76,6 +85,40 @@ namespace OzonCardService
         public static IServiceCollection AddManagerTasksProgress(this IServiceCollection services)
         {
             services.AddScoped<ITasksManagerProgress, TasksManagerProgress>();
+            return services;
+        }
+
+
+        
+        public static IServiceCollection AddQuartz(this IServiceCollection services, IConfiguration configuration)
+        {
+            
+            services.AddTransient<IServiceDatabase, ServiceDatabase>();
+            //services.AddTransient<Workers.IDeleteOld, Workers.DeleteOld>();
+            //services.AddTransient<Workers.IModerationsAuto, Workers.ModerationsAuto>();
+            services.AddQuartz(q =>
+            {
+                // base quartz scheduler, job and trigger configuration
+                q.UseMicrosoftDependencyInjectionJobFactory();
+                //выставление независимого времени
+                q.UseTimeZoneConverter();
+
+                q.ScheduleJob<BackupDatabaseJob>(t => t
+                    .WithIdentity("Backup_Job", "Backup")
+                    .UsingJobData(
+                        JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
+                        TimeSpan.FromHours(1).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
+                    .WithSchedule(CronScheduleBuilder
+                        .DailyAtHourAndMinute(1, 0)
+                        .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time")))
+                    );
+
+
+            });
+            services.AddQuartzServer(options =>
+            {
+                options.WaitForJobsToComplete = true;
+            });
             return services;
         }
     }

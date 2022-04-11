@@ -3,16 +3,16 @@ using System;
 
 namespace OzonCardService.Services.TasksManagerProgress.Implementation
 {
-    public class ProgressInfo<T> : IProgressInfo<T> where T : class, IInfoData
+    public class ProgressInfo : IProgressInfo
     {
-        public T InfoData { get; private set; }
+        public IInfoData InfoData { get; private set; }
 
-        public ProgressInfo(T info)
+        public ProgressInfo(IInfoData info)
         {
             InfoData = info;
         }
 
-        public T Status
+        public IInfoData Status
         {
             get { return InfoData; }
         }

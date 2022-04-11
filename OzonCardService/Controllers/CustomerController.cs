@@ -47,7 +47,7 @@ namespace OzonCardService.Controllers
                
                 var customers = new ExcelManager(new FileManager().GetFile(infoUpload.FileReport))
                     .GetClients();
-                var progress = new ProgressTask<ProgressInfo<IInfoData>>();
+                var progress = new ProgressTask<ProgressInfo>();
 
                 var t = 
                     _service.UploadCustomers(

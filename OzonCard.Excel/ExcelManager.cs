@@ -2,6 +2,7 @@
 using ExcelLibrary.SpreadSheet;
 using Serilog;
 using System.Data;
+using System.Reflection;
 
 namespace OzonCard.Excel
 {
@@ -193,23 +194,22 @@ namespace OzonCard.Excel
 
         static DataSet ToDataSet<T>(IList<T> list)
         {
-            Type elementType = typeof(T);
+            var elementType = typeof(T).GetProperties().Select(x => new KeyValuePair<PropertyInfo, string?>(
+                x,
+                (x.GetCustomAttributes(true)?.FirstOrDefault() as CsvHelper.Configuration.Attributes.NameAttribute)?.Names?.First()
+                )).ToList();
+            elementType.RemoveAll(x => x.Value == null);
             DataSet ds = new DataSet();
             DataTable t = new DataTable();
             ds.Tables.Add(t);
 
             DataRow row = t.NewRow();
             //add a column to table for each public property on T
-            foreach (var propInfo in elementType.GetProperties())
+            foreach (var propInfo in elementType)
             {
                 //Type ColType = Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType;
-
-                t.Columns.Add(propInfo.Name, typeof(object));//ColType);
-                row[propInfo.Name] = ((CsvHelper.Configuration.Attributes.NameAttribute)propInfo.GetCustomAttributes(true).First())
-                    .Names
-                    .FirstOrDefault()
-                    .ToString();
-
+                t.Columns.Add(propInfo.Key.Name, typeof(object));//ColType);
+                row[propInfo.Key.Name] = propInfo.Value;
             }
             t.Rows.Add(row);
 
@@ -217,11 +217,8 @@ namespace OzonCard.Excel
             foreach (T item in list)
             {
                 row = t.NewRow();
-
-                foreach (var propInfo in elementType.GetProperties())
-                {
-                    row[propInfo.Name] = propInfo.GetValue(item, null) ?? DBNull.Value;
-                }
+                foreach (var propInfo in elementType)
+                    row[propInfo.Key.Name] = propInfo.Key.GetValue(item, null) ?? DBNull.Value;
 
                 t.Rows.Add(row);
             }

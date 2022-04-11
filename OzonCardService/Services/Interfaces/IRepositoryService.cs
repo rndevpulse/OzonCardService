@@ -22,10 +22,11 @@ namespace OzonCardService.Services.Interfaces
 
         Task<bool> AddUserForOrganization(Guid userId, Guid organizationId);
         Task<bool> DelUserForOrganization(Guid userId, Guid organizationId);
-        Task SaveFile(Guid id, string format, string name);
+        Task SaveFile(Guid id, string format, string name, Guid userId);
         Task RemoveFiles(DateTime dateTime);
         Task UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers, 
-            IProgress<ProgressInfo<IInfoData>> progress);
+            IProgress<ProgressInfo> progress);
         Task<IEnumerable<ReportCN_dto>> CreateReportBiz(Guid userId, ReportOption_vm reportOption);
+        Task<IEnumerable<File_dto>> GetFiles(Guid userId);
     }
 }

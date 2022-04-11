@@ -22,12 +22,13 @@ namespace OzonCardService.Controllers
         [HttpGet("{taskId}")]
         [AuthorizeRoles(EnumRules.Basic)]
         [Consumes("application/json")]
-        public ActionResult<InfoDataUpload_dto> GetTaskInformation(Guid taskId)
+        public ActionResult<IInfoData> GetTaskInformation(Guid taskId)
         {
             try
             {
                 log.Information("GetTaskInformation {@taskId}", taskId);
-                return (InfoDataUpload_dto)_tasksManager.GetStatusTask(taskId);
+                var obj = _tasksManager.GetStatusTask(taskId);
+                return new ActionResult<IInfoData>(obj);
             }
             catch (Exception ex)
             {

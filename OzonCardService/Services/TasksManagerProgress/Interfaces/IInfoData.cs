@@ -7,4 +7,10 @@ namespace OzonCardService.Services.TasksManagerProgress.Interfaces
         bool isCompleted { get; set; }
         TimeSpan TimeCompleted { get; set; }
     }
+
+    public class InfoData : IInfoData
+    {
+        public bool isCompleted { get; set; }
+        public TimeSpan TimeCompleted { get; set; }
+    }
 }

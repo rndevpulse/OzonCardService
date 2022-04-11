@@ -2,9 +2,9 @@
 
 namespace OzonCardService.Services.TasksManagerProgress.Interfaces
 {
-    public interface IProgressInfo<T> where T : class, IInfoData
+    public interface IProgressInfo
     {
-        T Status { get; }
+        IInfoData Status { get; }
         void isCompleted(bool complete);
         void TimeCompleted(TimeSpan timeComplete);
     }
