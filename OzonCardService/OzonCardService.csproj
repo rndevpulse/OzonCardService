@@ -52,7 +52,11 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\components\FilesForm.tsx" />
+    <None Remove="ClientApp\src\http\index.ts" />
     <None Remove="ClientApp\src\index.ts" />
+    <None Remove="ClientApp\src\models\ICategoryResponce.ts" />
+    <None Remove="ClientApp\src\models\IOrganizationResponse.ts" />
+    <None Remove="ClientApp\src\services\OrganizationServise.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,6 +68,10 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\FilesForm.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\http\index.ts" />
+    <TypeScriptCompile Include="ClientApp\src\models\ICategoryResponce.ts" />
+    <TypeScriptCompile Include="ClientApp\src\models\IOrganizationResponse.ts" />
+    <TypeScriptCompile Include="ClientApp\src\services\OrganizationServise.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

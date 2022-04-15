@@ -13,7 +13,7 @@ namespace OzonCardService.Services.Quartzs.Workers
     {
         Task CreateBackup(string path, int countBackup);
         Task RemoveOldFile(string path, int countDays);
-        Task RemoveOldTokensRefresh(int countDays)
+        Task RemoveOldTokensRefresh(int countDays);
     }
 
 
