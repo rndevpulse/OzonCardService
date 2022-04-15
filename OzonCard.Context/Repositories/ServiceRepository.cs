@@ -37,5 +37,20 @@ namespace OzonCard.Context.Repositories
 			}
 		}
 
+        public async Task<bool> RemoveOldTokensRefresh(int countDays)
+        {
+			using (var context = ContextFactory.CreateDbContext(ConnectionString))
+			{
+				var date = DateTime.UtcNow.AddDays(-countDays);
+				var tokens = await context.Users
+					.Include(x=>x.RefreshTokens)
+					.SelectMany(x=>x.RefreshTokens)
+					.Where(x => x.Expires > date)
+					.ToListAsync();
+				context.RemoveRange(tokens);
+				await context.SaveChangesAsync();
+				return true;
+			}
+		}
     }
 }

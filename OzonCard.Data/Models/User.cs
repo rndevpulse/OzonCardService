@@ -11,6 +11,7 @@ namespace OzonCard.Data.Models
         public List<Organization> Organizations { get; set; }
         public string Rules { get; set; }
         public DateTime CreatedDate { get; set; }
+        public List<RefreshToken> RefreshTokens { get; set; }
 
         public User()
         {
@@ -18,6 +19,7 @@ namespace OzonCard.Data.Models
             Organizations = new List<Organization>();
             Rules = String.Empty;
             CreatedDate = DateTime.UtcNow;
+            RefreshTokens = new List<RefreshToken>();
         }
 
     }

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace OzonCardService.Services.Quartzs.Jobs
 {
-    public class BackupDatabaseJob : IJob
+    public class ServiceDatabaseJob : IJob
     {
         private readonly IServiceDatabase _serviceDatabase;
 
-        public BackupDatabaseJob(IServiceDatabase serviceDatabase)
+        public ServiceDatabaseJob(IServiceDatabase serviceDatabase)
         {
             _serviceDatabase = serviceDatabase;
         }
@@ -20,6 +20,7 @@ namespace OzonCardService.Services.Quartzs.Jobs
             ;
             await _serviceDatabase.CreateBackup(Path.Combine(path, "Backup"), 6);
             await _serviceDatabase.RemoveOldFile(Path.Combine(path, "FileReports"), 7);
+            await _serviceDatabase.RemoveOldTokensRefresh(10);
         }
 
     }

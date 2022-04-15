@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using OzonCard.Common;
-using OzonCardService.Helpers;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OzonCardService.Models.DTO;
 using OzonCardService.Models.View;
 using OzonCardService.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OzonCardService.Controllers
@@ -22,52 +18,67 @@ namespace OzonCardService.Controllers
 
         [HttpPost]
         [Consumes("application/json")]
-        public async Task<ActionResult> Token(Identity_vm auth)
+        public async Task<ActionResult<Authenticate_dto>> Token(Identity_vm auth)
         {
-            if (auth.Login == "" || auth.Password == "")
+           
+            var user = await _service.GetUser(auth.Login, auth.Password);
+            var authenticate = await _service.Authenticate(user);
+            if (authenticate == null)
                 return Unauthorized();
-            var identity = await GetIdentity(auth.Login, auth.Password);
-
-            if (identity == null)
-                return Unauthorized();
-
-            var now = DateTime.UtcNow;
-            // создаем JWT-токен
-            var jwt = new JwtSecurityToken(
-                    issuer: AuthOptions.ISSUER,
-                    audience: AuthOptions.AUDIENCE,
-                    notBefore: now,
-                    claims: identity.Claims,
-                    expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
-                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            return new OkObjectResult(new
-            {
-                access_token = encodedJwt
-            });
+            setTokenCookie(authenticate.RefreshToken);
+            return new OkObjectResult(authenticate);
         }
 
-        private async Task<ClaimsIdentity> GetIdentity(string userName, string password)
+        [HttpPost("refresh")]
+        [Consumes("application/json")]
+        public async Task<ActionResult<Authenticate_dto>> RefreshToken(RefrashToken_vm model)
         {
-            ClaimsIdentity identity = null;
-            var user = await _service.GetUser(userName);
-            if (user != null)
-            {
-                var passwordHash = UserHelper.GetHash(password);
-                if (passwordHash == user.Password)
-                {
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimsIdentity.DefaultNameClaimType, user.Id.ToString()),
-                    };
-                    foreach (var rule in user.Rules.Split(','))
-                        claims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, rule));
 
-                    identity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-                }
-            }
-            return identity;
+            var refreshToken = model?.Token ?? Request.Cookies["refreshToken"];
+            var authenticate = await _service.RefreshToken(refreshToken);
+
+            if (authenticate == null)
+                return Unauthorized(new { message = "Invalid token" });
+            setTokenCookie(authenticate.RefreshToken);
+            return new OkObjectResult(authenticate);
         }
-        
+
+        [HttpPost("logout")]
+        [Consumes("application/json")]
+        public async Task<ActionResult> LogoutToken(RefrashToken_vm model)
+        {
+            var refreshToken = model?.Token ?? Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(refreshToken))
+                return Ok(new { message = "Token is required" });
+
+            var isLogout = await _service.LogoutToken(refreshToken);
+
+            if (!isLogout)
+                return Ok(new { message = "Token not found" });
+
+            return Ok(new { message = "Token revoked" });
+        }
+
+        private string ipAddress()
+        {
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                return Request.Headers["X-Forwarded-For"];
+            else
+                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+        }
+
+        private void setTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions()
+            {
+                SameSite = SameSiteMode.None,
+                Secure = true,
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(Helpers.AuthOptions.LIFETIME_REFRESH)
+            };
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
+        }
     }
+    
 }

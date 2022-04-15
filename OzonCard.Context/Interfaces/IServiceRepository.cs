@@ -5,5 +5,6 @@ namespace OzonCard.Context.Interfaces
     {
         Task<bool> CreateBackup(string path);
         Task<bool> RemoveOldFile(int countDays);
+        Task<bool> RemoveOldTokensRefresh(int countDays);
     }
 }

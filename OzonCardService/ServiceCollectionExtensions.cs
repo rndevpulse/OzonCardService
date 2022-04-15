@@ -103,7 +103,7 @@ namespace OzonCardService
                 //выставление независимого времени
                 q.UseTimeZoneConverter();
 
-                q.ScheduleJob<BackupDatabaseJob>(t => t
+                q.ScheduleJob<ServiceDatabaseJob>(t => t
                     .WithIdentity("Backup_Job", "Backup")
                     .UsingJobData(
                         JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,

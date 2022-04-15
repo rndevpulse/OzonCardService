@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace OzonCard.Common
 {
@@ -22,6 +23,18 @@ namespace OzonCard.Common
             foreach (byte b in btsHash)
                 hash += string.Format("{0:x2}", b);
             return new Guid(hash);
+        }
+        static public string GetCsp()
+        {
+            var key = "";
+            using (var rngCryptoServiceProvider = new RSACryptoServiceProvider())
+            {
+                var randomBytes = new byte[64];
+                randomBytes = rngCryptoServiceProvider.ExportCspBlob(false);
+                key = Convert.ToBase64String(randomBytes);
+            }
+            var regex = new Regex(@"[~`!@#$%^&*()+={}\/]", RegexOptions.Compiled);
+            return regex.Replace(key, "");
         }
     }
 }
