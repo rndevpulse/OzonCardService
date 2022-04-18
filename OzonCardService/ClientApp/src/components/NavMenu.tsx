@@ -5,7 +5,8 @@ import { Container, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 
 import './NavMenu.css';
 
- export const NavMenu : FC=()=>(
+export const NavMenu: FC = () => (
+
     <header>
         <Navbar className="navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" light>
             <Container>
@@ -15,9 +16,7 @@ import './NavMenu.css';
                         <NavItem>
                             <NavLink tag={Link} className="text-dark" to="/">UploadForm</NavLink>
                         </NavItem>
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/auth">LoginForm</NavLink>
-                     </NavItem>
+                        
                      <NavItem>
                          <NavLink tag={Link} className="text-dark" to="/files">FilesForm</NavLink>
                      </NavItem>

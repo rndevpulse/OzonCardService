@@ -21,7 +21,7 @@ namespace OzonCardService.Controllers
         public async Task<ActionResult<Authenticate_dto>> Token(Identity_vm auth)
         {
            
-            var user = await _service.GetUser(auth.Login, auth.Password);
+            var user = await _service.GetUser(auth.Email, auth.Password);
             var authenticate = await _service.Authenticate(user);
             if (authenticate == null)
                 return Unauthorized();

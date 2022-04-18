@@ -77,7 +77,7 @@ namespace OzonCardService.Services.Implementation
             await _repository.AddRefreshToken(user, refreshToken);
             return new Authenticate_dto
             {
-                Username = user.Mail,
+                Email = user.Mail,
                 Token = NetJwtToken(identity),
                 RefreshToken = refreshToken.Token
             };
@@ -102,7 +102,7 @@ namespace OzonCardService.Services.Implementation
             {
                 RefreshToken = newRefreshToken.Token,
                 Token = NetJwtToken(user),
-                Username = user.Mail
+                Email = user.Mail
             };
 
         }

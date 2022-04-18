@@ -1,9 +1,10 @@
-﻿import api from "../http";
-import { IAuthResponce } from "../models/AuthResponse";
+﻿import { AxiosResponse } from "axios";
+import api from "../http";
+import { IOrganizationResponce } from "../models/IOrganizationResponse"
 
 export default class OrganizationService {
-    static async getMyOrganizations(): Promise<IAuthResponce> {
-        return api.get<IOrganizationResponse[]>
+    static async getMyOrganizations(): Promise<AxiosResponse<IOrganizationResponce[]>> {
+        return api.get<IOrganizationResponce[]>('/')
     }
     
 }

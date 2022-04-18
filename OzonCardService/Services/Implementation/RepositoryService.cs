@@ -43,13 +43,13 @@ namespace OzonCardService.Services.Implementation
         {
             //request to iikobiz to get the category and cn (IdentityOrganization.login, IdentityOrganization.pass)
             
-            var session = await _client.GetSession(IdentityOrganization.Login, IdentityOrganization.Password);
+            var session = await _client.GetSession(IdentityOrganization.Email, IdentityOrganization.Password);
             var organizations = _mapper.Map<IEnumerable<Organization>>(await _client.GetOrganizations(session));
             
             var Tasks = new List<Task>();
             foreach (var organization in organizations)
             {
-                organization.Login = IdentityOrganization.Login;
+                organization.Login = IdentityOrganization.Email;
                 organization.Password = IdentityOrganization.Password;
                 Tasks.Add(Task.Run(async () => organization.Categories =
                     _mapper.Map<List<Category>>(await _client.GetOrganizationCategories(session, organization.Id))));
@@ -88,7 +88,7 @@ namespace OzonCardService.Services.Implementation
         {
             var user = new User
             {
-                Mail = identity.Login,
+                Mail = identity.Email,
                 Password = UserHelper.GetHash(identity.Password),
                 CreatedDate = DateTime.UtcNow,
                 Rules = rules
