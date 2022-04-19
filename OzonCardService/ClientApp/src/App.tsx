@@ -1,19 +1,18 @@
 
-import { observer, useObserver } from 'mobx-react-lite';
-import React, { FC, useContext, useEffect } from 'react'
-//import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { FC, useContext, useEffect } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Context } from '.';
-//import FilesForm from './components/FilesForm';
-import { LoginForm }  from './components/LoginForm';
 
-
-//import { NavMenu } from './components/NavMenu';
-//import UploadForm from './components/UploadForm';
+import FilesForm from './components/FilesForm';
+import LoginForm  from './components/LoginForm';
+import { NavMenu } from './components/NavMenu';
+import UploadForm from './components/UploadForm';
 
 import './custom.css'
 
 
-export const App: FC = observer(() => {
+const App: FC = () => {
     const { store } = useContext(Context);
     useEffect(() => {
         console.log(`App useEffect = ${store.email} ${store.isAuth}`)
@@ -22,32 +21,29 @@ export const App: FC = observer(() => {
             store.checkAuth()
         }
     }, [])
-    console.log(`App store = ${store.email} ${store.isAuth}`)
     if (!store.isAuth) {
+    console.log(`App store = ${store.email} ${store.isAuth}`)
         return (
             <div>
                 <LoginForm />
-
             </div>
         );
     }
     return (
-        <div>
-            <h1>{store.isAuth ? `autorize ${store.email}` : ' not autorize'}</h1>
-            <button onClick={() => store.logout()}>Logout</button>
-        </div>
-        //<BrowserRouter>
-        //    <NavMenu />
-        //    <div className="container">
-        //        <Switch>
-        //            <Route path='/' component={UploadForm} exact/>
-        //            <Route path='/files' component={FilesForm} />
-        //            <button onClick={() => store.logout() }>Logout</button>
-        //        </Switch>
-        //    </div>
-        //</BrowserRouter>
+
+        <BrowserRouter>
+            <NavMenu />
+            <div className="container">
+                <Routes>
+                    <Route path='/' element={<UploadForm/>} />
+                    <Route path='/files' element={<FilesForm/>} />
+                </Routes>
+            </div>
+        </BrowserRouter>
     );
 
-})
+};
+
+export default observer(App)
 
 
