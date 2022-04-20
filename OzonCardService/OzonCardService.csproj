@@ -6,9 +6,13 @@
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
 	<DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+	  <TypeScriptJSXEmit>react-jsx</TypeScriptJSXEmit>
 	  <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-	  <TypeScriptToolsVersion>4.6</TypeScriptToolsVersion>
-	  <TypeScriptJSXEmit>react</TypeScriptJSXEmit>
+	  <TypeScriptLib>es5,es2015</TypeScriptLib>
+	  <!--
+	  <TypeScriptCompileOnSaveEnabled>true</TypeScriptCompileOnSaveEnabled>
+	  <TypeScriptEnableIncrementalMSBuild>true</TypeScriptEnableIncrementalMSBuild>
+	  -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,10 +21,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.6.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -56,10 +56,11 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\components\FilesForm.tsx" />
-    <None Remove="ClientApp\src\components\NavMenu.tsx" />
+    <None Remove="ClientApp\src\components\ReportForm.tsx" />
+    <None Remove="ClientApp\src\components\ServiceForm.tsx" />
     <None Remove="ClientApp\src\http\index.ts" />
     <None Remove="ClientApp\src\index.ts" />
-    <None Remove="ClientApp\src\models\ICategoryResponce.ts" />
+    <None Remove="ClientApp\src\models\ICategoryResponcse.ts" />
     <None Remove="ClientApp\src\models\IOrganizationResponse.ts" />
     <None Remove="ClientApp\src\services\OrganizationServise.ts" />
   </ItemGroup>
@@ -72,9 +73,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\ReportForm.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\components\ServiceForm.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\components\FilesForm.tsx" />
     <TypeScriptCompile Include="ClientApp\src\http\index.ts" />
-    <TypeScriptCompile Include="ClientApp\src\models\ICategoryResponce.ts" />
+    <TypeScriptCompile Include="ClientApp\src\models\ICategoryResponcse.ts" />
     <TypeScriptCompile Include="ClientApp\src\models\IOrganizationResponse.ts" />
     <TypeScriptCompile Include="ClientApp\src\services\OrganizationServise.ts" />
   </ItemGroup>

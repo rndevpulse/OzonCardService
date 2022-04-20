@@ -6,9 +6,10 @@ import AuthService from '../services/AuthService';
 
 
 export default class LoginStore {
-    email :string = '';
+    email: string = '';
+    rules: string[] = ['1','2'];
     isAuth = false;
-
+    isLoading = false;
     public constructor() {
         makeAutoObservable(this);
     }
@@ -19,6 +20,12 @@ export default class LoginStore {
 
     setMail(mail: string) {
         this.email = mail;
+    }
+    setLoading(bool: boolean) {
+        this.isLoading = bool;
+    }
+    setRules(rules: string[]) {
+        this.rules = rules;
     }
 
     async login(email: string, password: string) {
@@ -31,8 +38,8 @@ export default class LoginStore {
 
             this.setIsAuth(true);
             this.setMail(response.data.email);
+            this.setRules(response.data.rules);
             console.log(response);
-            console.log(this.email, this.isAuth);
         }
         catch (e) {
             console.log(e);
@@ -53,16 +60,21 @@ export default class LoginStore {
     }
 
     async checkAuth() {
+        this.isLoading = true;
         try {
             const response = await axios.post<IAuthResponce>('https://localhost:5401/api/auth/refresh', { withCredentials: true })
             localStorage.setItem('token', response.data.token);
             this.setIsAuth(true);
             this.setMail(response.data.email);
+            this.setRules(response.data.rules);
             console.log(response);
         }
-        catch (e)
-        {
+        catch (e) {
             console.log(e);
+        }
+        finally {
+            this.isLoading = false;
+
         }
         
     }

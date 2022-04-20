@@ -1,5 +1,5 @@
 ﻿
-export interface ICategoryResponce {
+export interface ICategoryResponse {
     id: string
     name : string
 }

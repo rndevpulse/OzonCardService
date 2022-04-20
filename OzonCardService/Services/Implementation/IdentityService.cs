@@ -79,7 +79,8 @@ namespace OzonCardService.Services.Implementation
             {
                 Email = user.Mail,
                 Token = NetJwtToken(identity),
-                RefreshToken = refreshToken.Token
+                RefreshToken = refreshToken.Token,
+                Rules = user.Rules.Split(',')
             };
         }
 
@@ -102,7 +103,8 @@ namespace OzonCardService.Services.Implementation
             {
                 RefreshToken = newRefreshToken.Token,
                 Token = NetJwtToken(user),
-                Email = user.Mail
+                Email = user.Mail,
+                Rules = user.Rules.Split(',')
             };
 
         }
