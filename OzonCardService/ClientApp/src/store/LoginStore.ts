@@ -7,7 +7,7 @@ import AuthService from '../services/AuthService';
 
 export default class LoginStore {
     email: string = '';
-    rules: string[] = ['1','2'];
+    rules: string[] = [];
     isAuth = false;
     isLoading = false;
     public constructor() {

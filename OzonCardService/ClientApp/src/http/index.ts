@@ -1,4 +1,5 @@
 ﻿import axios from 'axios'
+import { IAuthResponce } from '../models/IAuthResponse'
 
 export const API_URL = 'https://localhost:5401/api'
 
@@ -10,6 +11,26 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
     config.headers!.Authorization = `Bearer ${localStorage.getItem('token')}`
     return config
+})
+
+api.interceptors.response.use(config => {
+    return config;
+}, async error => {
+    const originalRequest = error.config;
+    if (error.response.status == 401 && error.config && !originalRequest._isRetry) {
+        originalRequest._isRetry = true;
+        try {
+            const response = await axios.post<IAuthResponce>('https://localhost:5401/api/auth/refresh', { withCredentials: true })
+            localStorage.setItem('token', response.data.token);
+            console.log(response);
+            return api.request(originalRequest);
+        }
+        catch (e) {
+            console.log('no autorization')
+        }
+        
+    }
+    throw error;
 })
 
 export default api

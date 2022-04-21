@@ -3,17 +3,21 @@ import  * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import  App   from './App';
 import LoginStore from './store/LoginStore';
+import OrganizationStore from './store/OrganizationStore';
 
 interface IStoreState {
-    store: LoginStore 
+    loginstore: LoginStore,
+    organizationstore: OrganizationStore
 }
-const store = new LoginStore();
+const loginstore = new LoginStore();
+const organizationstore = new OrganizationStore()
+
 export const Context = React.createContext<IStoreState>({
-    store
+    loginstore, organizationstore
 })
-console.log(`index store = ${store.email} ${store.isAuth}`)
+
 ReactDOM.render(
-    <Context.Provider value={{ store }} >
+    <Context.Provider value={{ loginstore, organizationstore }} >
             <App />,
     </Context.Provider>,
     document.getElementById('root'));

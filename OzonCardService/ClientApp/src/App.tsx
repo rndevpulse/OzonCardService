@@ -15,24 +15,23 @@ import ReportForm from './components/ReportForm';
 
 
 const App: FC = () => {
-    const { store } = useContext(Context);
+    const { loginstore } = useContext(Context);
     useEffect(() => {
         if (localStorage.getItem('token')) {
-            store.checkAuth()
+            loginstore.checkAuth()
         }
     }, [])
-    if (store.isLoading) {
+    if (loginstore.isLoading) {
         return <div>Loading...</div>
     }
 
-    if (!store.isAuth) {
+    if (!loginstore.isAuth) {
         return (
             <div>
                 <LoginForm />
             </div>
         );
     }
-    else console.log('store = ', store)
     return (
 
         <BrowserRouter>

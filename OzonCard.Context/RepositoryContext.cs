@@ -25,6 +25,7 @@ namespace OzonCard.Context
 		public DbSet<FileReport> FileReports { get; set; }
 		public DbSet<User> Users { get; set; }
 		
+
 		public static void InitializationValue(MigrationBuilder migrationBuilder)
 		{
             var rules = string.Join(',', EnumUtil.GetAllValues<EnumRules>().Select(x=>(int)x));

@@ -18,7 +18,7 @@ const AuthService_1 = __importDefault(require("../services/AuthService"));
 class LoginStore {
     constructor() {
         this.email = '';
-        this.rules = ['1', '2'];
+        this.rules = [];
         this.isAuth = false;
         this.isLoading = false;
         mobx_1.makeAutoObservable(this);

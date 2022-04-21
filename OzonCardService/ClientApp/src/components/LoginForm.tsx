@@ -7,9 +7,8 @@ import { observer } from 'mobx-react-lite';
 const LoginForm: FC = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
-    const { store } = useContext(Context)
+    const { loginstore } = useContext(Context)
     return (
-
         <div>
             <h1>LoginForm</h1>
             <input
@@ -25,11 +24,11 @@ const LoginForm: FC = () => {
                 placeholder='Password'
             />
             <button
-                onClick={() => store.login(email, password)}>
+                onClick={() => loginstore.login(email, password)}>
                 Login
             </button>
         </div>
-    );
+    )
 };
 
 export default observer(LoginForm)

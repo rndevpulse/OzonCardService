@@ -41,7 +41,7 @@ namespace OzonCardService.Controllers
                     throw new Exception("File format not correct");
                 var str = file.FileName.Split(".");
                 var format = str.Last().Trim().ToLower();
-                await _service.SaveFile(id, format, str.First(), userId);
+                await _service.SaveFile(id, format, file.FileName, userId);
                 return new OkObjectResult(new
                 {
                     id = id,
@@ -71,8 +71,8 @@ namespace OzonCardService.Controllers
                 );
 
                 log.Verbose("POST /files/user: {0} ", userId);
-                
-                return new OkObjectResult(await _service.GetFiles(userId));
+                var files = await _service.GetFiles(userId);
+                return new OkObjectResult(files.OrderByDescending(x=>x.Created));
             }
             catch (Exception ex)
             {

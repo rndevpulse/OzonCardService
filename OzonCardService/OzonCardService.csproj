@@ -34,17 +34,21 @@
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Compile Remove="Backup\**" />
+    <Compile Remove="ClientApp\wwwroot\**" />
     <Compile Remove="FileReports\**" />
     <Compile Remove="logs\**" />
     <Content Remove="$(SpaRoot)**" />
     <Content Remove="Backup\**" />
+    <Content Remove="ClientApp\wwwroot\**" />
     <Content Remove="FileReports\**" />
     <Content Remove="logs\**" />
     <EmbeddedResource Remove="Backup\**" />
+    <EmbeddedResource Remove="ClientApp\wwwroot\**" />
     <EmbeddedResource Remove="FileReports\**" />
     <EmbeddedResource Remove="logs\**" />
     <None Remove="$(SpaRoot)**" />
     <None Remove="Backup\**" />
+    <None Remove="ClientApp\wwwroot\**" />
     <None Remove="FileReports\**" />
     <None Remove="logs\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
@@ -60,9 +64,14 @@
     <None Remove="ClientApp\src\components\ServiceForm.tsx" />
     <None Remove="ClientApp\src\http\index.ts" />
     <None Remove="ClientApp\src\index.ts" />
-    <None Remove="ClientApp\src\models\ICategoryResponcse.ts" />
+    <None Remove="ClientApp\src\models\ICategoryResponse.ts" />
+    <None Remove="ClientApp\src\models\IFileResponse.ts" />
     <None Remove="ClientApp\src\models\IOrganizationResponse.ts" />
+    <None Remove="ClientApp\src\services\FileServise.ts" />
     <None Remove="ClientApp\src\services\OrganizationServise.ts" />
+    <None Remove="ClientApp\wwwroot\js\components\LoginForm.js" />
+    <None Remove="ClientApp\wwwroot\js\index.js" />
+    <None Remove="ClientApp\wwwroot\js\store\OrganizationStore.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -81,8 +90,14 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\components\FilesForm.tsx" />
     <TypeScriptCompile Include="ClientApp\src\http\index.ts" />
-    <TypeScriptCompile Include="ClientApp\src\models\ICategoryResponcse.ts" />
+    <TypeScriptCompile Include="ClientApp\src\models\IFileResponse.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\models\ICategoryResponse.ts" />
     <TypeScriptCompile Include="ClientApp\src\models\IOrganizationResponse.ts" />
+    <TypeScriptCompile Include="ClientApp\src\services\FileServise.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\services\OrganizationServise.ts" />
   </ItemGroup>
 

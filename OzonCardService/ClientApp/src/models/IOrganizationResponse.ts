@@ -1,9 +1,9 @@
-﻿import { ICategoryResponse } from "./ICategoryResponcse";
+﻿import { ICategoryResponse } from "./ICategoryResponse";
 import { ICorporateNutritionResponse } from "./ICorporateNutritionResponse";
 
 export interface IOrganizationResponse {
-    Id: string;
-    Name: string;
-    Categories: ICategoryResponse[];
-    CorporateNutritions: ICorporateNutritionResponse[];
+    id: string;
+    name: string;
+    categories: ICategoryResponse[];
+    corporateNutritions: ICorporateNutritionResponse[];
 }

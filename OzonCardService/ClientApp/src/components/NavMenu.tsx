@@ -8,11 +8,11 @@ import { Context } from '..';
 import './NavMenu.css';
 
 export const NavMenu: FC = () => {
-    const { store } = useContext(Context);
-    console.log('store.rules = ', store.rules.toString());
+    const { loginstore } = useContext(Context);
+    console.log('NavMenu store.rules = ', loginstore.rules.toString());
 
     function linkBasic() {
-        if (store.rules.includes('101'))
+        if (loginstore.rules.includes('101'))
             return (
                 <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/">UploadForm</NavLink>
@@ -21,7 +21,7 @@ export const NavMenu: FC = () => {
                 )
     };
     function linkReport() {
-        if (store.rules.includes('111'))
+        if (loginstore.rules.includes('111'))
             return (
                 <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/report">ReportForm</NavLink>
@@ -29,7 +29,7 @@ export const NavMenu: FC = () => {
             )
     };
     function linkAdmin() {
-        if (store.rules.includes('100'))
+        if (loginstore.rules.includes('100'))
             return (
                 <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/service">ServiceForm</NavLink>
@@ -38,7 +38,7 @@ export const NavMenu: FC = () => {
     };
     return (
         <header>
-            <Navbar className="navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" light>
+            <Navbar className="navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3 grey lighten-3 col s12 m2" light>
                 <Container>
                     <NavbarBrand tag={Link} to="/">OzonCardService</NavbarBrand>
 
@@ -50,7 +50,7 @@ export const NavMenu: FC = () => {
                         {linkReport()}
                         {linkAdmin()}
                         <NavItem>
-                            <NavLink tag={Link}  to="" className="text-dark" onClick={() => store.logout()}>Logout</NavLink>
+                            <NavLink tag={Link} to="" className="text-dark" onClick={() => loginstore.logout()}>Logout</NavLink>
                         </NavItem>
                     </ul>
                 </Container>
