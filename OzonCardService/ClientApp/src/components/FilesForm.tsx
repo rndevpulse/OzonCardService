@@ -9,32 +9,61 @@ const FilesForm: FC = () => {
 
     async function getFiles() {
         const response = await FileService.getMyFiles()
+        console.log(response.data)
         setFiles(response.data);
+    }
+    async function onRemoveFile(url: string) {
+        console.log('onRemoveFile: ', url)
+
+        await FileService.removeFile(url);
+        await getFiles();
+    }
+    
+    async function downloadHandler(e: React.MouseEvent<HTMLElement, MouseEvent>, url: string, name: string) {
+        console.log('downloadHandler', url, name)
+        e.stopPropagation()
+        FileService.downloadFile(url, name)
+            .then(response => {
+                const type = response.headers['content-type']
+                const blob = new Blob([response.data], { type: type })
+                const _url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = _url
+                link.setAttribute('download', name);
+                document.body.appendChild(link)
+                link.click()
+                link.remove()
+            })
     }
 
     useEffect(() => {
+        console.log('useEffect')
         getFiles()
     }, []);
 
-    const print = () => {
-        
-            
-        
-    }
-
+    
     return (
         <div>
             <h1>FilesForm</h1>
             <div className="form-group col-md-12">
                 <ul>
-                    {files && files.map((file, index) => {
-                        const classes = ['file']
+                    {files && files.map(file => {
                         return (
-                            <li className={classes.join(' ')} key={index}>
+                            <li className="file" key={file.url}>
                                 <label>
-                                    <span>{file.name} | {new Date(file.created).toDateString()}</span>
-                                    <label className="details">{file.url}</label>
-                                    <i className="material-icons red-text">delete</i>
+                                    <span onClick={(e) => downloadHandler(e, file.url, `${file.name}`)}>
+                                        {file.name} | {new Date(file.created).toDateString()}
+                                    </span>
+                                    <span>
+                                        <i className="material-icons blue-text"
+                                        onClick={(e) => downloadHandler(e, file.url, `${file.name}`)}>
+                                            file_download
+                                        </i>
+                                        <i className="material-icons red-text"
+                                            onClick={() => onRemoveFile(file.url)}>
+                                            delete
+                                        </i>
+                                    </span>
                                 </label>
 
                             </li>

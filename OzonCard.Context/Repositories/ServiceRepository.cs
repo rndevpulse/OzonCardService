@@ -29,7 +29,7 @@ namespace OzonCard.Context.Repositories
 			{
 				var date = DateTime.UtcNow.AddDays(-countDays);
 				var files = await context.FileReports
-					.Where(x => x.Created > date)
+					.Where(x => x.Created < date)
 					.ToListAsync();
 				context.RemoveRange(files);
 				await context.SaveChangesAsync();
@@ -45,7 +45,7 @@ namespace OzonCard.Context.Repositories
 				var tokens = await context.Users
 					.Include(x=>x.RefreshTokens)
 					.SelectMany(x=>x.RefreshTokens)
-					.Where(x => x.Expires > date)
+					.Where(x => x.Expires < date)
 					.ToListAsync();
 				context.RemoveRange(tokens);
 				await context.SaveChangesAsync();

@@ -45,6 +45,18 @@ namespace OzonCardService.Helpers
             catch (Exception)
             { return false; }
         }
+        public async Task<bool> RemoveFile(string file)
+        {
+            try
+            {
+                await Task.Run(() => File.Delete(
+                    Path.Combine(path, file).TrimEnd()));
+                return true;
+            }
+            catch (Exception)
+            { return false; }
+        }
+
 
         public string GetFile(string name)
         {

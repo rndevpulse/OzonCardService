@@ -64,14 +64,32 @@
     <None Remove="ClientApp\src\components\ServiceForm.tsx" />
     <None Remove="ClientApp\src\http\index.ts" />
     <None Remove="ClientApp\src\index.ts" />
+    <None Remove="ClientApp\src\models\IAdvancedOptionsResponse.ts" />
     <None Remove="ClientApp\src\models\ICategoryResponse.ts" />
     <None Remove="ClientApp\src\models\IFileResponse.ts" />
     <None Remove="ClientApp\src\models\IOrganizationResponse.ts" />
+    <None Remove="ClientApp\src\services\BizServise.ts" />
     <None Remove="ClientApp\src\services\FileServise.ts" />
     <None Remove="ClientApp\src\services\OrganizationServise.ts" />
-    <None Remove="ClientApp\wwwroot\js\components\LoginForm.js" />
-    <None Remove="ClientApp\wwwroot\js\index.js" />
-    <None Remove="ClientApp\wwwroot\js\store\OrganizationStore.js" />
+    <None Remove="ClientApp\wwwroot\js\App.js" />
+    <None Remove="ClientApp\wwwroot\js\components\FilesForm.js" />
+    <None Remove="ClientApp\wwwroot\js\components\NavMenu.js" />
+    <None Remove="ClientApp\wwwroot\js\components\ReportForm.js" />
+    <None Remove="ClientApp\wwwroot\js\components\ServiceForm.js" />
+    <None Remove="ClientApp\wwwroot\js\components\UploadForm.js" />
+    <None Remove="ClientApp\wwwroot\js\http\index.js" />
+    <None Remove="ClientApp\wwwroot\js\models\IAdvancedOptionsResponse.js" />
+    <None Remove="ClientApp\wwwroot\js\models\IAuthResponse.js" />
+    <None Remove="ClientApp\wwwroot\js\models\ICategoryResponcse.js" />
+    <None Remove="ClientApp\wwwroot\js\models\ICorporateNutritionResponse.js" />
+    <None Remove="ClientApp\wwwroot\js\models\ICustomerOptionResponse.js" />
+    <None Remove="ClientApp\wwwroot\js\models\IFileResponse.js" />
+    <None Remove="ClientApp\wwwroot\js\models\IOrganizationResponse.js" />
+    <None Remove="ClientApp\wwwroot\js\models\IReportOptionResponse.js" />
+    <None Remove="ClientApp\wwwroot\js\services\BizServise.js" />
+    <None Remove="ClientApp\wwwroot\js\services\FileServise.js" />
+    <None Remove="ClientApp\wwwroot\js\services\OrganizationServise.js" />
+    <None Remove="ClientApp\wwwroot\js\store\LoginStore.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -94,8 +112,14 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\models\ICategoryResponse.ts" />
+    <TypeScriptCompile Include="ClientApp\src\models\IAdvancedOptionsResponse.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\models\IOrganizationResponse.ts" />
     <TypeScriptCompile Include="ClientApp\src\services\FileServise.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\services\BizServise.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\services\OrganizationServise.ts" />

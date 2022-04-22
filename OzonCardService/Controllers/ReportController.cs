@@ -38,7 +38,7 @@ namespace OzonCardService.Controllers
         [HttpPost]
         [AuthorizeRoles(EnumRules.Report)]
         [Consumes("application/json")]
-        public async Task<ActionResult<object>> ReportIkoBiz(ReportOption_vm reportOption)
+        public async Task<ActionResult<Guid>> ReportIkoBiz(ReportOption_vm reportOption)
         {
             try
             {

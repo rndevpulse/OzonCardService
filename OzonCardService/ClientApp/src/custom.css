@@ -12,3 +12,35 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+
+
+.file {
+    margin-bottom: 1rem;
+}
+.file label {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 1rem;
+    background: #f3f3f3;
+    font-size: 110%;
+}
+.label-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 110%;
+}
+.file i {
+    z-index: 2;
+    margin-left: 2rem;
+}
+i {
+    z-index: 2;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    align-items: end;
+}

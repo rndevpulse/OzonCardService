@@ -44,7 +44,7 @@ namespace OzonCardService.Services.Quartzs.Workers
             var date = DateTime.UtcNow.AddDays(-countDays);
             var count = 0;
             foreach (var file in files)
-                if (new FileInfo(file).CreationTimeUtc > date)
+                if (new FileInfo(file).CreationTimeUtc < date)
                 {
                     Directory.Delete(file);
                     count++;

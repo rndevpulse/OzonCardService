@@ -114,17 +114,6 @@ namespace OzonCardService.Services.Implementation
             return true;
         }
 
-        public async Task SaveFile(Guid id, string format, string name, Guid UserId)
-        {
-            var file = new FileReport()
-            {
-                Id = id,
-                Format = format,
-                Name = name,
-                UserId = UserId
-            };
-            await _repository.AddFile(file);
-        }
 
         public async Task<IEnumerable<File_dto>> GetFiles(Guid userId)
         {
@@ -161,6 +150,9 @@ namespace OzonCardService.Services.Implementation
             var new_customers = new List<Customer>();
             //customers_excel           содержить весь список из ексоля
             //customers_excel_newTab    содержить пользователей, которых еще нет в базе с такими табельниками
+            ///ебучая задержка для отладки фронта
+            System.Threading.Thread.Sleep(1000 *300);//5 min
+
             foreach (var customer_excel in customers_excel_new)
             {
                 ///=> для каждого из нового списка выполняем
@@ -329,5 +321,22 @@ namespace OzonCardService.Services.Implementation
             return report;
         }
 
+
+        public async Task SaveFile(Guid id, string format, string name, Guid UserId)
+        {
+            var file = new FileReport()
+            {
+                Id = id,
+                Format = format,
+                Name = name,
+                UserId = UserId
+            };
+            await _repository.AddFile(file);
+        }
+
+        public async Task RemoveFile(string url)
+        {
+            await _repository.RemoveFile(url);
+        }
     }
 }

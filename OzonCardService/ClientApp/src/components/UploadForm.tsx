@@ -2,10 +2,13 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { Context } from '..';
-import { IOrganizationResponse } from '../models/IOrganizationResponse';
 import { ICategoryResponse } from '../models/ICategoryResponse';
 import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
-import { isFunctionOrConstructorTypeNode } from 'typescript';
+import FileService from '../services/FileServise';
+import axios from 'axios';
+import { IFileResponse } from '../models/IFileResponse';
+import { ICustomerOptionResponse } from '../models/ICustomerOptionResponse';
+import BizService from '../services/BizServise';
 
 interface item_option {
     id: string
@@ -15,14 +18,20 @@ interface item_option {
 const UploadForm: FC = () => {
     const { organizationstore } = useContext(Context);
 
+    const [taskId, setTaskId] = useState('');
+
     const [organizationId, setOrganizationId] = useState('');
+    const [categoryId, setCategoryId] = useState('');
+    const [corporateNutritionId, setCorporateNutritionId] = useState('');
+    const [file, setFile] = useState('');
+    const [refreshBalance, setRefreshBalance] = useState(false);
+    const [rename, setRename] = useState(false);
 
     const [categories, setCategories] = useState<ICategoryResponse[]>([]);
-    const [categoryId, setCategoryId] = useState('');
     const [corporateNutritions, setCorporateNutritions] = useState<ICorporateNutritionResponse[]>([]);
-    const [corporateNutritionId, setCorporateNutritionId] = useState('');
 
-    const [balance,setBalance] = useState<number>(0)
+    const [balance, setBalance] = useState<number>(0);
+
 
     const CustomSelect = ({ id, value, options, onChange }) => {
         return (
@@ -61,6 +70,39 @@ const UploadForm: FC = () => {
 
     }
 
+
+    async function  onChangeFile(e) {
+        const formdata = new FormData()
+        formdata.append('file', e.target.files[0])
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        }
+        const response = await axios.post<IFileResponse>('/api/file/create', formdata, config)
+        setFile(response.data.url)
+    }
+
+    async function  uploadToBiz() {
+        if (file === '')
+            confirm('Не выбран вайл выгрузки')
+        const option: ICustomerOptionResponse = {
+            organizationId: organizationId,
+            corporateNutritionId: corporateNutritionId,
+            categoryId: categoryId,
+            balance: balance,
+            fileReport: file,
+            options: {
+                refreshBalance: refreshBalance,
+                rename: rename
+            }
+        }
+        console.log('option ', JSON.stringify(option))
+        const response = await BizService.upladCustomersToBiz(option)
+        setTaskId(response.data)
+        console.log('taskId', response.data)
+    }
     useEffect(() => {
         firstInit();
         console.log('UploadForm useEffect');
@@ -77,11 +119,13 @@ const UploadForm: FC = () => {
             <p>организация: {organizationId}</p>
             <p>категория: {categoryId}</p>
             <p>корпит: {corporateNutritionId}</p>
+            <p>файл: {file}</p>
 
 
             <div className="form-group col-md-6">
                 <label htmlFor="organizations">Организации</label>
-                <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations} onChange={onOrganizationSelectChange} />
+                <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
+                    onChange={onOrganizationSelectChange} />
             </div>
             <div className="form-group col-md-6">
                 <label htmlFor="categories">Категории</label>
@@ -89,19 +133,51 @@ const UploadForm: FC = () => {
             </div>
             <div className="form-group col-md-6">
                 <label htmlFor="corporateNutritions">Программы питания</label>
-                <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions} onChange={event => setCorporateNutritionId(event.target.value)} />
+                <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
+                    onChange={event => setCorporateNutritionId(event.target.value)} />
             </div>
 
             <div className="form-group col-md-6">
-                 <label htmlFor="balance">Баланс</label>
+                <label htmlFor="balance">Баланс
                 <input
                     id='balance'
                     onChange={e => setBalance(parseInt(e.target.value))}
                     value={balance}
                     type='number'
-                     placeholder='Баланс'
+                    placeholder='Баланс'
+                    /></label>
+            </div>
+            <div className="form-group col-md-7">
+                <label htmlFor='refreshBalance' className="label-checkbox">
+                    <input id='refreshBalance' type='checkbox' checked={refreshBalance}
+                        onChange={() => setRefreshBalance(!refreshBalance)}
+                    />
+                    Обновлять баланс
+                    <i className="material-icons red-text">
+                        {refreshBalance ? 'check_box' : 'check_box_outline_blank' }
+                    </i>
+                </label>
+                <label htmlFor="rename" className="label-checkbox">
+                    <input id='rename' type='checkbox' checked={rename}
+                        onChange={() => setRename(!rename)}
+                    />
+                    Переименовать в соответствии с новым списком
+                    <i className="material-icons red-text">
+                        {rename ? 'check_box' : 'check_box_outline_blank'}
+                    </i>
+                </label>
+                <label htmlFor="file">Выбирите файл</label>
+                <br/>
+                <input className="form-group"
+                    id='file'
+                    type='file'
+                    onChange={onChangeFile}
                 />
             </div>
+            <button className="uploadToBiz"
+                onClick={uploadToBiz}>
+                Выгрузить
+                </button>
 
         </div>
     );

@@ -59,6 +59,32 @@ namespace OzonCardService.Controllers
             }
         }
 
+        [HttpGet("remove/{url}")]
+        [AuthorizeRoles(EnumRules.Basic)]
+        public async Task<ActionResult> DocRemove(string url)
+        {
+            try
+            {
+                log.Verbose("GET /files/remove: {0} ", url);
+                if (url == null || url == string.Empty)
+                    return BadRequest();
+                if (!await new FileManager().RemoveFile(url))
+                    throw new Exception("File format not correct");
+                await _service.RemoveFile(url);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 404,
+                    Message = ex.Message,
+                    Description = ex.InnerException?.ToString()
+                });
+            }
+        }
+
+
         [HttpGet("user")]
         [AuthorizeRoles(EnumRules.Basic)]
         public async Task<ActionResult<File_dto>> DocsUser()

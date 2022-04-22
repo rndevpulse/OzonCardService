@@ -39,5 +39,6 @@ namespace OzonCard.Context.Interfaces
         Task<IEnumerable<Customer>> GetCustomersForOrganization(Guid organizationId);
         Task AttachRangeCustomer(IEnumerable<Customer> customers);
         Task UpdateCustomer(Customer customer);
+        Task RemoveFile(string url);
     }
 }

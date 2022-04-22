@@ -290,7 +290,15 @@ namespace OzonCard.Context.Repositories
                     .ToListAsync();
             }
         }
-
+        public async Task RemoveFile(string url)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var file = new FileReport { Id = Guid.Parse(url.Split('.').First()) };
+                context.FileReports.Remove(file);
+                await context.SaveChangesAsync();
+            }
+        }
 
         #endregion
 
@@ -351,7 +359,9 @@ namespace OzonCard.Context.Repositories
             }
         }
 
-        
+       
+
+
 
 
 
