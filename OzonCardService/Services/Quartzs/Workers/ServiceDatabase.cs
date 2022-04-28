@@ -39,17 +39,19 @@ namespace OzonCardService.Services.Quartzs.Workers
         public async Task RemoveOldFile(string path, int countDays)
         {
             log.Information("Remove old files");
-            await _repository.RemoveOldFile(countDays);
-            var files = Directory.GetFiles(path);
-            var date = DateTime.UtcNow.AddDays(-countDays);
-            var count = 0;
-            foreach (var file in files)
-                if (new FileInfo(file).CreationTimeUtc < date)
-                {
-                    Directory.Delete(file);
-                    count++;
-                }
-            log.Information($"Remove {count} old files with date created < {date}");
+            if (await _repository.RemoveOldFile(countDays))
+            {
+                var files = Directory.GetFiles(path);
+                var date = DateTime.UtcNow.AddDays(-countDays);
+                var count = 0;
+                foreach (var file in files)
+                    if (new FileInfo(file).CreationTimeUtc < date)
+                    {
+                        Directory.Delete(file);
+                        count++;
+                    }
+                log.Information($"Remove {count} old files with date created < {date}");
+            }
 
         }
 

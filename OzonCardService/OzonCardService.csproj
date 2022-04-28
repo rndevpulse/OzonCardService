@@ -62,6 +62,7 @@
     <None Remove="ClientApp\src\components\FilesForm.tsx" />
     <None Remove="ClientApp\src\components\ReportForm.tsx" />
     <None Remove="ClientApp\src\components\ServiceForm.tsx" />
+    <None Remove="ClientApp\src\components\TasksForm.tsx" />
     <None Remove="ClientApp\src\http\index.ts" />
     <None Remove="ClientApp\src\index.ts" />
     <None Remove="ClientApp\src\models\IAdvancedOptionsResponse.ts" />
@@ -71,6 +72,7 @@
     <None Remove="ClientApp\src\services\BizServise.ts" />
     <None Remove="ClientApp\src\services\FileServise.ts" />
     <None Remove="ClientApp\src\services\OrganizationServise.ts" />
+    <None Remove="ClientApp\src\services\TaskService.ts" />
     <None Remove="ClientApp\wwwroot\js\App.js" />
     <None Remove="ClientApp\wwwroot\js\components\FilesForm.js" />
     <None Remove="ClientApp\wwwroot\js\components\NavMenu.js" />
@@ -100,6 +102,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\TasksForm.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\components\ReportForm.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -116,6 +121,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\models\IOrganizationResponse.ts" />
+    <TypeScriptCompile Include="ClientApp\src\services\TaskService.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\services\FileServise.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

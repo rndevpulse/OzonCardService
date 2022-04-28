@@ -44,3 +44,24 @@ i {
     margin-right: 2rem;
     align-items: end;
 }
+
+.uploadToBiz{
+    align-content:center;
+    border-radius:10px;
+}
+.task {
+    margin-bottom: 1rem;
+}
+.task label {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 1rem;
+    background: #f3f3f3;
+    font-size: 110%;
+}
+.task.completed label{
+    background-color:mediumspringgreen;
+}

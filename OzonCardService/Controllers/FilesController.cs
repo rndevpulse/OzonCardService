@@ -45,7 +45,8 @@ namespace OzonCardService.Controllers
                 return new OkObjectResult(new
                 {
                     id = id,
-                    url = id + "." + format
+                    url = id + "." + format,
+                    name = file.FileName
                 });
             }
             catch (Exception ex)

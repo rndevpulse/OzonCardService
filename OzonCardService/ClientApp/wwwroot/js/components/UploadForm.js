@@ -14,13 +14,15 @@ import { useEffect } from 'react';
 import { Context } from '..';
 import axios from 'axios';
 import BizService from '../services/BizServise';
+import { useNavigate } from 'react-router-dom';
 const UploadForm = () => {
-    const { organizationstore } = useContext(Context);
-    const [taskId, setTaskId] = useState('');
+    const navigate = useNavigate();
+    const { organizationstore, taskstore } = useContext(Context);
     const [organizationId, setOrganizationId] = useState('');
     const [categoryId, setCategoryId] = useState('');
     const [corporateNutritionId, setCorporateNutritionId] = useState('');
     const [file, setFile] = useState('');
+    const [fileName, setFileName] = useState('');
     const [refreshBalance, setRefreshBalance] = useState(false);
     const [rename, setRename] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -64,6 +66,7 @@ const UploadForm = () => {
             };
             const response = yield axios.post('/api/file/create', formdata, config);
             setFile(response.data.url);
+            setFileName(response.data.name);
         });
     }
     function uploadToBiz() {
@@ -83,8 +86,9 @@ const UploadForm = () => {
             };
             console.log('option ', JSON.stringify(option));
             const response = yield BizService.upladCustomersToBiz(option);
-            setTaskId(response.data);
+            taskstore.onAddTask(response.data, 'Выгрузка ' + fileName);
             console.log('taskId', response.data);
+            navigate(`/task`);
         });
     }
     useEffect(() => {
@@ -95,6 +99,6 @@ const UploadForm = () => {
         return _jsx("h1", { children: "Loading..." }, void 0);
     }
     console.log('UploadForm return');
-    return (_jsxs("div", { children: [_jsx("h1", { children: "UPLOAD FORM" }, void 0), _jsxs("p", { children: ["\u043E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F: ", organizationId] }, void 0), _jsxs("p", { children: ["\u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F: ", categoryId] }, void 0), _jsxs("p", { children: ["\u043A\u043E\u0440\u043F\u0438\u0442: ", corporateNutritionId] }, void 0), _jsxs("p", { children: ["\u0444\u0430\u0439\u043B: ", file] }, void 0), _jsxs("div", Object.assign({ className: "form-group col-md-6" }, { children: [_jsx("label", Object.assign({ htmlFor: "organizations" }, { children: "\u041E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438" }), void 0), _jsx(CustomSelect, { id: "organizations", value: organizationId, options: organizationstore.organizations, onChange: onOrganizationSelectChange }, void 0)] }), void 0), _jsxs("div", Object.assign({ className: "form-group col-md-6" }, { children: [_jsx("label", Object.assign({ htmlFor: "categories" }, { children: "\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438" }), void 0), _jsx(CustomSelect, { id: "categories", value: categoryId, options: categories, onChange: event => setCategoryId(event.target.value) }, void 0)] }), void 0), _jsxs("div", Object.assign({ className: "form-group col-md-6" }, { children: [_jsx("label", Object.assign({ htmlFor: "corporateNutritions" }, { children: "\u041F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u044B \u043F\u0438\u0442\u0430\u043D\u0438\u044F" }), void 0), _jsx(CustomSelect, { id: "corporateNutritions", value: corporateNutritionId, options: corporateNutritions, onChange: event => setCorporateNutritionId(event.target.value) }, void 0)] }), void 0), _jsx("div", Object.assign({ className: "form-group col-md-6" }, { children: _jsxs("label", Object.assign({ htmlFor: "balance" }, { children: ["\u0411\u0430\u043B\u0430\u043D\u0441", _jsx("input", { id: 'balance', onChange: e => setBalance(parseInt(e.target.value)), value: balance, type: 'number', placeholder: '\u0411\u0430\u043B\u0430\u043D\u0441' }, void 0)] }), void 0) }), void 0), _jsxs("div", Object.assign({ className: "form-group col-md-7" }, { children: [_jsxs("label", Object.assign({ htmlFor: 'refreshBalance', className: "label-checkbox" }, { children: [_jsx("input", { id: 'refreshBalance', type: 'checkbox', checked: refreshBalance, onChange: () => setRefreshBalance(!refreshBalance) }, void 0), "\u041E\u0431\u043D\u043E\u0432\u043B\u044F\u0442\u044C \u0431\u0430\u043B\u0430\u043D\u0441", _jsx("i", Object.assign({ className: "material-icons red-text" }, { children: refreshBalance ? 'check_box' : 'check_box_outline_blank' }), void 0)] }), void 0), _jsxs("label", Object.assign({ htmlFor: "rename", className: "label-checkbox" }, { children: [_jsx("input", { id: 'rename', type: 'checkbox', checked: rename, onChange: () => setRename(!rename) }, void 0), "\u041F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C \u0432 \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0438 \u0441 \u043D\u043E\u0432\u044B\u043C \u0441\u043F\u0438\u0441\u043A\u043E\u043C", _jsx("i", Object.assign({ className: "material-icons red-text" }, { children: rename ? 'check_box' : 'check_box_outline_blank' }), void 0)] }), void 0), _jsx("label", Object.assign({ htmlFor: "file" }, { children: "\u0412\u044B\u0431\u0438\u0440\u0438\u0442\u0435 \u0444\u0430\u0439\u043B" }), void 0), _jsx("br", {}, void 0), _jsx("input", { className: "form-group", id: 'file', type: 'file', onChange: onChangeFile }, void 0)] }), void 0), _jsx("button", Object.assign({ className: "uploadToBiz", onClick: uploadToBiz }, { children: "\u0412\u044B\u0433\u0440\u0443\u0437\u0438\u0442\u044C" }), void 0)] }, void 0));
+    return (_jsxs("div", { children: [_jsx("h1", { children: "UPLOAD FORM" }, void 0), _jsxs("div", Object.assign({ className: "form-group col-md-6" }, { children: [_jsx("label", Object.assign({ htmlFor: "organizations" }, { children: "\u041E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438" }), void 0), _jsx(CustomSelect, { id: "organizations", value: organizationId, options: organizationstore.organizations, onChange: onOrganizationSelectChange }, void 0)] }), void 0), _jsxs("div", Object.assign({ className: "form-group col-md-6" }, { children: [_jsx("label", Object.assign({ htmlFor: "categories" }, { children: "\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438" }), void 0), _jsx(CustomSelect, { id: "categories", value: categoryId, options: categories, onChange: event => setCategoryId(event.target.value) }, void 0)] }), void 0), _jsxs("div", Object.assign({ className: "form-group col-md-6" }, { children: [_jsx("label", Object.assign({ htmlFor: "corporateNutritions" }, { children: "\u041F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u044B \u043F\u0438\u0442\u0430\u043D\u0438\u044F" }), void 0), _jsx(CustomSelect, { id: "corporateNutritions", value: corporateNutritionId, options: corporateNutritions, onChange: event => setCorporateNutritionId(event.target.value) }, void 0)] }), void 0), _jsx("div", Object.assign({ className: "form-group col-md-6" }, { children: _jsxs("label", Object.assign({ htmlFor: "balance" }, { children: ["\u0411\u0430\u043B\u0430\u043D\u0441", _jsx("input", { id: 'balance', onChange: e => setBalance(parseInt(e.target.value)), value: balance, type: 'number', placeholder: '\u0411\u0430\u043B\u0430\u043D\u0441' }, void 0)] }), void 0) }), void 0), _jsxs("div", Object.assign({ className: "form-group col-md-7" }, { children: [_jsxs("label", Object.assign({ htmlFor: 'refreshBalance', className: "label-checkbox" }, { children: [_jsx("input", { id: 'refreshBalance', type: 'checkbox', checked: refreshBalance, onChange: () => setRefreshBalance(!refreshBalance) }, void 0), "\u041E\u0431\u043D\u043E\u0432\u043B\u044F\u0442\u044C \u0431\u0430\u043B\u0430\u043D\u0441", _jsx("i", Object.assign({ className: "material-icons red-text" }, { children: refreshBalance ? 'check_box' : 'check_box_outline_blank' }), void 0)] }), void 0), _jsxs("label", Object.assign({ htmlFor: "rename", className: "label-checkbox" }, { children: [_jsx("input", { id: 'rename', type: 'checkbox', checked: rename, onChange: () => setRename(!rename) }, void 0), "\u041F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C \u0432 \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0438 \u0441 \u043D\u043E\u0432\u044B\u043C \u0441\u043F\u0438\u0441\u043A\u043E\u043C", _jsx("i", Object.assign({ className: "material-icons red-text" }, { children: rename ? 'check_box' : 'check_box_outline_blank' }), void 0)] }), void 0), _jsx("label", Object.assign({ htmlFor: "file" }, { children: "\u0412\u044B\u0431\u0438\u0440\u0438\u0442\u0435 \u0444\u0430\u0439\u043B" }), void 0), _jsx("br", {}, void 0), _jsx("input", { className: "form-group", id: 'file', type: 'file', onChange: onChangeFile }, void 0)] }), void 0), _jsx("button", Object.assign({ className: "uploadToBiz button", onClick: uploadToBiz }, { children: "\u0412\u044B\u0433\u0440\u0443\u0437\u0438\u0442\u044C" }), void 0)] }, void 0));
 };
 export default observer(UploadForm);

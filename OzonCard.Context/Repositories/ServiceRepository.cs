@@ -31,8 +31,12 @@ namespace OzonCard.Context.Repositories
 				var files = await context.FileReports
 					.Where(x => x.Created < date)
 					.ToListAsync();
-				context.RemoveRange(files);
-				await context.SaveChangesAsync();
+				if (files.Count > 0)
+				{ 
+					context.RemoveRange(files);
+					await context.SaveChangesAsync();
+				}
+				else return false;
 				return true;
 			}
 		}

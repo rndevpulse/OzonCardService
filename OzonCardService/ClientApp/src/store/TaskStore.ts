@@ -1,0 +1,66 @@
+﻿
+import { makeAutoObservable, observable, configure } from 'mobx';
+import { useEffect } from 'react';
+import { IInfoDataUpload, ITask } from '../models/IInfoDataUpload';
+import TaskService from '../services/TaskService';
+
+configure({
+    enforceActions: "never",
+})
+
+
+export default class TaskStore {
+    timer = 0;
+    tasks: ITask[] = JSON.parse(localStorage.getItem('tasks') || '[]') as ITask[]
+    
+    constructor() {
+        makeAutoObservable(this, {}, { autoBind: true });
+        setInterval(this.increaseTimer, 5000);
+        console.log('TaskStore constructor')
+
+    }
+    increaseTimer() {
+        this.timer++;
+        this.tasks = this.tasks.map((t,index) => {
+            if (t.isCompleted) { return t }
+            this.setTaskInfo(t.taskId, index)
+            return t
+        })
+
+    }
+
+    async setTaskInfo(taskId: string, index: number){
+        const response = await TaskService.getTaskUpload(taskId)
+        console.log('setTaskInfo response ', response)
+        if (response.status === 200) {
+            this.tasks[index].taskInfo = response.data
+            this.tasks[index].isCompleted = response.data.isCompleted
+        }
+        else {
+            this.tasks[index].isCompleted = true
+        }
+        console.log('setTaskInfo tasks ', JSON.stringify(this.tasks))
+        localStorage.setItem('tasks', JSON.stringify(this.tasks))
+    }
+
+    onRemoveTask(taskId :string) {
+        this.tasks = this.tasks.filter(t => t.taskId !== taskId)
+        localStorage.setItem('tasks', JSON.stringify(this.tasks))
+    }
+    onAddTask(taskId: string, deskription: string) {
+        const task: ITask = {
+            taskId: taskId,
+            deskription: deskription,
+            taskInfo: undefined,
+            isCompleted: false
+        }
+        this.tasks.push(task)
+        localStorage.setItem('tasks', JSON.stringify(this.tasks))
+    }
+    
+}
+
+
+
+
+ 

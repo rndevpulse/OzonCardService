@@ -4,26 +4,25 @@ import { useEffect } from 'react';
 import { Context } from '..';
 import { ICategoryResponse } from '../models/ICategoryResponse';
 import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
-import FileService from '../services/FileServise';
 import axios from 'axios';
 import { IFileResponse } from '../models/IFileResponse';
 import { ICustomerOptionResponse } from '../models/ICustomerOptionResponse';
 import BizService from '../services/BizServise';
+import { useNavigate } from 'react-router-dom';
 
-interface item_option {
-    id: string
-    name:string
-}
+
 
 const UploadForm: FC = () => {
-    const { organizationstore } = useContext(Context);
+    const navigate = useNavigate()
 
-    const [taskId, setTaskId] = useState('');
+    const { organizationstore, taskstore } = useContext(Context);
+
 
     const [organizationId, setOrganizationId] = useState('');
     const [categoryId, setCategoryId] = useState('');
     const [corporateNutritionId, setCorporateNutritionId] = useState('');
     const [file, setFile] = useState('');
+    const [fileName, setFileName] = useState('');
     const [refreshBalance, setRefreshBalance] = useState(false);
     const [rename, setRename] = useState(false);
 
@@ -73,6 +72,7 @@ const UploadForm: FC = () => {
 
     async function  onChangeFile(e) {
         const formdata = new FormData()
+        
         formdata.append('file', e.target.files[0])
         const config = {
             headers: {
@@ -82,6 +82,7 @@ const UploadForm: FC = () => {
         }
         const response = await axios.post<IFileResponse>('/api/file/create', formdata, config)
         setFile(response.data.url)
+        setFileName(response.data.name)
     }
 
     async function  uploadToBiz() {
@@ -100,9 +101,14 @@ const UploadForm: FC = () => {
         }
         console.log('option ', JSON.stringify(option))
         const response = await BizService.upladCustomersToBiz(option)
-        setTaskId(response.data)
+        taskstore.onAddTask(response.data, 'Выгрузка ' + fileName)
         console.log('taskId', response.data)
+        
+        navigate(`/task`)
     }
+
+    
+
     useEffect(() => {
         firstInit();
         console.log('UploadForm useEffect');
@@ -115,13 +121,7 @@ const UploadForm: FC = () => {
 
         <div>
             <h1>UPLOAD FORM</h1>
-            
-            <p>организация: {organizationId}</p>
-            <p>категория: {categoryId}</p>
-            <p>корпит: {corporateNutritionId}</p>
-            <p>файл: {file}</p>
-
-
+           
             <div className="form-group col-md-6">
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
@@ -174,7 +174,9 @@ const UploadForm: FC = () => {
                     onChange={onChangeFile}
                 />
             </div>
-            <button className="uploadToBiz"
+               
+
+            <button className="uploadToBiz button"
                 onClick={uploadToBiz}>
                 Выгрузить
                 </button>
@@ -183,3 +185,4 @@ const UploadForm: FC = () => {
     );
 };
 export default observer(UploadForm);
+

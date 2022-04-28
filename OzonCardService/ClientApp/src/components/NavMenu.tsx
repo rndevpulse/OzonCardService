@@ -6,8 +6,9 @@ import { Container, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 import { Context } from '..';
 
 import './NavMenu.css';
+import { observer } from 'mobx-react-lite';
 
-export const NavMenu: FC = () => {
+const NavMenu: FC = () => {
     const { loginstore } = useContext(Context);
     console.log('NavMenu store.rules = ', loginstore.rules.toString());
 
@@ -48,6 +49,9 @@ export const NavMenu: FC = () => {
                             <NavLink tag={Link} className="text-dark" to="/file">FilesForm</NavLink>
                         </NavItem>
                         {linkReport()}
+                        <NavItem>
+                            <NavLink tag={Link} className="text-dark" to="/task">TasksForm</NavLink>
+                        </NavItem>
                         {linkAdmin()}
                         <NavItem>
                             <NavLink tag={Link} to="" className="text-dark" onClick={() => loginstore.logout()}>Logout</NavLink>
@@ -58,3 +62,4 @@ export const NavMenu: FC = () => {
         </header>
     )
 }
+export default observer(NavMenu)

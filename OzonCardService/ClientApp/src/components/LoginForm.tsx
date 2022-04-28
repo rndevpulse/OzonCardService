@@ -9,15 +9,17 @@ const LoginForm: FC = () => {
     const [password, setPassword] = useState<string>('')
     const { loginstore } = useContext(Context)
     return (
-        <div>
+        <div className="form-group col-md-4">
             <h1>LoginForm</h1>
             <input
+                className=""
                 onChange={e => setEmail(e.target.value)}
                 value={email}
                 type='text'
                 placeholder='Email'
             />
             <input
+                className=""
                 onChange={e => setPassword(e.target.value)}
                 value={password}
                 type='text'
