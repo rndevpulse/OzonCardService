@@ -52,7 +52,8 @@ export default class TaskStore {
             taskId: taskId,
             deskription: deskription,
             taskInfo: undefined,
-            isCompleted: false
+            isCompleted: false,
+            created: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`
         }
         this.tasks.push(task)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))

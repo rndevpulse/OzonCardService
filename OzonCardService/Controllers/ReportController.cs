@@ -53,7 +53,7 @@ namespace OzonCardService.Controllers
                 progress.Report(new ProgressInfo(new InfoData()));
                 var path = new FileManager().GetDirectory();
                 var id = Guid.NewGuid();
-                var title = $"{reportOption.Title} from {reportOption.DateFrom} to {reportOption.DateTo}";
+                var title = $"{reportOption.Title}";
                 var t = Task.Factory.StartNew(async () =>
                 {
                     ExcelManager.CreateWorkbook(

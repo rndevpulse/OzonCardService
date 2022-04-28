@@ -22,7 +22,7 @@ code {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
+    cursor: default;
     padding: 1rem;
     background: #f3f3f3;
     font-size: 110%;
@@ -43,25 +43,37 @@ i {
     margin-left: 2rem;
     margin-right: 2rem;
     align-items: end;
+    cursor: pointer;
 }
 
-.uploadToBiz{
-    align-content:center;
-    border-radius:10px;
+.button {
+    margin-top: 1rem;
+    align-content: center;
+    border-radius: 10px;
 }
 .task {
     margin-bottom: 1rem;
 }
-.task label {
+.task dt {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
+    cursor:default;
     padding: 1rem;
     background: #f3f3f3;
     font-size: 110%;
 }
-.task.completed label{
+.task.completed dt{
     background-color:mediumspringgreen;
 }
+    .task dd {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: default;
+        padding: 0.4rem;
+        background: #f3f3f3;
+        font-size: 90%;
+    }

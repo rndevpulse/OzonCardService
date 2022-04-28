@@ -1,4 +1,5 @@
 ﻿import { FC, useContext, useState } from 'react';
+import * as React from 'react'
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { Context } from '..';
@@ -54,7 +55,7 @@ const UploadForm: FC = () => {
     }
     async function firstInit() {
         await organizationstore.requestOrganizations();
-        setOrganizationId(organizationstore.organizations[0]?.id ?? []);
+        setOrganizationId(organizationstore.organizations[0]?.id ?? '');
 
         setCategories(organizationstore.organizations[0]?.categories ?? []);
         setCategoryId(organizationstore.organizations[0]?.categories[0]?.id ?? '');
@@ -99,10 +100,9 @@ const UploadForm: FC = () => {
                 rename: rename
             }
         }
-        console.log('option ', JSON.stringify(option))
+        
         const response = await BizService.upladCustomersToBiz(option)
-        taskstore.onAddTask(response.data, 'Выгрузка ' + fileName)
-        console.log('taskId', response.data)
+        taskstore.onAddTask(response.data, 'Выгрузка: ' + fileName)
         
         navigate(`/task`)
     }
@@ -120,24 +120,17 @@ const UploadForm: FC = () => {
     return (
 
         <div>
-            <h1>UPLOAD FORM</h1>
+            <h1>Выгрузка в iikoBiz</h1>
            
             <div className="form-group col-md-6">
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                     onChange={onOrganizationSelectChange} />
-            </div>
-            <div className="form-group col-md-6">
                 <label htmlFor="categories">Категории</label>
                 <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)}/>
-            </div>
-            <div className="form-group col-md-6">
                 <label htmlFor="corporateNutritions">Программы питания</label>
                 <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
                     onChange={event => setCorporateNutritionId(event.target.value)} />
-            </div>
-
-            <div className="form-group col-md-6">
                 <label htmlFor="balance">Баланс
                 <input
                     id='balance'
@@ -176,7 +169,7 @@ const UploadForm: FC = () => {
             </div>
                
 
-            <button className="uploadToBiz button"
+            <button className="btn-primary button"
                 onClick={uploadToBiz}>
                 Выгрузить
                 </button>

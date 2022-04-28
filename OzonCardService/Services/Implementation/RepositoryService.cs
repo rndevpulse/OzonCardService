@@ -328,7 +328,7 @@ namespace OzonCardService.Services.Implementation
             {
                 Id = id,
                 Format = format,
-                Name = name,
+                Name = name + "." + format,
                 UserId = UserId
             };
             await _repository.AddFile(file);

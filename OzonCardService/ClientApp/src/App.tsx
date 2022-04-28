@@ -1,4 +1,4 @@
-
+import * as React from 'react'
 import { observer } from 'mobx-react-lite';
 import { FC, useContext, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -31,12 +31,11 @@ const App: FC = () => {
             <div>
                 <LoginForm />
             </div>
-        );
+        )
     }
     return (
-
         <BrowserRouter>
-            <NavMenu />)
+            <NavMenu />
             <div className="container">
                 <Routes>
                     <Route path='/' element={<UploadForm/>} />
@@ -47,8 +46,7 @@ const App: FC = () => {
                 </Routes>
             </div>
         </BrowserRouter>
-    );
-
+    )
 };
 
 export default observer(App)
