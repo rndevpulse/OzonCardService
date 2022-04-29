@@ -9,9 +9,20 @@ const LoginForm: FC = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const { loginstore } = useContext(Context)
+
+    const [hidden, setHidden] = useState(false)
+
+    const classes_i = ['password material-icons']
+    if (hidden) {
+        classes_i.push('red-text')
+    }
+    else {
+        classes_i.push('black-text')
+    }
     return (
-        <div className="form-group col-md-4 center">
+        <div className="form-group col-md-12 center">
             <h1>Authorization</h1>
+            <br/>
             <label htmlFor='email'>
                 Email
                 <input 
@@ -23,7 +34,8 @@ const LoginForm: FC = () => {
                     placeholder='Email'
                     />
             </label>
-            <br/>
+            <br />
+            <span>
             <label htmlFor='pass'>
                 Password
                 <input
@@ -31,11 +43,16 @@ const LoginForm: FC = () => {
                     className=""
                     onChange={e => setPassword(e.target.value)}
                     value={password}
-                    type='text'
+                    type={!hidden ? 'password' : 'text'}
                     placeholder='Password'
                     />
             </label>
-            <br/>
+            <i className={classes_i.join(' ')}
+                onClick={() => setHidden(!hidden)}>
+                remove_red_eye
+            </i>
+            </span>
+                    <br />
             <button
                 onClick={() => loginstore.login(email, password)}>
                 Login

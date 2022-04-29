@@ -73,6 +73,7 @@
     <None Remove="ClientApp\src\services\FileServise.ts" />
     <None Remove="ClientApp\src\services\OrganizationServise.ts" />
     <None Remove="ClientApp\src\services\TaskService.ts" />
+    <None Remove="ClientApp\src\services\UserService.ts" />
     <None Remove="ClientApp\wwwroot\js\App.js" />
     <None Remove="ClientApp\wwwroot\js\components\FilesForm.js" />
     <None Remove="ClientApp\wwwroot\js\components\NavMenu.js" />
@@ -121,6 +122,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\models\IOrganizationResponse.ts" />
+    <TypeScriptCompile Include="ClientApp\src\services\UserService.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\services\TaskService.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

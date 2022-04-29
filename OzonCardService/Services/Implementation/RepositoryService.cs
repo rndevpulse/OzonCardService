@@ -84,14 +84,14 @@ namespace OzonCardService.Services.Implementation
 
 
 
-        public async Task<bool> AddUser(Identity_vm identity, string rules)
+        public async Task<bool> AddUser(UserCreate_vm _user)
         {
             var user = new User
             {
-                Mail = identity.Email,
-                Password = UserHelper.GetHash(identity.Password),
+                Mail = _user.Email,
+                Password = UserHelper.GetHash(_user.Password),
                 CreatedDate = DateTime.UtcNow,
-                Rules = rules
+                Rules = string.Join(',', _user.Rules)
             };
             await _repository.AddUser(user);
             return true;

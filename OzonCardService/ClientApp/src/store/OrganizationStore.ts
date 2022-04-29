@@ -29,6 +29,35 @@ export default class OrganizationStore {
         
     }
 
+    async updateOrganization(organizationId: string) {
+        this.setLoading(true)
+        try {
+            const response = await OrganizationServise.updateOrganization(organizationId)
+            this.organizations = this.organizations.filter(f => f.id !== response.data.id)
+            this.organizations.push(response.data)
+            console.log(response)
+        }
+        catch (e) {
+            console.log(e);
+        }
+        finally {
+            this.setLoading(false)
+        }
+    }
+    async createOrganization(email: string, password:string) {
+        this.setLoading(true)
+        try {
+            const response = await OrganizationServise.createOrganization(email, password)
+            this.organizations.push(response.data)
+            console.log(response)
+        }
+        catch (e) {
+            console.log(e);
+        }
+        finally {
+            this.setLoading(false)
+        }
+    }
 
 }
 

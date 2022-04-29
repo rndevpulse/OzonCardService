@@ -45,7 +45,9 @@ i {
     align-items: end;
     cursor: pointer;
 }
-
+.password {
+    margin-left: 0.1rem;
+}
 .button {
     margin-top: 1rem;
     align-content: center;
@@ -76,4 +78,40 @@ i {
         padding: 0.4rem;
         background: #f3f3f3;
         font-size: 90%;
+    }
+.link {
+    align-items: center;
+    cursor: pointer;
+    text-decoration-line:underline;
+    color: deepskyblue;
+}
+.logout {
+    font-weight: bolder;
+}
+.service {
+    margin-bottom: 1rem;
+}
+    .service li dt {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: default;
+        padding-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        background: #f3f3f3;
+        font-size: 110%;
+        margin-left: 1rem;
+    }
+    .service li dd {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: default;
+        padding-left: 1rem;
+        padding-bottom: 1rem;
+        background: #f3f3f3;
+        margin-left: 1rem;
     }

@@ -27,18 +27,17 @@ namespace OzonCardService.Controllers
         [HttpPost("create")]
         [AuthorizeRoles(EnumRules.Admin)]
         [Consumes("application/json")]
-        public async Task<ActionResult<bool>> CreateUser(Identity_vm identity)
+        public async Task<ActionResult<bool>> CreateUser(UserCreate_vm user)
         {
             
-            log.Verbose("CreateUser {@identity}", identity);
+            log.Verbose("CreateUser {@identity}", user);
             try
             {
-                var rules = string.Join(',', new[] { (int)EnumRules.Basic, (int)EnumRules.Basic });
-                return new OkObjectResult(await _service.AddUser(identity, rules));
+                return new OkObjectResult(await _service.AddUser(user));
             }
             catch (Exception ex)
             {
-                log.Error(ex, "CreateOrganization {@identity}", identity);
+                log.Error(ex, "CreateOrganization {@identity}", user);
                 return new BadRequestObjectResult(new Error_dto
                 {
                     Code = 401,

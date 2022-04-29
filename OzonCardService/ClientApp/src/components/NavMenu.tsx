@@ -16,7 +16,7 @@ const NavMenu: FC = () => {
         if (loginstore.rules.includes('101'))
             return (
                 <NavItem>
-                    <NavLink tag={Link} className="text-dark" to="/">UploadForm</NavLink>
+                    <NavLink tag={Link} className="text-dark" to="/">Выгрузка</NavLink>
                 </NavItem>
                 
                 )
@@ -25,7 +25,7 @@ const NavMenu: FC = () => {
         if (loginstore.rules.includes('111'))
             return (
                 <NavItem>
-                    <NavLink tag={Link} className="text-dark" to="/report">ReportForm</NavLink>
+                    <NavLink tag={Link} className="text-dark" to="/report">Отчеты</NavLink>
                 </NavItem>
             )
     };
@@ -33,7 +33,7 @@ const NavMenu: FC = () => {
         if (loginstore.rules.includes('100'))
             return (
                 <NavItem>
-                    <NavLink tag={Link} className="text-dark" to="/service">ServiceForm</NavLink>
+                    <NavLink tag={Link} className="text-dark" to="/service">Сервис</NavLink>
                 </NavItem>
             )
     };
@@ -45,16 +45,16 @@ const NavMenu: FC = () => {
 
                     <ul className="navbar-nav flex-grow">
                         {linkBasic()}
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/file">FilesForm</NavLink>
-                        </NavItem>
                         {linkReport()}
                         <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/task">TasksForm</NavLink>
+                            <NavLink tag={Link} className="text-dark" to="/file">Файлы</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink tag={Link} className="text-dark" to="/task">Задачи</NavLink>
                         </NavItem>
                         {linkAdmin()}
                         <NavItem>
-                            <NavLink tag={Link} to="" className="text-dark" onClick={() => loginstore.logout()}>Logout</NavLink>
+                            <NavLink tag={Link} to="" className="text-dark logout" onClick={() => loginstore.logout()}>Выйти</NavLink>
                         </NavItem>
                     </ul>
                 </Container>

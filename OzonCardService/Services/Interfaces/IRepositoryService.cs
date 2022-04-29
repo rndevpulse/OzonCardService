@@ -16,7 +16,7 @@ namespace OzonCardService.Services.Interfaces
         Task<IEnumerable<Organization_dto>> GetMyOrganizations(Guid userId);
         Task<IEnumerable<Organization_dto>> AddOrganizations(Identity_vm IdentityOrganization, Guid userId);
         Task<Organization_dto> UpdateOrganization(Guid organizationId, Guid userId);
-        Task<bool> AddUser(Identity_vm identity, string rules);
+        Task<bool> AddUser(UserCreate_vm user);
         Task<IEnumerable<User_dto>> GetUsers();
 
 

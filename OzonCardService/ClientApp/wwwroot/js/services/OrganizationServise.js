@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,16 +7,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const http_1 = __importDefault(require("../http"));
-class OrganizationService {
+import api from "../http";
+export default class OrganizationService {
     static getMyOrganizations() {
         return __awaiter(this, void 0, void 0, function* () {
-            return http_1.default.get('/organization/list');
+            return api.get('/organization/list');
+        });
+    }
+    static updateOrganization(organizationId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return api.get(`/organization/${organizationId}/update`);
+        });
+    }
+    static createOrganization(email, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return api.post('/organization/create', { email, password });
         });
     }
 }
-exports.default = OrganizationService;

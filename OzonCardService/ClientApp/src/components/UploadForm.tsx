@@ -55,21 +55,22 @@ const UploadForm: FC = () => {
     }
     async function firstInit() {
         await organizationstore.requestOrganizations();
-        setOrganizationId(organizationstore.organizations[0]?.id ?? '');
-
-        setCategories(organizationstore.organizations[0]?.categories ?? []);
-        setCategoryId(organizationstore.organizations[0]?.categories[0]?.id ?? '');
-
-        setCorporateNutritions(organizationstore.organizations[0]?.corporateNutritions ?? [])
-        setCorporateNutritionId(organizationstore.organizations[0]?.corporateNutritions[0]?.id ?? '')
-
+        setSetters()
 
 
         organizationstore.setLoading(false);
         console.log('isLoading false')
 
     }
+    function setSetters() {
+        setOrganizationId(organizationstore.organizations[0]?.id ?? '');
+        setCategories(organizationstore.organizations[0]?.categories ?? []);
+        setCategoryId(organizationstore.organizations[0]?.categories[0]?.id ?? '');
 
+        setCorporateNutritions(organizationstore.organizations[0]?.corporateNutritions ?? [])
+        setCorporateNutritionId(organizationstore.organizations[0]?.corporateNutritions[0]?.id ?? '')
+
+    }
 
     async function  onChangeFile(e) {
         const formdata = new FormData()
@@ -107,7 +108,10 @@ const UploadForm: FC = () => {
         navigate(`/task`)
     }
 
-    
+    async function updateOrganization() {
+        await organizationstore.updateOrganization(organizationId)
+        setSetters()
+    }
 
     useEffect(() => {
         firstInit();
@@ -123,6 +127,7 @@ const UploadForm: FC = () => {
             <h1>Выгрузка в iikoBiz</h1>
            
             <div className="form-group col-md-6">
+                <h5 className="link" onClick={updateOrganization}>Обновить данные по организации</h5>
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                     onChange={onOrganizationSelectChange} />
