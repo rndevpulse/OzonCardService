@@ -26,6 +26,9 @@ export default class OrganizationStore {
         catch (e) {
             console.log(e);
         }
+        finally {
+            this.setLoading(false)
+        }
         
     }
 
@@ -58,6 +61,8 @@ export default class OrganizationStore {
             this.setLoading(false)
         }
     }
+
+    
 
 }
 

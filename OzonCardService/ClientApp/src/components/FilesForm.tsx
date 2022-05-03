@@ -22,7 +22,7 @@ const FilesForm: FC = () => {
     async function downloadHandler(e: React.MouseEvent<HTMLElement, MouseEvent>, url: string, name: string) {
         console.log('downloadHandler', url, name)
         e.stopPropagation()
-        FileService.downloadFile(url, name)
+        FileService.downloadFile(url)
             .then(response => {
                 const type = response.headers['content-type']
                 const blob = new Blob([response.data], { type: type })

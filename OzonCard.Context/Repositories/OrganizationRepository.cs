@@ -232,12 +232,11 @@ namespace OzonCard.Context.Repositories
             {
                 var user = await context.Users
                     .Where(x => x.Id == userId)
+                    .Include(x=>x.Organizations)
                     .FirstOrDefaultAsync();
                 if (user != null)
                 {
-                    var organization = await context.Organizations
-                       .FirstOrDefaultAsync(x => x.Id == organizationId);
-                    organization?.Users.Remove(user);
+                    user.Organizations.RemoveAll(x => x.Id == organizationId);
                     await context.SaveChangesAsync();
                 }
             }
@@ -355,6 +354,7 @@ namespace OzonCard.Context.Repositories
                 context.Entry(customer).Property(e => e.TabNumber).IsModified = true;
                 context.Entry(customer).Property(e => e.Name).IsModified = true;
                 context.Entry(customer).Property(e => e.Position).IsModified = true;
+                context.Entry(customer).Property(e => e.Organization).IsModified = false;
                 await context.SaveChangesAsync();
             }
         }

@@ -151,7 +151,7 @@ namespace OzonCardService.Services.Implementation
             //customers_excel           содержить весь список из ексоля
             //customers_excel_newTab    содержить пользователей, которых еще нет в базе с такими табельниками
             ///ебучая задержка для отладки фронта
-            System.Threading.Thread.Sleep(1000 *300);//5 min
+            //System.Threading.Thread.Sleep(1000 *300);//5 min
 
             foreach (var customer_excel in customers_excel_new)
             {

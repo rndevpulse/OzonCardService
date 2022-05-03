@@ -1,7 +1,7 @@
 ﻿import axios from 'axios'
 import { IAuthResponce } from '../models/IAuthResponse'
 
-export const API_URL = 'https://localhost:5401/api'
+export const API_URL = 'https://ozon.pulse.keenetic.link/api'
 
 const api = axios.create({
     withCredentials: true,
@@ -20,7 +20,7 @@ api.interceptors.response.use(config => {
     if (error.response.status == 401 && error.config && !originalRequest._isRetry) {
         originalRequest._isRetry = true;
         try {
-            const response = await axios.post<IAuthResponce>('https://localhost:5401/api/auth/refresh', { withCredentials: true })
+            const response = await axios.post<IAuthResponce>(`${API_URL}/auth/refresh`, { withCredentials: true })
             localStorage.setItem('token', response.data.token);
             console.log(response);
             return api.request(originalRequest);

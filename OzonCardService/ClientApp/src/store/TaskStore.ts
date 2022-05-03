@@ -16,8 +16,6 @@ export default class TaskStore {
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
         setInterval(this.increaseTimer, 5000);
-        console.log('TaskStore constructor')
-
     }
     increaseTimer() {
         this.timer++;
@@ -39,7 +37,6 @@ export default class TaskStore {
         else {
             this.tasks[index].isCompleted = true
         }
-        console.log('setTaskInfo tasks ', JSON.stringify(this.tasks))
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
 

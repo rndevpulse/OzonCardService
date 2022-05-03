@@ -14,7 +14,7 @@ export default class FileService {
         return api.get(`/file/remove/${url}`)
     }
     
-    static async downloadFile(url: string, name: string){
+    static async downloadFile(url: string){
         return api.get(`/file/get/${url}`, {responseType: 'blob'})
     }
 

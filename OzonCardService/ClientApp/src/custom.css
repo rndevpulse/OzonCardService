@@ -12,7 +12,9 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
-
+.button{
+    margin-right:1rem;
+}
 
 .file {
     margin-bottom: 1rem;

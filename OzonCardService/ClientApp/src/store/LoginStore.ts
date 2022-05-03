@@ -1,5 +1,6 @@
 ﻿import axios from 'axios';
 import { makeAutoObservable } from 'mobx';
+import { API_URL } from '../http';
 import { IAuthResponce } from '../models/IAuthResponse';
 import AuthService from '../services/AuthService';
 
@@ -62,7 +63,7 @@ export default class LoginStore {
     async checkAuth() {
         this.isLoading = true;
         try {
-            const response = await axios.post<IAuthResponce>('https://localhost:5401/api/auth/refresh', { withCredentials: true })
+            const response = await axios.post<IAuthResponce>(`${API_URL}/auth/refresh`, { withCredentials: true })
             localStorage.setItem('token', response.data.token);
             this.setIsAuth(true);
             this.setMail(response.data.email);
