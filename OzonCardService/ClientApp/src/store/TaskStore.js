@@ -36,44 +36,67 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.API_URL = void 0;
-var axios_1 = require("axios");
-//export const API_URL = 'https://localhost:5401/api'
-exports.API_URL = 'https://ozon.pulse.keenetic.link/api';
-var api = axios_1.default.create({
-    withCredentials: true,
-    baseURL: exports.API_URL
+var mobx_1 = require("mobx");
+var TaskService_1 = require("../services/TaskService");
+mobx_1.configure({
+    enforceActions: "never",
 });
-api.interceptors.request.use(function (config) {
-    config.headers.Authorization = "Bearer " + localStorage.getItem('token');
-    return config;
-});
-api.interceptors.response.use(function (config) {
-    return config;
-}, function (error) { return __awaiter(void 0, void 0, void 0, function () {
-    var originalRequest, response, e_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                originalRequest = error.config;
-                if (!(error.response.status == 401 && error.config && !originalRequest._isRetry)) return [3 /*break*/, 4];
-                originalRequest._isRetry = true;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.post(exports.API_URL + "/auth/refresh", { withCredentials: true })];
-            case 2:
-                response = _a.sent();
-                localStorage.setItem('token', response.data.token);
-                console.log(response);
-                return [2 /*return*/, api.request(originalRequest)];
-            case 3:
-                e_1 = _a.sent();
-                console.log('no autorization');
-                return [3 /*break*/, 4];
-            case 4: throw error;
-        }
-    });
-}); });
-exports.default = api;
-//# sourceMappingURL=index.js.map
+var TaskStore = /** @class */ (function () {
+    function TaskStore() {
+        this.timer = 0;
+        this.tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        mobx_1.makeAutoObservable(this, {}, { autoBind: true });
+        setInterval(this.increaseTimer, 5000);
+    }
+    TaskStore.prototype.increaseTimer = function () {
+        var _this = this;
+        this.timer++;
+        this.tasks = this.tasks.map(function (t, index) {
+            if (t.isCompleted) {
+                return t;
+            }
+            _this.setTaskInfo(t.taskId, index);
+            return t;
+        });
+    };
+    TaskStore.prototype.setTaskInfo = function (taskId, index) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, TaskService_1.default.getTaskUpload(taskId)];
+                    case 1:
+                        response = _a.sent();
+                        console.log('setTaskInfo response ', response);
+                        if (response.status === 200) {
+                            this.tasks[index].taskInfo = response.data;
+                            this.tasks[index].isCompleted = response.data.isCompleted;
+                        }
+                        else {
+                            this.tasks[index].isCompleted = true;
+                        }
+                        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    TaskStore.prototype.onRemoveTask = function (taskId) {
+        this.tasks = this.tasks.filter(function (t) { return t.taskId !== taskId; });
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    };
+    TaskStore.prototype.onAddTask = function (taskId, deskription) {
+        var task = {
+            taskId: taskId,
+            deskription: deskription,
+            taskInfo: undefined,
+            isCompleted: false,
+            created: new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+        };
+        this.tasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    };
+    return TaskStore;
+}());
+exports.default = TaskStore;
+//# sourceMappingURL=TaskStore.js.map

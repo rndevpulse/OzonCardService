@@ -40,6 +40,19 @@ namespace OzonCard.Context
             modelBuilder.HasAnnotation("Relational:Collation", "Cyrillic_General_CI_AS");
 			modelBuilder.Entity<Organization>().Property(u=>u.Login).IsRequired();
 			modelBuilder.Entity<Organization>().Property(u=>u.Password).IsRequired();
+
+			modelBuilder.Entity<CategoryCustomer>()
+		   .HasKey(t => new { t.CustomerId, t.CategoryId });
+
+			modelBuilder.Entity<CategoryCustomer>()
+				.HasOne(sc => sc.Customer)
+				.WithMany(s => s.Categories)
+				.HasForeignKey(sc => sc.CustomerId);
+
+			modelBuilder.Entity<CategoryCustomer>()
+				.HasOne(sc => sc.Category)
+				.WithMany(c => c.Customers)
+				.HasForeignKey(sc => sc.CategoryId);
 		}
 
     }

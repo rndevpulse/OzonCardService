@@ -74,25 +74,7 @@
     <None Remove="ClientApp\src\services\OrganizationServise.ts" />
     <None Remove="ClientApp\src\services\TaskService.ts" />
     <None Remove="ClientApp\src\services\UserService.ts" />
-    <None Remove="ClientApp\wwwroot\js\App.js" />
-    <None Remove="ClientApp\wwwroot\js\components\FilesForm.js" />
-    <None Remove="ClientApp\wwwroot\js\components\NavMenu.js" />
-    <None Remove="ClientApp\wwwroot\js\components\ReportForm.js" />
-    <None Remove="ClientApp\wwwroot\js\components\ServiceForm.js" />
-    <None Remove="ClientApp\wwwroot\js\components\UploadForm.js" />
-    <None Remove="ClientApp\wwwroot\js\http\index.js" />
-    <None Remove="ClientApp\wwwroot\js\models\IAdvancedOptionsResponse.js" />
-    <None Remove="ClientApp\wwwroot\js\models\IAuthResponse.js" />
-    <None Remove="ClientApp\wwwroot\js\models\ICategoryResponcse.js" />
-    <None Remove="ClientApp\wwwroot\js\models\ICorporateNutritionResponse.js" />
-    <None Remove="ClientApp\wwwroot\js\models\ICustomerOptionResponse.js" />
-    <None Remove="ClientApp\wwwroot\js\models\IFileResponse.js" />
-    <None Remove="ClientApp\wwwroot\js\models\IOrganizationResponse.js" />
-    <None Remove="ClientApp\wwwroot\js\models\IReportOptionResponse.js" />
-    <None Remove="ClientApp\wwwroot\js\services\BizServise.js" />
-    <None Remove="ClientApp\wwwroot\js\services\FileServise.js" />
-    <None Remove="ClientApp\wwwroot\js\services\OrganizationServise.js" />
-    <None Remove="ClientApp\wwwroot\js\store\LoginStore.js" />
+   
   </ItemGroup>
 
   <ItemGroup>

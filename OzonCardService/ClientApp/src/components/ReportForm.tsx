@@ -10,8 +10,8 @@ import DatePicker, { registerLocale, setDefaultLocale }  from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ru from "date-fns/locale/ru";
-import { IReportOptionResponse } from '../models/IReportOptionResponse';
 registerLocale("ru", ru);
+import { IReportOptionResponse } from '../models/IReportOptionResponse';
 import * as moment from 'moment';
 import BizService from '../services/BizServise';
 

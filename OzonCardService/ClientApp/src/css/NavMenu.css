@@ -1,0 +1,62 @@
+﻿a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+.html {
+    font-size: 16px;
+}
+
+@media screen and (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+
+
+
+.navbar-nav__button {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+    .navbar-nav__custom {
+        display: none !important;
+    }
+    .navbar-nav__button {
+        display: block;
+    }
+}
+
+
+
+.styledMenu {
+    top: 64px;
+    width: 35vw;
+    position: fixed;
+    background-color: #F0F0F0;
+    z-index: 2;
+    padding: 1rem 0;
+    flex-direction: column;
+    display: none;
+}
+.styledMenu.open {
+    display: flex;
+}
+
+.styledLink {
+    padding-left: 2rem;
+    color: #343a40;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+

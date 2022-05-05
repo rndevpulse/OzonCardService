@@ -6,11 +6,11 @@ namespace OzonCard.Data.Models
         override public Guid Id { get; set; }
         public string Name { get; set; }
         public bool isActive { get; set; }
-        public List<Customer> Customers { get; set; }
+        public List<CategoryCustomer> Customers { get; set; }
 
         public Category()
         {
-            Customers = new List<Customer>();
+            Customers = new List<CategoryCustomer>();
             Name = String.Empty;
         }
     }

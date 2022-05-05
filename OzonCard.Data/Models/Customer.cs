@@ -15,7 +15,7 @@ namespace OzonCard.Data.Models
 
         public Organization Organization { get; set; }
         public List<Card> Cards { get; set; }
-        public List<Category> Categories { get; set; }
+        public List<CategoryCustomer> Categories { get; set; }
         public List<CustomerWallet> Wallets { get; set; }
 
 
@@ -27,7 +27,7 @@ namespace OzonCard.Data.Models
             Position = String.Empty;
             Comment = String.Empty;
             Cards = new List<Card>();
-            Categories = new List<Category>();
+            Categories = new List<CategoryCustomer>();
             Wallets = new List<CustomerWallet>();
             Organization = new Organization();
 

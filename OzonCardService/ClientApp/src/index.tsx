@@ -23,6 +23,6 @@ export const Context = React.createContext<IStoreState>({
 
 ReactDOM.render(
     <Context.Provider value={{ loginstore, organizationstore, taskstore }} >
-            <App />,
+            <App />
     </Context.Provider>,
     document.getElementById('root'));

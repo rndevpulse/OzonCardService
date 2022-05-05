@@ -196,10 +196,11 @@ namespace OzonCardService.Services.Implementation
                 
 
                 ///2.1 Если у пользователя нет категории присваиваем ее
-                if (!customer.Categories.Contains(category) )
+                if (!customer.Categories.Any(x=>x.CategoryId == category.Id) )
                 {
                     await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id);
-                    customer.Categories.Add(category);
+                    //category.Customers.Add(customer);
+                    customer.Categories.Add(new CategoryCustomer { Category = category, Customer = customer});
                     info.CountCustomersCategory++;
                 }
                 ///2.2 Если у пользователя нет кошелька создаем
@@ -222,6 +223,7 @@ namespace OzonCardService.Services.Implementation
 
                 await _repository.UpdateCustomer(customer);
             }
+            //await _repository.UpdateCategory(category);
         }
 
         async Task<KeyValuePair<Customer, InfoDataUpload_dto>> UploadCustomerInBiz(InfoCustomersUpload_vm infoUpload,
@@ -250,7 +252,7 @@ namespace OzonCardService.Services.Implementation
             //1.2
             if (await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id))
             {
-                customer.Categories.Add(category);
+                customer.Categories.Add(new CategoryCustomer { Category = category, Customer = customer });
                 info.CountCustomersCategory++;
             }
             //1.3

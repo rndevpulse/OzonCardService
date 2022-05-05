@@ -322,6 +322,7 @@ namespace OzonCard.Context.Repositories
                     .Include(x => x.Wallets)
                     .ThenInclude(x => x.Wallet)
                     .Include(x => x.Cards)
+                    .Include(x=>x.Organization)
                     .ToListAsync();
 
                 return customers;
@@ -348,19 +349,34 @@ namespace OzonCard.Context.Repositories
         }
         public async Task UpdateCustomer(Customer customer)
         {
+            try
+            {
+
+                //var cat = customer.Categories.Select(x => x.Id).ToList();
+                //customer.Categories.Clear();
+                    //customer.Categories.AddRange(context.Categories.Where(x => cat.Contains(x.Id)).ToList());
+                using (var context = ContextFactory.CreateDbContext(ConnectionString))
+                {
+                    context.Customers.Attach(customer);
+                    context.Entry(customer).Property(e => e.TabNumber).IsModified = true;
+                    context.Entry(customer).Property(e => e.Name).IsModified = true;
+                    context.Entry(customer).Property(e => e.Position).IsModified = true;
+                    context.Entry(customer).Collection(e => e.Categories).IsModified = true;
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex) { }
+        }
+        
+
+        public async Task UpdateCategory(Category category)
+        {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
-                context.Customers.AttachRange(customer);
-                context.Entry(customer).Property(e => e.TabNumber).IsModified = true;
-                context.Entry(customer).Property(e => e.Name).IsModified = true;
-                context.Entry(customer).Property(e => e.Position).IsModified = true;
-                context.Entry(customer).Property(e => e.Organization).IsModified = false;
+                context.Categories.Attach(category);
                 await context.SaveChangesAsync();
             }
         }
-
-       
-
 
 
 

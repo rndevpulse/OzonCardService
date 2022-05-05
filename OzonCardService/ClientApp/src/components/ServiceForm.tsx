@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { IUserResponce } from '../models/IUserResponse';
 import { Context } from '..';
 import { observer } from 'mobx-react-lite';
+import '../css/ServiceForm.css'
+
 
 const ServiceForm: FC = () => {
 
@@ -70,19 +72,21 @@ const ServiceForm: FC = () => {
     const formNewUser = () => (
         <li>
             <dt>
-                <label htmlFor="user">
-                    Email нового пользователя
+                <div className="email__pass">
+                    <label htmlFor="user">
+                        Email нового пользователя
+                    </label>
                     <input
                         id='user'
                         onChange={e => setUser(e.target.value)}
                         value={user}
                         type='text'
-                        placeholder='Email'
+                    placeholder='Email'
+                    className="email"
                     />
-                </label>
-                <span>
                     <label htmlFor="password">
                         Пароль пользователя
+                    </label>
                         <input
                             id='password'
                             onChange={e => setPassword(e.target.value)}
@@ -91,12 +95,11 @@ const ServiceForm: FC = () => {
                             placeholder='Password'
 
                         />
-                    </label>
                     <i className={classes_i.join(' ')}
                         onClick={() => setHidden(!hidden)}>
                         remove_red_eye
                     </i>
-                </span>
+                </div>
                 <button className="btn-primary button"
                     onClick={createUser}>
                     Создать
@@ -134,8 +137,10 @@ const ServiceForm: FC = () => {
     const formNewOrganization = () => (
         <li>
             <dt>
-                <label htmlFor="organization_login">
-                    Api логин новой организации
+                <div className="email__pass">
+                    <label htmlFor="organization_login">
+                        Api логин новой организации
+                    </label>
                     <input
                         id='organization_login'
                         onChange={e => setOrganizationLogin(e.target.value)}
@@ -143,24 +148,22 @@ const ServiceForm: FC = () => {
                         type='text'
                         placeholder='Login API'
                     />
-                </label>
-                <span>
                     <label htmlFor="organization_password">
                         Api пароль организации
-                        <input
-                            id='organization_password'
-                            onChange={e => setOrganizationPassword(e.target.value)}
-                            value={organizationPassword}
-                            type={!hiddenOrg ? 'password' : 'text'}
-                            placeholder='Password'
-
-                        />
                     </label>
+                    <input
+                        id='organization_password'
+                        onChange={e => setOrganizationPassword(e.target.value)}
+                        value={organizationPassword}
+                        type={!hiddenOrg ? 'password' : 'text'}
+                        placeholder='Password'
+
+                    />
                     <i className={classes_i_O.join(' ')}
                         onClick={() => setHiddenOrg(!hiddenOrg)}>
                         remove_red_eye
                     </i>
-                </span>
+                </div>
                 <button className="btn-primary button"
                     onClick={createOrganization}>
                     Создать

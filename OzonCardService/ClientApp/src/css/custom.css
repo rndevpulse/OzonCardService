@@ -37,19 +37,17 @@ code {
     font-size: 110%;
 }
 .file i {
-    z-index: 2;
+    z-index: 1;
     margin-left: 2rem;
 }
 i {
-    z-index: 2;
+    z-index: 1;
     margin-left: 2rem;
     margin-right: 2rem;
     align-items: end;
     cursor: pointer;
 }
-.password {
-    margin-left: 0.1rem;
-}
+
 .button {
     margin-top: 1rem;
     align-content: center;
@@ -90,30 +88,5 @@ i {
 .logout {
     font-weight: bolder;
 }
-.service {
-    margin-bottom: 1rem;
-}
-    .service li dt {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: default;
-        padding-top: 1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        background: #f3f3f3;
-        font-size: 110%;
-        margin-left: 1rem;
-    }
-    .service li dd {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: default;
-        padding-left: 1rem;
-        padding-bottom: 1rem;
-        background: #f3f3f3;
-        margin-left: 1rem;
-    }
+
+

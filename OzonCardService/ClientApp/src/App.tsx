@@ -8,7 +8,7 @@ import LoginForm  from './components/LoginForm';
 import NavMenu from './components/NavMenu';
 import UploadForm from './components/UploadForm';
 
-import './custom.css'
+import '../src/css/custom.css'
 import FilesForm from './components/FilesForm';
 import ServiceForm from './components/ServiceForm';
 import ReportForm from './components/ReportForm';

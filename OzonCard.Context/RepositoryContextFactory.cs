@@ -9,7 +9,7 @@ namespace OzonCard.Context
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<RepositoryContext>();
 			optionsBuilder.UseSqlServer(connectionString);
-
+			//optionsBuilder.LogTo(System.Console.WriteLine);
 			return new RepositoryContext(optionsBuilder.Options);
 		}
 	}

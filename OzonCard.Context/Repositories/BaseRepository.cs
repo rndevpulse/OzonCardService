@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using OzonCard.Common;
-using OzonCard.Context.Interfaces;
-using OzonCard.Data.Enums;
+﻿using OzonCard.Context.Interfaces;
 
 namespace OzonCard.Context.Repositories
 {

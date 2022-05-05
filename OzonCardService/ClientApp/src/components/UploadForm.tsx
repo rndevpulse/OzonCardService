@@ -120,7 +120,6 @@ const UploadForm: FC = () => {
     if (organizationstore.isLoading) {
         return <h1>Loading...</h1>
     }
-    console.log('UploadForm return')
     return (
 
         <div>
@@ -166,7 +165,7 @@ const UploadForm: FC = () => {
                 </label>
                 <label htmlFor="file">Выбирите файл</label>
                 <br/>
-                <input className="form-group"
+                <input className="form-group btn-primary button"
                     id='file'
                     type='file'
                     onChange={onChangeFile}

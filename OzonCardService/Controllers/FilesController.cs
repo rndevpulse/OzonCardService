@@ -41,7 +41,8 @@ namespace OzonCardService.Controllers
                     throw new Exception("File format not correct");
                 var str = file.FileName.Split(".");
                 var format = str.Last().Trim().ToLower();
-                await _service.SaveFile(id, format, file.FileName, userId);
+                var name = string.Join('.', str.Take(str.Length - 1));
+                await _service.SaveFile(id, format, name, userId);
                 return new OkObjectResult(new
                 {
                     id = id,
