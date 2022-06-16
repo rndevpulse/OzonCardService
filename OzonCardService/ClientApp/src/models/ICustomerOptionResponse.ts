@@ -6,5 +6,10 @@ export interface ICustomerOptionResponse {
     categoryId: string
     balance: number
     fileReport: string
-    options: IAdvancedOptionsResponse
+    options: IAdvancedOptionsResponse,
+    customer: ICustomer | null
+}
+export interface ICustomer {
+    name: string,
+    card: string
 }

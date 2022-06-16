@@ -10,6 +10,7 @@ namespace OzonCardService.Models.View
         public string FileReport { get; set; }
         public double Balance { get; set; }
         public AdvancedOptions_vm Options { get; set; }
+        public Customer_vm? Customer { get; set; }
 
     }
 }

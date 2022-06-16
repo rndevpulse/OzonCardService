@@ -43,15 +43,19 @@ namespace OzonCard.Context.Repositories
                     .Where(x => x.Id == organizationId)
                     .Include(x => x.Categories)
                     .FirstOrDefaultAsync();
-                var result = categories.Except(organization?.Categories ?? new List<Category>());
+                var result = categories.Except(organization?.Categories ?? new List<Category>()).ToList();
 
-                var olds = categories.Except(result);
+                var olds = categories.Except(result).ToList();
                 foreach (var category in organization?.Categories)
                 {
                     category.isActive = olds.FirstOrDefault(x => x.Equals(category))?.isActive ?? category.isActive;
+                    context.Entry(category).Property(e => e.isActive).IsModified = true;
                 }
+                await context.SaveChangesAsync();
+                context.Categories.AddRange(result);
                 organization?.Categories.AddRange(result);
                 await context.SaveChangesAsync();
+
             }
         }
 
@@ -170,15 +174,17 @@ namespace OzonCard.Context.Repositories
 
 
                 var result = сorporateNutrition.Except(organization?.CorporateNutritions ?? new List<CorporateNutrition>()).ToList();
-                organization?.CorporateNutritions.AddRange(result);
                 
 
                 var olds = organization?.CorporateNutritions.Except(сorporateNutrition);
                 foreach (var corpNut in olds)
                 {
                     corpNut.isActive = false;
+                    context.Entry(corpNut).Property(e=>e.isActive).IsModified = true;
                 }
-
+                await context.SaveChangesAsync();
+                context.CorporateNutritions.AddRange(result);
+                organization?.CorporateNutritions.AddRange(result);
                 await context.SaveChangesAsync();
             }
         }

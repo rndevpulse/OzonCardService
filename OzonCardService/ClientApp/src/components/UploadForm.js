@@ -57,6 +57,8 @@ var UploadForm = function () {
     var _j = react_1.useState([]), categories = _j[0], setCategories = _j[1];
     var _k = react_1.useState([]), corporateNutritions = _k[0], setCorporateNutritions = _k[1];
     var _l = react_1.useState(0), balance = _l[0], setBalance = _l[1];
+    var _m = react_1.useState(''), customerName = _m[0], setCustomerName = _m[1];
+    var _o = react_1.useState(''), customerCard = _o[0], setCustomerCard = _o[1];
     var CustomSelect = function (_a) {
         var id = _a.id, value = _a.value, options = _a.options, onChange = _a.onChange;
         return (React.createElement("select", { className: "custom-select", id: id, value: value, onChange: onChange }, options.map(function (option) {
@@ -137,6 +139,38 @@ var UploadForm = function () {
                             options: {
                                 refreshBalance: refreshBalance,
                                 rename: rename
+                            },
+                            customer: null
+                        };
+                        return [4 /*yield*/, BizServise_1.default.upladCustomersToBiz(option)];
+                    case 1:
+                        response = _a.sent();
+                        taskstore.onAddTask(response.data, 'Выгрузка: ' + fileName);
+                        navigate("/task");
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function singleUploadToBiz() {
+        return __awaiter(this, void 0, void 0, function () {
+            var option, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        option = {
+                            organizationId: organizationId,
+                            corporateNutritionId: corporateNutritionId,
+                            categoryId: categoryId,
+                            balance: balance,
+                            fileReport: file,
+                            options: {
+                                refreshBalance: refreshBalance,
+                                rename: rename
+                            },
+                            customer: {
+                                name: customerName,
+                                card: customerCard
                             }
                         };
                         return [4 /*yield*/, BizServise_1.default.upladCustomersToBiz(option)];
@@ -191,10 +225,19 @@ var UploadForm = function () {
                 React.createElement("input", { id: 'rename', type: 'checkbox', checked: rename, onChange: function () { return setRename(!rename); } }),
                 "\u041F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C \u0432 \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0438 \u0441 \u043D\u043E\u0432\u044B\u043C \u0441\u043F\u0438\u0441\u043A\u043E\u043C",
                 React.createElement("i", { className: "material-icons red-text" }, rename ? 'check_box' : 'check_box_outline_blank')),
+            React.createElement("label", { htmlFor: "customerName" },
+                "\u0421\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A",
+                React.createElement("input", { id: 'customerName', onChange: function (e) { return setCustomerName(e.target.value); }, value: customerName, type: 'text', placeholder: '\u0424\u0418\u041E \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u0430' })),
+            React.createElement("br", null),
+            React.createElement("label", { htmlFor: "customerCard" },
+                "\u0421\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A",
+                React.createElement("input", { id: 'customerName', onChange: function (e) { return setCustomerCard(e.target.value); }, value: customerCard, type: 'text', placeholder: '\u041A\u0430\u0440\u0442\u0430 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u0430' })),
+            React.createElement("button", { className: "btn-primary button", onClick: singleUploadToBiz }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043E\u0434\u043D\u043E\u0433\u043E"),
+            React.createElement("br", null),
             React.createElement("label", { htmlFor: "file" }, "\u0412\u044B\u0431\u0438\u0440\u0438\u0442\u0435 \u0444\u0430\u0439\u043B"),
             React.createElement("br", null),
-            React.createElement("input", { className: "form-group btn-primary button", id: 'file', type: 'file', onChange: onChangeFile })),
-        React.createElement("button", { className: "btn-primary button", onClick: uploadToBiz }, "\u0412\u044B\u0433\u0440\u0443\u0437\u0438\u0442\u044C")));
+            React.createElement("input", { className: "form-group btn-primary button", id: 'file', type: 'file', onChange: onChangeFile }),
+            React.createElement("button", { className: "btn-primary button", onClick: uploadToBiz }, "\u0412\u044B\u0433\u0440\u0443\u0437\u0438\u0442\u044C"))));
 };
 exports.default = mobx_react_lite_1.observer(UploadForm);
 //# sourceMappingURL=UploadForm.js.map

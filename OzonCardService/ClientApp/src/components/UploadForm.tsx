@@ -33,6 +33,9 @@ const UploadForm: FC = () => {
     const [balance, setBalance] = useState<number>(0);
 
 
+    const [customerName, setCustomerName] = useState('');
+    const [customerCard, setCustomerCard] = useState('');
+
     const CustomSelect = ({ id, value, options, onChange }) => {
         return (
             <select className="custom-select" id={id} value={value} onChange={onChange}>
@@ -99,12 +102,37 @@ const UploadForm: FC = () => {
             options: {
                 refreshBalance: refreshBalance,
                 rename: rename
-            }
+            },
+            customer: null
         }
         
         const response = await BizService.upladCustomersToBiz(option)
         taskstore.onAddTask(response.data, 'Выгрузка: ' + fileName)
         
+        navigate(`/task`)
+    }
+    
+
+    async function singleUploadToBiz() {
+        const option: ICustomerOptionResponse = {
+            organizationId: organizationId,
+            corporateNutritionId: corporateNutritionId,
+            categoryId: categoryId,
+            balance: balance,
+            fileReport: file,
+            options: {
+                refreshBalance: refreshBalance,
+                rename: rename
+            },
+            customer: {
+                name: customerName,
+                card: customerCard
+            }
+        }
+
+        const response = await BizService.upladCustomersToBiz(option)
+        taskstore.onAddTask(response.data, 'Выгрузка: ' + fileName)
+
         navigate(`/task`)
     }
 
@@ -163,20 +191,46 @@ const UploadForm: FC = () => {
                         {rename ? 'check_box' : 'check_box_outline_blank'}
                     </i>
                 </label>
+
+                <label htmlFor="customerName">Сотрудник
+                    <input
+                        id='customerName'
+                        onChange={e => setCustomerName(e.target.value)}
+                        value={customerName}
+                        type='text'
+                        placeholder='ФИО сотрудника'
+                    /></label>
+                <br />
+                <label htmlFor="customerCard">Сотрудник
+                    <input
+                        id='customerName'
+                        onChange={e => setCustomerCard(e.target.value)}
+                        value={customerCard}
+                        type='text'
+                        placeholder='Карта сотрудника'
+                    /></label>
+                <button className="btn-primary button"
+                    onClick={singleUploadToBiz}>
+                    Добавить одного
+                </button>
+                        <br />
                 <label htmlFor="file">Выбирите файл</label>
                 <br/>
+                
                 <input className="form-group btn-primary button"
                     id='file'
                     type='file'
                     onChange={onChangeFile}
                 />
-            </div>
-               
 
-            <button className="btn-primary button"
+                <button className="btn-primary button"
                 onClick={uploadToBiz}>
                 Выгрузить
                 </button>
+            </div>
+               
+
+           
 
         </div>
     );

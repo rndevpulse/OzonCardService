@@ -11,6 +11,7 @@ using OzonCardService.Services.TasksManagerProgress.Implementation;
 using OzonCardService.Services.TasksManagerProgress.Interfaces;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -45,15 +46,23 @@ namespace OzonCardService.Controllers
                         User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
                 );
                
-                var customers = new ExcelManager(new FileManager().GetFile(infoUpload.FileReport))
-                    .GetClients();
+                var customers = new List<ShortCustomerInfo_excel>();
+                if (infoUpload.Customer != null)
+                    customers.Add(new ShortCustomerInfo_excel()
+                    {
+                        Card = infoUpload.Customer.Card,
+                        Name = infoUpload.Customer.Name,
+                    });
+                else
+                    customers = new ExcelManager(new FileManager().GetFile(infoUpload.FileReport))
+                    .GetClients().ToList();
                 var progress = new ProgressTask<ProgressInfo>();
 
                 var t = 
                     _service.UploadCustomers(
                     userId,
                     infoUpload,
-                    customers.ToList(), progress);
+                    customers, progress);
                 
                 progress.SetTask(t);
                 return _tasksManager.AddTask(progress);
@@ -69,5 +78,9 @@ namespace OzonCardService.Controllers
                 });
             }
         }
+
+
+
+        
     }
 }
