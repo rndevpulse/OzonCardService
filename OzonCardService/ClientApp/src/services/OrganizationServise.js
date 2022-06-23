@@ -37,31 +37,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = require("../http");
-var BizService = /** @class */ (function () {
-    function BizService() {
+var OrganizationService = /** @class */ (function () {
+    function OrganizationService() {
     }
-    BizService.upladCustomersToBiz = function (option) {
+    OrganizationService.getMyOrganizations = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/upload', option)];
+                return [2 /*return*/, http_1.default.get('/organization/list')];
             });
         });
     };
-    BizService.ReportFromBiz = function (option) {
+    OrganizationService.updateOrganization = function (organizationId) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/report', option)];
+                return [2 /*return*/, http_1.default.get("/organization/" + organizationId + "/update")];
             });
         });
     };
-    BizService.SearchCustomerFromBiz = function (option) {
+    OrganizationService.createOrganization = function (email, password) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/search', option)];
+                return [2 /*return*/, http_1.default.post('/organization/create', { email: email, password: password })];
             });
         });
     };
-    return BizService;
+    return OrganizationService;
 }());
-exports.default = BizService;
-//# sourceMappingURL=BizServise.js.map
+exports.default = OrganizationService;
+//# sourceMappingURL=OrganizationServise.js.map

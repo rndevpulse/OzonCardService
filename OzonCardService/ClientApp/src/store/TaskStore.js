@@ -36,32 +36,67 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var http_1 = require("../http");
-var BizService = /** @class */ (function () {
-    function BizService() {
+var mobx_1 = require("mobx");
+var TaskService_1 = require("../services/TaskService");
+mobx_1.configure({
+    enforceActions: "never",
+});
+var TaskStore = /** @class */ (function () {
+    function TaskStore() {
+        this.timer = 0;
+        this.tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        mobx_1.makeAutoObservable(this, {}, { autoBind: true });
+        setInterval(this.increaseTimer, 5000);
     }
-    BizService.upladCustomersToBiz = function (option) {
+    TaskStore.prototype.increaseTimer = function () {
+        var _this = this;
+        this.timer++;
+        this.tasks = this.tasks.map(function (t, index) {
+            if (t.isCompleted) {
+                return t;
+            }
+            _this.setTaskInfo(t.taskId, index);
+            return t;
+        });
+    };
+    TaskStore.prototype.setTaskInfo = function (taskId, index) {
         return __awaiter(this, void 0, void 0, function () {
+            var response;
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/upload', option)];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, TaskService_1.default.getTaskUpload(taskId)];
+                    case 1:
+                        response = _a.sent();
+                        console.log('setTaskInfo response ', response);
+                        if (response.status === 200) {
+                            this.tasks[index].taskInfo = response.data;
+                            this.tasks[index].isCompleted = response.data.isCompleted;
+                        }
+                        else {
+                            this.tasks[index].isCompleted = true;
+                        }
+                        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+                        return [2 /*return*/];
+                }
             });
         });
     };
-    BizService.ReportFromBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/report', option)];
-            });
-        });
+    TaskStore.prototype.onRemoveTask = function (taskId) {
+        this.tasks = this.tasks.filter(function (t) { return t.taskId !== taskId; });
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
     };
-    BizService.SearchCustomerFromBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/search', option)];
-            });
-        });
+    TaskStore.prototype.onAddTask = function (taskId, deskription) {
+        var task = {
+            taskId: taskId,
+            deskription: deskription,
+            taskInfo: undefined,
+            isCompleted: false,
+            created: new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+        };
+        this.tasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
     };
-    return BizService;
+    return TaskStore;
 }());
-exports.default = BizService;
-//# sourceMappingURL=BizServise.js.map
+exports.default = TaskStore;
+//# sourceMappingURL=TaskStore.js.map

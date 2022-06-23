@@ -1,0 +1,31 @@
+
+    .search {
+        margin-bottom: 1rem;
+    }
+        .search li dt {
+            background-color: mediumspringgreen;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: default;
+            padding: 0.5rem 0.5rem 0.5rem;
+            font-size: 110%;
+        }
+        .search li dd {
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            cursor: default;
+            padding: 0.2rem 1rem;
+            background: #f3f3f3;
+        }
+
+
+.search_label {
+    padding-right: 0.5rem;
+    padding-top: 1rem;
+}
+
+

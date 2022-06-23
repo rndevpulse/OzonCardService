@@ -36,32 +36,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var http_1 = require("../http");
-var BizService = /** @class */ (function () {
-    function BizService() {
-    }
-    BizService.upladCustomersToBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/upload', option)];
-            });
-        });
-    };
-    BizService.ReportFromBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/report', option)];
-            });
-        });
-    };
-    BizService.SearchCustomerFromBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/search', option)];
-            });
-        });
-    };
-    return BizService;
-}());
-exports.default = BizService;
-//# sourceMappingURL=BizServise.js.map
+exports.API_URL = void 0;
+var axios_1 = require("axios");
+exports.API_URL = 'https://192.168.1.100:5401/api';
+//export const API_URL = 'https://ozon.pulse.keenetic.link/api'
+var api = axios_1.default.create({
+    withCredentials: true,
+    baseURL: exports.API_URL
+});
+api.interceptors.request.use(function (config) {
+    config.headers.Authorization = "Bearer " + localStorage.getItem('token');
+    return config;
+});
+api.interceptors.response.use(function (config) {
+    return config;
+}, function (error) { return __awaiter(void 0, void 0, void 0, function () {
+    var originalRequest, response, e_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                originalRequest = error.config;
+                if (!(error.response.status == 401 && error.config && !originalRequest._isRetry)) return [3 /*break*/, 4];
+                originalRequest._isRetry = true;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.post(exports.API_URL + "/auth/refresh", { withCredentials: true })];
+            case 2:
+                response = _a.sent();
+                localStorage.setItem('token', response.data.token);
+                console.log(response);
+                return [2 /*return*/, api.request(originalRequest)];
+            case 3:
+                e_1 = _a.sent();
+                console.log('no autorization');
+                return [3 /*break*/, 4];
+            case 4: throw error;
+        }
+    });
+}); });
+exports.default = api;
+//# sourceMappingURL=index.js.map

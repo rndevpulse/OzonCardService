@@ -310,6 +310,17 @@ namespace OzonCardService.Services.Implementation
                     reportOption.OrganizationId, reportOption.CorporateNutritionId,
                     reportOption.DateFrom,
                     reportOption.DateTo));
+            //фильтрация пользователей по запрашиваемой категории, если необходимо
+            if (reportOption.CategoryId != Guid.Empty)
+            {
+                var categoryName = organization.Categories.FirstOrDefault(x => x.Id == reportOption.CategoryId)?.Name;
+                if (categoryName != String.Empty)
+                {
+                    report = report.Where(x=>x.guestCategoryNames.Contains(categoryName)).ToList();
+                }
+            }
+
+
             var customers = await _repository.GetCustomersForOrganization(organization.Id);
             foreach (var row in report)
             {
@@ -339,6 +350,48 @@ namespace OzonCardService.Services.Implementation
         public async Task RemoveFile(string url)
         {
             await _repository.RemoveFile(url);
+        }
+
+        public async Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer)
+        {
+            var customers_db = new List<Customer>();
+            var customers_db_names = new List<Customer>();
+            var customers_db_cards = new List<Customer>();
+            if (customer.Name != String.Empty)
+                customers_db_names.AddRange(await _repository.GetCustomersForName(customer.Name));
+            if (customer.Card != String.Empty)
+                customers_db_cards.AddRange(await _repository.GetCustomersForCardNumber(customer.Card));
+            if (customer.Name != String.Empty && customer.Card != String.Empty)
+                customers_db = customers_db_names.Intersect(customers_db_cards).ToList();
+            else
+            {
+                customers_db.AddRange(customers_db_names);
+                customers_db.AddRange(customers_db_cards);
+            }
+            var customer_dto = new List<InfoSearchCustomer_dto>();
+            if (customers_db.Count == 0)
+                return customer_dto;
+            customers_db = customers_db.Where(x => x.Organization.Id == customer.OrganizationId).ToList();
+            var org = await _repository.GetOrganization(customer.OrganizationId);
+            var session = await _client.GetSession(org.Login, org.Password);
+            foreach(var c in customers_db)
+            {
+                var customer_biz = await _client.GetCustomerForId(session, c.iikoBizId, org.Id);
+                customer_biz.comment = org.Name;
+                customer_dto.Add(_mapper.Map<InfoSearchCustomer_dto>(customer_biz));
+                    
+            };
+            //переделать но запрос отчета
+            //ид организации есть
+            //ид корпита передавать из веб формы
+            //даты подставлять автоматически с начала месяца
+            var metrics = await _client.GetMetricsCustomers(session, org.Id, customers_db.Select(x => x.iikoBizId));
+            foreach (var metric_customer in metrics.GroupBy(x=>x.GuestId))
+                customer_dto.FirstOrDefault(x => x.Id == metric_customer.Key)
+                    .SetMetrics(metric_customer);
+
+            return customer_dto;
+
         }
     }
 }

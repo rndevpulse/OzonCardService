@@ -1,4 +1,6 @@
 /* Provide sufficient contrast against white background */
+
+
 a {
   color: #0366d6;
 }
@@ -36,6 +38,19 @@ code {
     justify-content: space-between;
     cursor: pointer;
     font-size: 110%;
+}
+.label-checkbox-category {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 110%;
+    padding-top: 1rem;
+    margin:auto;
+}
+.check_box
+{
+    margin:initial;
 }
 .file i {
     z-index: 1;
@@ -89,5 +104,6 @@ i {
 .logout {
     font-weight: bolder;
 }
+
 
 

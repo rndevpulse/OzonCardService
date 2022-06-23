@@ -8,6 +8,7 @@ import { Context } from '..';
 import { observer } from 'mobx-react-lite';
 import '../css/NavMenu.css'
 
+
 const useOnClickOutside = (
     ref: RefObject<HTMLDivElement>,
     closeMenu: () => void
@@ -56,39 +57,38 @@ const NavMenu: FC = () => {
     function linkBasic() {
         if (loginstore.rules.includes('101')) {
             links.push({ link: '/', name: 'Выгрузка' })
+            links.push({ link: '/search_customer', name: 'Поиск' })
             return (
-                <NavItem>
-                    <NavLink tag={Link} className="text-dark" to="/">Выгрузка</NavLink>
-                </NavItem>
-                
+                <div>
+                    <NavItem>
+                        <NavLink tag={Link} className="text-dark" to="/">Выгрузка</NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink tag={Link} className="text-dark" to="/search_customer">Поиск</NavLink>
+                    </NavItem>
+                </div>
                 )
         }
     };
     function linkReport() {
         if (loginstore.rules.includes('111')) {
             links.push({ link: '/report', name: 'Отчеты' })
-            links.push({ link: '/file', name: 'Файлы' })
-            links.push({ link: '/task', name: 'Задачи' })
             return (
                 <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/report">Отчеты</NavLink>
                 </NavItem>
             )
         }
-        links.push({ link: '/file', name: 'Файлы' })
-        links.push({ link: '/task', name: 'Задачи' })
     };
     function linkAdmin() {
         if (loginstore.rules.includes('100')) {
             links.push({ link: '/service', name: 'Сервис' })
-            links.push({ link: '/logout', name: 'Выход' })
             return (
                 <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/service">Сервис</NavLink>
                 </NavItem>
             )
         }
-        links.push({ link: '/logout', name: 'Выход' })
     };
 
     function onClickLink(l: { link: string, name: string }) {
@@ -99,6 +99,9 @@ const NavMenu: FC = () => {
             navigate(l.link)
     }
     const getLinks = () => {
+        links.push({ link: '/file', name: 'Файлы' })
+        links.push({ link: '/task', name: 'Задачи' })
+        links.push({ link: '/logout', name: 'Выход' })
         return (
             <div className={StyledMenu.join(' ')} ref={node}>
                 {links && links.map(l => {
@@ -113,9 +116,14 @@ const NavMenu: FC = () => {
 
     return (
         <header>
-            <Navbar className="navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3 grey lighten-3 col s12 m2" light>
+            <Navbar className="navbar-expand navbar-toggleable-sm border-bottom box-shadow mb-3 grey lighten-3 col s12 m2" light>
                 <Container>
-                    <NavbarBrand tag={Link} to="/">OzonCardService</NavbarBrand>
+                    
+                        <div >
+                            <img src="../logo.png" alt="logo" className="logo_image"/>
+                        <NavbarBrand tag={Link} to="/" >Corporate Catering Card Service </NavbarBrand>
+                        </div>
+                   
 
                     <ul className="navbar-nav__custom navbar-nav flex-grow">
                         {linkBasic()}

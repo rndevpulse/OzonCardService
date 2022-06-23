@@ -61,6 +61,7 @@
   <ItemGroup>
     <None Remove="ClientApp\src\components\FilesForm.tsx" />
     <None Remove="ClientApp\src\components\ReportForm.tsx" />
+    <None Remove="ClientApp\src\components\SearchCustomerForm.tsx" />
     <None Remove="ClientApp\src\components\ServiceForm.tsx" />
     <None Remove="ClientApp\src\components\TasksForm.tsx" />
     <None Remove="ClientApp\src\http\index.ts" />
@@ -68,7 +69,9 @@
     <None Remove="ClientApp\src\models\IAdvancedOptionsResponse.ts" />
     <None Remove="ClientApp\src\models\ICategoryResponse.ts" />
     <None Remove="ClientApp\src\models\IFileResponse.ts" />
+    <None Remove="ClientApp\src\models\IInfoSearhCustomerResponse.ts" />
     <None Remove="ClientApp\src\models\IOrganizationResponse.ts" />
+    <None Remove="ClientApp\src\models\ISearchCustomer.ts" />
     <None Remove="ClientApp\src\services\BizServise.ts" />
     <None Remove="ClientApp\src\services\FileServise.ts" />
     <None Remove="ClientApp\src\services\OrganizationServise.ts" />
@@ -85,6 +88,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\SearchCustomerForm.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\TasksForm.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -103,7 +107,9 @@
     <TypeScriptCompile Include="ClientApp\src\models\IAdvancedOptionsResponse.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\models\IInfoSearhCustomerResponse.ts" />
     <TypeScriptCompile Include="ClientApp\src\models\IOrganizationResponse.ts" />
+    <TypeScriptCompile Include="ClientApp\src\models\ISearchCustomer.ts" />
     <TypeScriptCompile Include="ClientApp\src\services\UserService.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -117,6 +123,12 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\services\OrganizationServise.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ClientApp\public\logo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

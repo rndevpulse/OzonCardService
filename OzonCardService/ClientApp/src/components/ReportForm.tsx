@@ -12,6 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ru from "date-fns/locale/ru";
 registerLocale("ru", ru);
 import { IReportOptionResponse } from '../models/IReportOptionResponse';
+import { ICategoryResponse } from '../models/ICategoryResponse';
 import * as moment from 'moment';
 import BizService from '../services/BizServise';
 
@@ -23,10 +24,14 @@ const ReportForm: FC = () => {
     const [organizationId, setOrganizationId] = useState('');
     const [corporateNutritions, setCorporateNutritions] = useState<ICorporateNutritionResponse[]>([]);
     const [corporateNutritionId, setCorporateNutritionId] = useState('');
+    const [categoryId, setCategoryId] = useState('');
+    const [categories, setCategories] = useState<ICategoryResponse[]>([]);
+
     const [fileName, setFileName] = useState('');
     const [dateFrom, setDateFrom] = useState<Date>(new Date(new Date().setDate(1)));
     const [dateTo, setDateTo] = useState<Date>(new Date());
-
+    
+    const [isFilter, setIsFilter] = useState(true);
 
 
     const CustomSelect = ({ id, value, options, onChange }) => {
@@ -44,6 +49,8 @@ const ReportForm: FC = () => {
         const organization = organizationstore.organizations.find(org => org.id === orgId);
 
         setOrganizationId(organization?.id ?? '')
+        setCategories(organization?.categories ?? [])
+        setCategoryId(organization?.categories[0]?.id ?? '')
         setCorporateNutritions(organization?.corporateNutritions ?? [])
         setCorporateNutritionId(organization?.corporateNutritions[0]?.id ?? '')
     }
@@ -53,12 +60,17 @@ const ReportForm: FC = () => {
 
         setCorporateNutritions(organizationstore.organizations[0]?.corporateNutritions ?? [])
         setCorporateNutritionId(organizationstore.organizations[0]?.corporateNutritions[0]?.id ?? '')
-        organizationstore.setLoading(false);
 
+        setCategories(organizationstore.organizations[0]?.categories ?? []);
+        setCategoryId(organizationstore.organizations[0]?.categories[0]?.id ?? '');
+
+        organizationstore.setLoading(false);
     }
+
     async function reportFromBiz() {
         const option: IReportOptionResponse = {
             organizationId: organizationId,
+            categoryId: isFilter ? categoryId : "00000000-0000-0000-0000-000000000000",
             corporateNutritionId: corporateNutritionId,
             dateFrom: (moment(dateFrom)).format("YYYY-MM-DD"),
             dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
@@ -84,7 +96,19 @@ const ReportForm: FC = () => {
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                     onChange={onOrganizationSelectChange} />
-           
+
+                <label htmlFor="allCategories" className="label-checkbox-category">
+                    <input id='allCategories' type='checkbox' checked={isFilter}
+                        onChange={() => setIsFilter(!isFilter)}
+                    />
+                    Учитывать фильтр категорий
+                    <i className="check_box material-icons red-text">
+                        {isFilter ? 'check_box' : 'check_box_outline_blank'}
+                    </i>
+                </label>
+
+                <label htmlFor="categories">Фильтр категорий</label>
+                <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)} />
                 <label htmlFor="corporateNutritions">Программы питания</label>
                 <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
                     onChange={event => setCorporateNutritionId(event.target.value)} />

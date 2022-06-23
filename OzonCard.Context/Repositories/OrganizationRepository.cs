@@ -309,7 +309,19 @@ namespace OzonCard.Context.Repositories
 
 
         #region Покупатели
+        public async Task<IEnumerable<Customer>> GetCustomersForName(string name)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var str = name.Trim().ToLower();// Split(' ', StringSplitOptions.TrimEntries).ToArray();
+                var customers = await context.Customers
+                    .Where(x => x.Name.ToLower().Contains(str))
+                    .Include(x=>x.Organization)
+                    .ToListAsync();
 
+                return customers;
+            }
+        }
 
 
         public async Task<IEnumerable<Customer>> GetCustomersForCardNumber(IEnumerable<string> cardnumbers)
@@ -334,6 +346,22 @@ namespace OzonCard.Context.Repositories
                 return customers;
             }
         }
+
+        public async Task<IEnumerable<Customer>> GetCustomersForCardNumber(string cardnumber)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var customers = await context.Cards
+                    .Where(x => x.Track.ToLower().Contains(cardnumber))
+                    .Include(x => x.Customer)
+                    .ThenInclude(x => x.Organization)
+                    .Select(x => x.Customer)
+                    .ToListAsync();
+
+                return customers;
+            }
+        }
+
         public async Task<IEnumerable<Customer>> GetCustomersForOrganization(Guid organizationId)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))

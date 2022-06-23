@@ -1,9 +1,8 @@
 ﻿
 namespace OzonCard.Data.Models
 {
-    public class Customer
+    public class Customer : EqualsId<Customer>
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Phone { get; set; }
         public string TabNumber { get; set; }

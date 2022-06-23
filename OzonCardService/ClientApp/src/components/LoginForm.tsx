@@ -21,7 +21,7 @@ const LoginForm: FC = () => {
     }
     return (
         <div className="form-group center col-md-6">
-            <h5>OzonCardService</h5>
+            <h5>Corporate Catering Card Service</h5>
             <h1>Authorization</h1>
             <br />
             <div className="autorization">

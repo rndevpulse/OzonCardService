@@ -3,7 +3,6 @@ using OzonCard.Excel;
 using OzonCardService.Models.DTO;
 using OzonCardService.Models.View;
 using OzonCardService.Services.TasksManagerProgress.Implementation;
-using OzonCardService.Services.TasksManagerProgress.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,5 +27,8 @@ namespace OzonCardService.Services.Interfaces
         Task SaveFile(Guid id, string format, string name, Guid userId);
         Task RemoveFile(string url);
         Task<IEnumerable<File_dto>> GetFiles(Guid userId);
+
+
+        Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer);
     }
 }

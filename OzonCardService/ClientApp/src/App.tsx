@@ -13,6 +13,7 @@ import FilesForm from './components/FilesForm';
 import ServiceForm from './components/ServiceForm';
 import ReportForm from './components/ReportForm';
 import TasksForm from './components/TasksForm';
+import SearchCustomerForm from './components/SearchCustomerForm';
 
 
 const App: FC = () => {
@@ -43,6 +44,9 @@ const App: FC = () => {
                     <Route path='/report' element={<ReportForm />} />
                     <Route path='/task' element={<TasksForm />} />
                     <Route path='/service' element={<ServiceForm />} />
+                    <Route path='/search_customer' element={<SearchCustomerForm />} />
+
+                    
                 </Routes>
             </div>
         </BrowserRouter>

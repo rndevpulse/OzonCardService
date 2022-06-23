@@ -11,7 +11,7 @@ namespace OzonCard.BizClient.Models
         public int consentStatus { get; set; }
         public string cultureName { get; set; }
         public string email { get; set; }
-        public string id { get; set; }
+        public Guid id { get; set; }
         public int iikoCardOrdersSum { get; set; }
         public bool isBlocked { get; set; }
         public bool isDeleted { get; set; }

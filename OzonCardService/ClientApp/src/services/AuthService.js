@@ -37,31 +37,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = require("../http");
-var BizService = /** @class */ (function () {
-    function BizService() {
+var AuthService = /** @class */ (function () {
+    function AuthService() {
     }
-    BizService.upladCustomersToBiz = function (option) {
+    AuthService.login = function (email, password) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/upload', option)];
+                return [2 /*return*/, http_1.default.post('/auth', { email: email, password: password })];
             });
         });
     };
-    BizService.ReportFromBiz = function (option) {
+    AuthService.logout = function (token) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/report', option)];
+                return [2 /*return*/, http_1.default.post('/auth/logout', { token: token })];
             });
         });
     };
-    BizService.SearchCustomerFromBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/search', option)];
-            });
-        });
-    };
-    return BizService;
+    return AuthService;
 }());
-exports.default = BizService;
-//# sourceMappingURL=BizServise.js.map
+exports.default = AuthService;
+//# sourceMappingURL=AuthService.js.map

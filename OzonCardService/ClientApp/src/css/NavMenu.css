@@ -2,35 +2,54 @@
     white-space: normal;
     text-align: center;
     word-break: break-all;
+    
 }
 
 .html {
     font-size: 16px;
 }
-
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 1000px) {
     html {
         font-size: 16px;
+        background-image: url("../../public/background.jpg");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+        background-size: cover;
     }
+    html body {
+        background-color: transparent;
+    }
+    
 }
 
 .box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
-
 
 
 .navbar-nav__button {
     display: none;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1000px) {
     html {
         font-size: 16px;
+        background-image: url("../../public/background.jpg");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+    html body {
+        background-color: transparent;
     }
     .navbar-nav__custom {
         display: none !important;
     }
     .navbar-nav__button {
         display: block;
+    }
+    a.navbar-brand {
+        font-size:13px;
     }
 }
 
@@ -56,6 +75,14 @@
     text-decoration: none;
     cursor: pointer;
     font-size: 16px;
+}
+
+.logo_image {
+    width: 40px;
+    height: 40px;
+    border-radius: 30%;
+    overflow: hidden;
+    margin-right: 1rem;
 }
 
 

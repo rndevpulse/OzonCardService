@@ -37,31 +37,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = require("../http");
-var BizService = /** @class */ (function () {
-    function BizService() {
+var TaskService = /** @class */ (function () {
+    function TaskService() {
     }
-    BizService.upladCustomersToBiz = function (option) {
+    TaskService.getTaskUpload = function (task) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/upload', option)];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, http_1.default.get("/tasks/" + task)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
             });
         });
     };
-    BizService.ReportFromBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/report', option)];
-            });
-        });
-    };
-    BizService.SearchCustomerFromBiz = function (option) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/search', option)];
-            });
-        });
-    };
-    return BizService;
+    return TaskService;
 }());
-exports.default = BizService;
-//# sourceMappingURL=BizServise.js.map
+exports.default = TaskService;
+//# sourceMappingURL=TaskService.js.map

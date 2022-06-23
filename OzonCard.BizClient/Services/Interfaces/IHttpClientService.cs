@@ -25,5 +25,6 @@ namespace OzonCard.BizClient.Services.Interfaces
         Task<bool> AddBalanceByCustomer(Session session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance);
         Task<bool> DelBalanceByCustomer(Session session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance);
         Task<IEnumerable<ReportCN>> GerReportCN(Session session, Guid organizationId, Guid corporateNutritionId, string dateFrom, string dateTo);
+        Task<IEnumerable<MetricCustomer>> GetMetricsCustomers(Session session, Guid organizationId, IEnumerable<Guid> guids);
     }
 }

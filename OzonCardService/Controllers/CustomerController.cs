@@ -79,8 +79,26 @@ namespace OzonCardService.Controllers
             }
         }
 
-
-
         
+        [HttpPost("search")]
+        [AuthorizeRoles(EnumRules.Basic)]
+        [Consumes("application/json")]
+        public async Task<ActionResult<IEnumerable<InfoSearchCustomer_dto>>> SearchCustomers(SearchCustomer_vm customer)
+        {
+            try
+            {
+                return new OkObjectResult(await _service.SearchCustomers(customer));
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "SearchCustomers {@customers}", customer);
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 400,
+                    Message = ex.Message,
+                    Description = ex.InnerException?.ToString()
+                });
+            }
+        }
     }
 }

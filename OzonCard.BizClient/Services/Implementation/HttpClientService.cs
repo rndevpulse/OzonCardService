@@ -299,5 +299,25 @@ namespace OzonCard.BizClient.Services.Implementation
                 return await GerReportCN(access_session, organizationId, corporateNutritionId, dateFrom, dateTo);
             }
         }
+
+        public async Task<IEnumerable<MetricCustomer>> GetMetricsCustomers(Session access_session, Guid organizationId, IEnumerable<Guid> guids)
+        {
+            try
+            {
+                MetricsCustomers_dto metrics = new MetricsCustomers_dto()
+                {
+                    guestIds = guids,
+                    periods = new[] {CounterPeriod.Month},
+                    metrics = new[] {CounterMetric.OrdersSum, CounterMetric.OrdersCount}
+                };
+                return await _client.Send<IEnumerable<MetricCustomer>>($"customers/get_counters_by_guests?organization={organizationId}&access_token={access_session.Token}", "POST", metrics)
+                ?? new List<MetricCustomer>();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetMetricsCustomers(access_session, organizationId, guids);
+            }
+        }
     }
 }

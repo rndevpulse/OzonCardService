@@ -37,31 +37,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = require("../http");
-var BizService = /** @class */ (function () {
-    function BizService() {
+var FileService = /** @class */ (function () {
+    function FileService() {
     }
-    BizService.upladCustomersToBiz = function (option) {
+    FileService.getMyFiles = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/upload', option)];
+                return [2 /*return*/, http_1.default.get('/file/user')];
             });
         });
     };
-    BizService.ReportFromBiz = function (option) {
+    FileService.removeFile = function (url) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/report', option)];
+                return [2 /*return*/, http_1.default.get("/file/remove/" + url)];
             });
         });
     };
-    BizService.SearchCustomerFromBiz = function (option) {
+    FileService.downloadFile = function (url) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, http_1.default.post('/customer/search', option)];
+                return [2 /*return*/, http_1.default.get("/file/get/" + url, { responseType: 'blob' })];
             });
         });
     };
-    return BizService;
+    return FileService;
 }());
-exports.default = BizService;
-//# sourceMappingURL=BizServise.js.map
+exports.default = FileService;
+//# sourceMappingURL=FileServise.js.map
