@@ -8,6 +8,7 @@ import BizService from '../services/BizServise';
 import '../css/SearchForm.css'
 import { IInfoSearhCustomerResponse } from '../models/IInfoSearhCustomerResponse';
 import { ISearchCustomer } from '../models/ISearchCustomer';
+import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
 
 
 
@@ -15,12 +16,14 @@ const SearchCustomerForm: FC = () => {
 
     const { organizationstore } = useContext(Context);
     const [organizationId, setOrganizationId] = useState('');
+    const [corporateNutritions, setCorporateNutritions] = useState<ICorporateNutritionResponse[]>([]);
+    const [corporateNutritionId, setCorporateNutritionId] = useState('');
 
     const [customerName, setCustomerName] = useState('');
     const [customerCard, setCustomerCard] = useState('');
 
     const [customersInfo, setCustomersInfo] = useState<IInfoSearhCustomerResponse[]>([]);
-    
+    const [isLoadCustomers, setIsLoadCustomers] = useState(false);
 
     const CustomSelect = ({ id, value, options, onChange }) => {
         return (
@@ -36,24 +39,34 @@ const SearchCustomerForm: FC = () => {
         const organization = organizationstore.organizations.find(org => org.id === orgId);
 
         setOrganizationId(organization?.id ?? '')
+        setCorporateNutritions(organization?.corporateNutritions ?? [])
+        setCorporateNutritionId(organization?.corporateNutritions[0]?.id ?? '')
+
     }
     async function firstInit() {
         await organizationstore.requestOrganizations();
         setOrganizationId(organizationstore.organizations[0]?.id ?? '');
+        setCorporateNutritions(organizationstore.organizations[0]?.corporateNutritions ?? [])
+        setCorporateNutritionId(organizationstore.organizations[0]?.corporateNutritions[0]?.id ?? '')
+
 
         organizationstore.setLoading(false);
         console.log('isLoading false')
 
     }
 
-    async function getCustomers(name: string, card:string) {
+    async function getCustomers(name: string, card: string) {
+        setIsLoadCustomers(true)
         const response = await BizService.SearchCustomerFromBiz({
             name,
             card,
-            organizationId
+            organizationId,
+            corporateNutritionId
         })
         console.log('customers: ', response.data)
         setCustomersInfo(response.data)
+        setIsLoadCustomers(false)
+
     }
 
     function onChangeCustomerName(value: string) {
@@ -73,41 +86,16 @@ const SearchCustomerForm: FC = () => {
             setCustomersInfo([])
         }
     }
-    useEffect(() => {
-        firstInit();
-        console.log('SearchCustomerForm useEffect');
-    }, []);
-    if (organizationstore.isLoading) {
-        return <h1>Loading...</h1>
-    }
-
-    return (
-
-        <div>
-            <h1>Поиск сотрудника</h1>
-
-            <div className="form-group col-md-8">
-                <label htmlFor="organizations">Организации</label>
-                <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
-                    onChange={onOrganizationSelectChange} />
-                <label className="search_label" htmlFor="customerName">ФИО сотрудника
-                    <input 
-                        id='customerName'
-                        onChange={e => onChangeCustomerName(e.target.value)}
-                        value={customerName}
-                        type='text'
-                        placeholder='Фамилия Имя Отчество'
-                    /></label>
-                <label className="search_label" htmlFor="customerCard">Карта сотрудника
-                    <input
-                        id='customerCard'
-                        onChange={e => onChangeCustomerCard(e.target.value)}
-                        value={customerCard}
-                        type='text'
-                        placeholder='xxxxxxxx'
-                        /></label>
-            </div>
-            <div className="search form-group col-md-8">
+    function getCustomersInfo() {
+        console.log("getCustomersInfo length", customersInfo.length)
+        if (isLoadCustomers) {
+            return <div className="center">Идет поиск...</div>
+        }
+        if (customersInfo.length === 0) {
+            return <div className="center">Нет результатов</div>
+        }
+        return (
+            <div className="center search form-group col-md-8">
                 <ul>
                     {customersInfo && customersInfo.map(customer => {
                         return (
@@ -134,6 +122,48 @@ const SearchCustomerForm: FC = () => {
                 </ul>
 
             </div>
+        )
+    }
+    useEffect(() => {
+        firstInit();
+        console.log('SearchCustomerForm useEffect');
+    }, []);
+    if (organizationstore.isLoading) {
+        return <h1>Loading...</h1>
+    }
+
+    return (
+
+        <div>
+            <h1 className="center form-group col-md-8">Поиск сотрудника</h1>
+
+            <div className="center form-group col-md-8">
+                <label htmlFor="organizations">Организации</label>
+                <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
+                    onChange={onOrganizationSelectChange} />
+                <label htmlFor="corporateNutritions">Программы питания</label>
+                <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
+                    onChange={event => setCorporateNutritionId(event.target.value)} />
+
+                <label className="search_label" htmlFor="customerName">ФИО сотрудника
+                    <input 
+                        id='customerName'
+                        onChange={e => onChangeCustomerName(e.target.value)}
+                        value={customerName}
+                        type='text'
+                        placeholder='Фамилия Имя Отчество'
+                    /></label>
+                <label className="search_label" htmlFor="customerCard">Карта сотрудника
+                    <input
+                        id='customerCard'
+                        onChange={e => onChangeCustomerCard(e.target.value)}
+                        value={customerCard}
+                        type='text'
+                        placeholder='xxxxxxxx'
+                        /></label>
+            </div>
+            {getCustomersInfo()}
+            
 
         </div>
 

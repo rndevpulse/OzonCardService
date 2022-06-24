@@ -150,10 +150,10 @@ const UploadForm: FC = () => {
     }
     return (
 
-        <div>
-            <h1>Выгрузка в iikoBiz</h1>
+        <div >
+            <h1 className="form-group col-md-7">Выгрузка в iikoBiz</h1>
            
-            <div className="form-group col-md-6">
+            <div className="form-group col-md-7">
                 <h5 className="link" onClick={updateOrganization}>Обновить данные по организации</h5>
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}

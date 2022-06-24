@@ -46,8 +46,8 @@ const FilesForm: FC = () => {
     }
     return (
         <div>
-            <h1>Мои документы</h1>
-            <div className="form-group col-md-12">
+            <h1 className="center form-group col-md-12">Мои документы</h1>
+            <div className="center form-group col-md-12">
                 <ul>
                     {files && files.map(file => {
                         return (

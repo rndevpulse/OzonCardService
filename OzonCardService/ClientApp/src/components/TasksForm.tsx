@@ -45,8 +45,8 @@ const TasksForm: FC = () => {
     
     return (
         <div>
-            <h1>Мои задачи</h1>
-            <div className="form-group col-md-8">
+            <h1 className="center form-group col-md-8">Мои задачи</h1>
+            <div className="center form-group col-md-8">
                 <ul>
                     {taskstore.tasks && taskstore.tasks.map(task => {
                         const classes = ['task']

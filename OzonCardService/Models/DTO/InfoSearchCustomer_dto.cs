@@ -17,10 +17,12 @@ namespace OzonCardService.Models.DTO
         public int Orders { get; set; }
         public IEnumerable<string> Categories { get; set; }
 
-        internal void SetMetrics(IEnumerable<MetricCustomer> metric_customer)
+
+        internal void SetMetrics(ReportCN report)
         {
-            Sum = metric_customer.FirstOrDefault(x => x.Metric == CounterMetric.OrdersSum)?.Value ?? 0;
-            Orders = (int)(metric_customer.FirstOrDefault(x => x.Metric == CounterMetric.OrdersCount)?.Value ?? 0);
+            Sum = report?.payFromWalletSum ?? 0;
+            Orders = (int)(report?.paidOrdersCount ?? 0);
+
         }
     }
 }

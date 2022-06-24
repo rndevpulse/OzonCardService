@@ -354,6 +354,12 @@ namespace OzonCardService.Services.Implementation
 
         public async Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer)
         {
+            var organization = await _repository.GetOrganization(customer.OrganizationId) ??
+                throw new ArgumentException($"Organization with {customer.OrganizationId} not found");
+            if (!organization.CorporateNutritions.Any(x => x.Id == customer.CorporateNutritionId))
+                throw new ArgumentException($"CorporateNutrition with {customer.CorporateNutritionId} not found");
+
+
             var customers_db = new List<Customer>();
             var customers_db_names = new List<Customer>();
             var customers_db_cards = new List<Customer>();
@@ -369,26 +375,29 @@ namespace OzonCardService.Services.Implementation
                 customers_db.AddRange(customers_db_cards);
             }
             var customer_dto = new List<InfoSearchCustomer_dto>();
+            customers_db = customers_db.Where(x => x.Organization.Id == customer.OrganizationId).ToList();
             if (customers_db.Count == 0)
                 return customer_dto;
-            customers_db = customers_db.Where(x => x.Organization.Id == customer.OrganizationId).ToList();
-            var org = await _repository.GetOrganization(customer.OrganizationId);
-            var session = await _client.GetSession(org.Login, org.Password);
+            
+            var session = await _client.GetSession(organization.Login, organization.Password);
             foreach(var c in customers_db)
             {
-                var customer_biz = await _client.GetCustomerForId(session, c.iikoBizId, org.Id);
-                customer_biz.comment = org.Name;
+                var customer_biz = await _client.GetCustomerForId(session, c.iikoBizId, organization.Id);
+                customer_biz.comment = organization.Name;
                 customer_dto.Add(_mapper.Map<InfoSearchCustomer_dto>(customer_biz));
                     
             };
+            DateTime now = DateTime.Now;
+            var dateFrom = new DateTime(now.Year, now.Month, 1);
+            var dateTo = dateFrom.AddMonths(1);
             //переделать но запрос отчета
             //ид организации есть
             //ид корпита передавать из веб формы
             //даты подставлять автоматически с начала месяца
-            var metrics = await _client.GetMetricsCustomers(session, org.Id, customers_db.Select(x => x.iikoBizId));
-            foreach (var metric_customer in metrics.GroupBy(x=>x.GuestId))
-                customer_dto.FirstOrDefault(x => x.Id == metric_customer.Key)
-                    .SetMetrics(metric_customer);
+            var report = await _client.GerReportCN(session, organization.Id, customer.CorporateNutritionId,
+                dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
+            foreach (var c in customer_dto)
+                c.SetMetrics(report.FirstOrDefault(x => x.guestId == c.Id));
 
             return customer_dto;
 

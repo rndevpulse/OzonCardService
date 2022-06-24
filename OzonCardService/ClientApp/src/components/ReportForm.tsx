@@ -91,8 +91,8 @@ const ReportForm: FC = () => {
     
     return (
         <div>
-            <h1>Отчеты</h1>
-            <div className="form-group col-md-6">
+            <h1 className="center form-group col-md-7">Отчеты</h1>
+            <div className="center form-group col-md-7">
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                     onChange={onOrganizationSelectChange} />

@@ -13,7 +13,7 @@ namespace OzonCard.BizClient.Models
         public Guid guestId { get; set; }
         public string guestName { get; set; }
         public string guestPhone { get; set; }
-        public decimal paidOrdersCount { get; set; }
+        public double paidOrdersCount { get; set; }
         public double payFromWalletSum { get; set; }
     }
 }
