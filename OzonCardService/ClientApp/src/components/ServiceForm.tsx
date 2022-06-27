@@ -255,8 +255,8 @@ const ServiceForm: FC = () => {
 
     return (
         <div className="">
-            <h1 className="center form-group col-md-10">Сервис</h1>
-            <div className="form-group col-md-10">
+            <h1 className="center form-group col-md-12">Сервис</h1>
+            <div className="center form-group col-md-12">
                 <ul className="service">
                     {formNewUser()}
                     {formNewOrganization()}

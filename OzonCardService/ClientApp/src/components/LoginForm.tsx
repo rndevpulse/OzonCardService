@@ -20,7 +20,7 @@ const LoginForm: FC = () => {
         classes_i.push('black-text')
     }
     return (
-        <div className="form-group center col-md-6">
+        <div className="center form-group  col-md-6">
             <h5>Corporate Catering Card Service</h5>
             <h1>Authorization</h1>
             <br />
@@ -54,7 +54,7 @@ const LoginForm: FC = () => {
         
             
             </div>
-            <button className="btn-primary"
+            <button className="btn-primary button_login"
                 onClick={() => loginstore.login(email, password)}>
                 Login
             </button>

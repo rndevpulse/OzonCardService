@@ -316,7 +316,7 @@ namespace OzonCardService.Services.Implementation
                 var categoryName = organization.Categories.FirstOrDefault(x => x.Id == reportOption.CategoryId)?.Name;
                 if (categoryName != String.Empty)
                 {
-                    report = report.Where(x=>x.guestCategoryNames.Contains(categoryName)).ToList();
+                    report = report.Where(x=>x.guestCategoryNames?.Contains(categoryName) == true).ToList();
                 }
             }
 

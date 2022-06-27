@@ -91,8 +91,8 @@ const ReportForm: FC = () => {
     
     return (
         <div>
-            <h1 className="center form-group col-md-7">Отчеты</h1>
-            <div className="center form-group col-md-7">
+            <h1 className="center form-group col-md-12">Отчеты</h1>
+            <div className="center form-group col-md-12">
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                     onChange={onOrganizationSelectChange} />
@@ -114,7 +114,7 @@ const ReportForm: FC = () => {
                     onChange={event => setCorporateNutritionId(event.target.value)} />
                 
                 <label htmlFor="dateFrom" >Период с</label>
-                <DatePicker
+                <DatePicker className="ccenter"
                     dateFormat='dd MMMM yyyy'
                     selected={dateFrom}
                     selectsStart
@@ -124,6 +124,7 @@ const ReportForm: FC = () => {
                     id="dateFrom"
                     locale='ru'
                     placeholderText="Период с"
+                    
                 />
                 
                 <label htmlFor="dateTo" >Период по</label>

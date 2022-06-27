@@ -95,7 +95,7 @@ const SearchCustomerForm: FC = () => {
             return <div className="center">Нет результатов</div>
         }
         return (
-            <div className="center search form-group col-md-8">
+            <div className="center search form-group col-md-12">
                 <ul>
                     {customersInfo && customersInfo.map(customer => {
                         return (
@@ -135,9 +135,9 @@ const SearchCustomerForm: FC = () => {
     return (
 
         <div>
-            <h1 className="center form-group col-md-8">Поиск сотрудника</h1>
+            <h1 className="center form-group col-md-12">Поиск сотрудника</h1>
 
-            <div className="center form-group col-md-8">
+            <div className="center form-group col-md-12">
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                     onChange={onOrganizationSelectChange} />
