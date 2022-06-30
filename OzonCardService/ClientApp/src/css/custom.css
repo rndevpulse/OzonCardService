@@ -5,6 +5,11 @@ a {
   color: #0366d6;
 }
 
+.container {
+    padding-right: 0;
+    padding-left: 0;
+}
+
 code {
   color: #E01A76;
 }

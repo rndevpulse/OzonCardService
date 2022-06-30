@@ -48,9 +48,12 @@
     .navbar-nav__button {
         display: block;
     }
-    a.navbar-brand {
-        font-size:13px;
-    }
+        .navbar-nav__button .material-icons {
+            margin: auto;
+        }
+        a.navbar-brand {
+            font-size: 12px;
+        }
 }
 
 
@@ -65,9 +68,10 @@
     flex-direction: column;
     display: none;
 }
-.styledMenu.open {
-    display: flex;
-}
+    .styledMenu.open {
+        display: flex;
+        right: 0;
+    }
 
 .styledLink {
     padding-left: 2rem;
