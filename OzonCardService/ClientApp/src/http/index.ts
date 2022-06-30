@@ -1,8 +1,9 @@
 ﻿import axios from 'axios'
 import { IAuthResponce } from '../models/IAuthResponse'
 
-export const API_URL = 'https://192.168.1.100:5401/api'
-//export const API_URL = 'https://ozon.pulse.keenetic.link/api'
+
+//export const API_URL = 'https://192.168.1.100:5401/api'
+export const API_URL = 'https://ozon.pulse.keenetic.link/api'
 
 const api = axios.create({
     withCredentials: true,
@@ -23,11 +24,11 @@ api.interceptors.response.use(config => {
         try {
             const response = await axios.post<IAuthResponce>(`${API_URL}/auth/refresh`, { withCredentials: true })
             localStorage.setItem('token', response.data.token);
-            console.log(response);
+            //console.log(response);
             return api.request(originalRequest);
         }
         catch (e) {
-            console.log('no autorization')
+            //console.log('no autorization')
         }
         
     }

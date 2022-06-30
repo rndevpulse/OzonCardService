@@ -62,7 +62,7 @@ const UploadForm: FC = () => {
 
 
         organizationstore.setLoading(false);
-        console.log('isLoading false')
+        //console.log('isLoading false')
 
     }
     function setSetters() {
@@ -143,7 +143,7 @@ const UploadForm: FC = () => {
 
     useEffect(() => {
         firstInit();
-        console.log('UploadForm useEffect');
+        //console.log('UploadForm useEffect');
     }, []);
     if (organizationstore.isLoading) {
         return <h1>Loading...</h1>
@@ -209,7 +209,7 @@ const UploadForm: FC = () => {
                         type='text'
                         placeholder='Карта сотрудника'
                     /></label>
-                <button className="btn-primary button"
+                <button className="button"
                     onClick={singleUploadToBiz}>
                     Добавить одного
                 </button>
@@ -217,13 +217,13 @@ const UploadForm: FC = () => {
                 <label htmlFor="file">Выбирите файл</label>
                 <br/>
                 
-                <input className="form-group btn-primary button"
+                <input className="form-group button"
                     id='file'
                     type='file'
                     onChange={onChangeFile}
                 />
 
-                <button className="btn-primary button"
+                <button className="button"
                 onClick={uploadToBiz}>
                 Выгрузить
                 </button>

@@ -56,9 +56,9 @@ const ServiceForm: FC = () => {
 
     async function getUsers() {
         const response = await UserService.getUsers()
-        console.log('users: ', response.data)
+        //console.log('users: ', response.data)
         setUsers(response.data)
-        console.log('organizationstore.organizations.length = ', organizationstore.organizations.length)
+        //console.log('organizationstore.organizations.length = ', organizationstore.organizations.length)
         if (organizationstore.organizations.length === 0) {
             await organizationstore.requestOrganizations()
         }
@@ -100,7 +100,7 @@ const ServiceForm: FC = () => {
                         remove_red_eye
                     </i>
                 </div>
-                <button className="btn-primary button"
+                <button className="button"
                     onClick={createUser}>
                     Создать
                 </button>
@@ -164,7 +164,7 @@ const ServiceForm: FC = () => {
                         remove_red_eye
                     </i>
                 </div>
-                <button className="btn-primary button"
+                <button className="button"
                     onClick={createOrganization}>
                     Создать
                 </button>
@@ -203,11 +203,11 @@ const ServiceForm: FC = () => {
                             <dt>
                                 <label className="label-checkbox">{u.mail}</label>
                                 <span>
-                                    <button className="btn-primary button"
+                                    <button className="button"
                                         onClick={() => delUserForOrganization(u.id)}>
                                         Убрать
                                     </button>
-                                    <button className="btn-primary button"
+                                    <button className="button"
                                         onClick={() => addUserForOrganization(u.id)}>
                                         Добавить
                                     </button>

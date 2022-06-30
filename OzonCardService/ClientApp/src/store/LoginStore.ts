@@ -40,10 +40,10 @@ export default class LoginStore {
             this.setIsAuth(true);
             this.setMail(response.data.email);
             this.setRules(response.data.rules);
-            console.log(response);
+            //console.log(response);
         }
         catch (e) {
-            console.log(e);
+            //console.log(e);
         }
     }
 
@@ -53,10 +53,10 @@ export default class LoginStore {
             localStorage.removeItem('token');
             this.setIsAuth(false);
             this.setMail("");
-            console.log(responce);
+            //console.log(responce);
         }
         catch (e) {
-            console.log(e);
+            //console.log(e);
         }
     }
 
@@ -68,10 +68,10 @@ export default class LoginStore {
             this.setIsAuth(true);
             this.setMail(response.data.email);
             this.setRules(response.data.rules);
-            console.log(response);
+            //console.log(response);
         }
         catch (e) {
-            console.log(e);
+            //console.log(e);
         }
         finally {
             this.isLoading = false;

@@ -9,18 +9,18 @@ const FilesForm: FC = () => {
 
     async function getFiles() {
         const response = await FileService.getMyFiles()
-        console.log(response.data)
+        //console.log(response.data)
         setFiles(response.data);
     }
     async function onRemoveFile(url: string) {
-        console.log('onRemoveFile: ', url)
+        //console.log('onRemoveFile: ', url)
 
         await FileService.removeFile(url);
         await getFiles();
     }
     
     async function downloadHandler(e: React.MouseEvent<HTMLElement, MouseEvent>, url: string, name: string) {
-        console.log('downloadHandler', url, name)
+        //console.log('downloadHandler', url, name)
         e.stopPropagation()
         FileService.downloadFile(url)
             .then(response => {
@@ -37,7 +37,7 @@ const FilesForm: FC = () => {
     }
 
     useEffect(() => {
-        console.log('useEffect')
+        //console.log('useEffect')
         getFiles()
     }, []);
     <h1>Мои документы</h1>

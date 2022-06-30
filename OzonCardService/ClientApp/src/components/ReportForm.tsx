@@ -152,7 +152,7 @@ const ReportForm: FC = () => {
                     />
                 </label>
 
-                <button className="btn-primary button"
+                <button className="button"
                     onClick={reportFromBiz}>
                     Выгрузить
                 </button>

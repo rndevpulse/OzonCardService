@@ -17,6 +17,12 @@ code {
 .button {
     margin-right: 1rem;
     margin-left: 1rem;
+    background-color: #638b6c;
+    border-color: #4f855b;
+    color: #fff;
+}
+.button:hover {
+        background-color: #3d5442;
 }
 
 .file {
@@ -82,9 +88,9 @@ i {
     background: #f3f3f3;
     font-size: 110%;
 }
-.task.completed dt{
-    background-color:mediumspringgreen;
-}
+    .task.completed dt {
+        background-color: #7abd89;
+    }
     .task dd {
         width: 100%;
         display: flex;

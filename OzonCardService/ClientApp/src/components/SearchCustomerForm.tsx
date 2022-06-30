@@ -51,7 +51,7 @@ const SearchCustomerForm: FC = () => {
 
 
         organizationstore.setLoading(false);
-        console.log('isLoading false')
+        //console.log('isLoading false')
 
     }
 
@@ -63,7 +63,7 @@ const SearchCustomerForm: FC = () => {
             organizationId,
             corporateNutritionId
         })
-        console.log('customers: ', response.data)
+        //console.log('customers: ', response.data)
         setCustomersInfo(response.data)
         setIsLoadCustomers(false)
 
@@ -87,7 +87,7 @@ const SearchCustomerForm: FC = () => {
         }
     }
     function getCustomersInfo() {
-        console.log("getCustomersInfo length", customersInfo.length)
+        //console.log("getCustomersInfo length", customersInfo.length)
         if (isLoadCustomers) {
             return <div className="center">Идет поиск...</div>
         }
@@ -126,7 +126,7 @@ const SearchCustomerForm: FC = () => {
     }
     useEffect(() => {
         firstInit();
-        console.log('SearchCustomerForm useEffect');
+        //console.log('SearchCustomerForm useEffect');
     }, []);
     if (organizationstore.isLoading) {
         return <h1>Loading...</h1>

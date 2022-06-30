@@ -29,7 +29,7 @@ export default class TaskStore {
 
     async setTaskInfo(taskId: string, index: number){
         const response = await TaskService.getTaskUpload(taskId)
-        console.log('setTaskInfo response ', response)
+        //console.log('setTaskInfo response ', response)
         if (response.status === 200) {
             this.tasks[index].taskInfo = response.data
             this.tasks[index].isCompleted = response.data.isCompleted

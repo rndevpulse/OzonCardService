@@ -21,10 +21,10 @@ export default class OrganizationStore {
         try {
             const response = await OrganizationServise.getMyOrganizations();
             this.organizations = response.data;
-            console.log(response);
+            //console.log(response);
         }
         catch (e) {
-            console.log(e);
+            //console.log(e);
         }
         finally {
             this.setLoading(false)
@@ -38,10 +38,10 @@ export default class OrganizationStore {
             const response = await OrganizationServise.updateOrganization(organizationId)
             this.organizations = this.organizations.filter(f => f.id !== response.data.id)
             this.organizations.push(response.data)
-            console.log(response)
+            //console.log(response)
         }
         catch (e) {
-            console.log(e);
+            //console.log(e);
         }
         finally {
             this.setLoading(false)
@@ -52,10 +52,10 @@ export default class OrganizationStore {
         try {
             const response = await OrganizationServise.createOrganization(email, password)
             this.organizations.push(response.data)
-            console.log(response)
+            //console.log(response)
         }
         catch (e) {
-            console.log(e);
+            //console.log(e);
         }
         finally {
             this.setLoading(false)
