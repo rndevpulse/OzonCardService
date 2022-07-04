@@ -1,16 +1,13 @@
-﻿using ExcelDataReader;
-using ExcelLibrary.SpreadSheet;
-using Serilog;
+﻿using Serilog;
 using System.Data;
 using System.Reflection;
+using ClosedXML.Excel;
 
 namespace OzonCard.Excel
 {
     public class ExcelManager
     {
-        private readonly ILogger log = Log.ForContext(typeof(ExcelManager));
-
-
+        static private readonly ILogger log = Log.ForContext(typeof(ExcelManager));
         string originalFileName = string.Empty;
         const int Columns = 3;
         int offset;
@@ -26,23 +23,12 @@ namespace OzonCard.Excel
             try
             {
                 var clientList = new List<ShortCustomerInfo_excel>();
-                log.Debug($"Открытие файла {originalFileName} для получения гостей");
-                using (var stream = File.Open(originalFileName, FileMode.Open, FileAccess.Read))
+                using (var workbook = new XLWorkbook(originalFileName))
                 {
-                    IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream);
-
-                    var conf = new ExcelDataSetConfiguration
-                    {
-                        UseColumnDataType = false,
-                        ConfigureDataTable = _ => new ExcelDataTableConfiguration
-                        {
-                            UseHeaderRow = false
-
-                        }
-                    };
-
-                    var dataSet = reader.AsDataSet(conf).Tables[0];
-                    switch (dataSet.Columns.Count)
+                    var dataSet = workbook.Worksheet(1);
+                    if (dataSet == null)
+                        return clientList;
+                    switch (dataSet.ColumnsUsed().Count())
                     {
                         case Columns:
                             break;
@@ -53,18 +39,17 @@ namespace OzonCard.Excel
                             offset = 1;
                             break;
                         default:
-                            var ex = $"Колличество столбцов ({dataSet.Columns.Count}) не соответствует заданному для парсинга количеству ({Columns})";
-                            log.Error(ex);
+                            var ex = $"Колличество столбцов ({dataSet.ColumnCount()}) не соответствует заданному для парсинга количеству ({Columns})";
+                            log.Error(ex,"Error");
                             throw new ArgumentOutOfRangeException(ex);
                     }
-
-                    //var count = dataSet.Rows.Count;
-                    foreach (DataRow row in dataSet.Rows)
+                    foreach (var row in dataSet.RowsUsed())
                     {
+                        var c = row.Cell(offset + 3);
                         string card = string.Empty;
-                        if (row[offset + 2].ToString().Contains("/"))
+                        if (row.Cell(offset + 3).Value.ToString()?.Contains("/") == true)
                         {
-                            string[] num = row[offset + 2].ToString().Replace(" ", "").Split('/');
+                            string[] num = (row.Cell(offset + 3).Value.ToString() ?? "").Replace(" ", "").Split('/');
                             num[0] = "000".Remove(0, num[0].Count()) + num[0];
                             num[1] = "00000".Remove(0, num[1].Count()) + num[1];
                             card = num[0] + num[1];
@@ -73,11 +58,12 @@ namespace OzonCard.Excel
                         {
                             try
                             {
-                                if (row[offset + 2].ToString().Trim() == "")
-                                    throw new Exception();
-                                card = "00000000".Remove(0, row[offset + 2].ToString().Count()) + row[offset + 2].ToString();
+                                if ((row.Cell(offset + 3).Value.ToString() ?? "").Trim() == "")
+                                    continue;
+                                card = "00000000".Remove(0,
+                                    row.Cell(offset + 3).Value.ToString()?.Count() ?? 3) + row.Cell(offset + 3).Value.ToString();
                             }
-                            catch (Exception)
+                            catch (ArgumentOutOfRangeException)
                             {
                                 card = "";
                             }
@@ -90,106 +76,84 @@ namespace OzonCard.Excel
                         if (offset == 1)
                             clientList.Add(new ShortCustomerInfo_excel()
                             {
-                                Name = row[offset].ToString().Replace("  ", " ").Trim(),
+                                Name = (row.Cell(offset).Value.ToString() ?? "").Replace("  ", " ").Trim(),
                                 Card = card,
-                                TabNumber = row[0].ToString(),
-                                Position = row[dataSet.Columns.Count - 1].ToString()
+                                TabNumber = row.Cell(1).Value.ToString() ?? "",
+                                Position = row.Cell(dataSet.ColumnsUsed().Count()).Value.ToString() ?? ""
                             });
                         else
                             clientList.Add(new ShortCustomerInfo_excel()
                             {
-                                Name = row[0].ToString(),
+                                Name = row.Cell(1).Value.ToString() ?? "",
                                 Card = card
                             });
                     }
 
-                    log.Information($"Обработка завершена, строк в документе обработано: {dataSet.Rows.Count}");
-                    reader.Close();
-                    //clientList.RemoveAt(0);
-
                 }
-
-                log.Information($"Загрузка гостей завершена, гостей для дальнейшей обработки: {clientList.Count}");
                 return clientList.ToArray();
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
                 throw new Exception(ex.Message);
             }
-        }
-
-        public void CreateReportWithTabNumber(IEnumerable<ShortCustomerInfo_excel> Customers, string saveFileName)
-        {
-            log.Information($"Открытие файла {originalFileName} для получения отчета");
-            using (var stream = File.Open(originalFileName, FileMode.Open, FileAccess.ReadWrite))
-            {
-                IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream);
-
-                var conf = new ExcelDataSetConfiguration
-                {
-                    UseColumnDataType = true,
-                    ConfigureDataTable = _ => new ExcelDataTableConfiguration
-                    {
-                        UseHeaderRow = true
-
-                    }
-                };
-
-                var dataSet = reader.AsDataSet(conf).Tables[0];
-                foreach (DataRow row in dataSet.Rows)
-                {
-                    var s = Customers
-                        .Where(data => data.Name.Contains(row[0].ToString().Replace("  ", " ").Trim()))
-                        .ToArray()
-                        .Select(data => data.TabNumber).First();
-                    if (row[3].ToString().Length > 0)
-                        row[row.ItemArray.Count() - 1] = s;
-                }
-                CreateWorkbook(saveFileName, dataSet.DataSet);
-                log.Information($"Обработка завершена, результат сохранен в {saveFileName}");
-                reader.Close();
-            }
 
         }
 
 
-        //////// экспорт в эксель
 
-
-        //export Excel from DataSet
         public static void CreateWorkbook<T>(String filePath, IList<T> list, string title = null)
         {
             var dataset = ToDataSet<T>(list);
-            CreateWorkbook(filePath, dataset, title);   
+            CreateWorkbook(filePath, dataset, title);
         }
-
         public static void CreateWorkbook(String filePath, DataSet dataset, string title = null)
         {
-            if (dataset.Tables.Count == 0)
-                throw new ArgumentException("DataSet needs to have at least one DataTable", "dataset");
-
-            Workbook workbook = new Workbook();
-            foreach (DataTable dt in dataset.Tables)
+            try
             {
-                Worksheet worksheet = new Worksheet(dt.TableName);
-                if (title != null)
-                {
-                    worksheet.Cells[0, 0] = new Cell(title);
-                }
-                for (int i = 0; i < dt.Columns.Count; i++)
-                {
-                    // Add column header
-                    //worksheet.Cells[0, i] = new Cell(dt.Columns[i].ColumnName);
 
-                    // Populate row data
-                    for (int j = 0; j < dt.Rows.Count; j++)
-                        //Если нулевые значения, заменяем на пустые строки
-                        worksheet.Cells[j + 1, i] = new Cell(dt.Rows[j][i] == DBNull.Value ? "" : dt.Rows[j][i]);
+                if (dataset.Tables.Count == 0)
+                    throw new ArgumentException("DataSet needs to have at least one DataTable", "dataset");
+
+                var workbook = new XLWorkbook();
+                foreach (DataTable dt in dataset.Tables)
+                {
+                    var worksheet = workbook.Worksheets.Add("Отчет");
+
+                    if (title != null)
+                    {
+                        worksheet.Cell(1, 1).Value = title;
+                    }
+                    var range = worksheet.Range(2, 1, dt.Rows.Count + 1, dt.Columns.Count);
+                    var table = range.CreateTable();
+                    table.Theme = XLTableTheme.TableStyleLight15;
+                    table.ShowTotalsRow = true;
+
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        // Add column header
+                        //worksheet.Cells[0, i] = new Cell(dt.Columns[i].ColumnName);
+
+                        // Populate row data
+                        for (int j = 0; j < dt.Rows.Count; j++)
+                            //Если нулевые значения, заменяем на пустые строки
+                            worksheet.Cell(j + 2, i + 1).Value = dt.Rows[j][i] == DBNull.Value ? "" : dt.Rows[j][i];
+                    }
+                    table.Field(0).TotalsRowLabel = "Сотрудников";
+                    table.Field(1).TotalsRowFunction = XLTotalsRowFunction.Count;
+                    
+                    table.Field(dt.Columns.Count - 5).TotalsRowLabel = "Количество обедов";
+                    table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
+                    table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
                 }
-                workbook.Worksheets.Add(worksheet);
+
+                log.Information("Save file report to {0}", filePath);
+                workbook.SaveAs(filePath);
             }
-            workbook.Save(filePath);
+
+            catch (Exception ex)
+            {
+                log.Error(ex, "Error on save report");
+            }
         }
 
         static DataSet ToDataSet<T>(IList<T> list)
@@ -228,36 +192,5 @@ namespace OzonCard.Excel
                     t.Rows.Add(t.NewRow());
             return ds;
         }
-
-
-        //********************************
-        //DataGridView to DataTable
-        //public static DataTable ToDataTable(DataTable table, string tableName)
-        //{
-
-        //    DataGridView dgv = dataGridView;
-        //    DataTable table = new DataTable(tableName);
-        //    int iCol = 0;
-
-        //    for (iCol = 0; iCol & lt; dgv.Columns.Count; iCol++)
-        //    {
-        //        table.Columns.Add(dgv.Columns[iCol].Name);
-        //    }
-
-        //    foreach (DataGridViewRow row in dgv.Rows)
-        //    {
-
-        //        DataRow datarw = table.NewRow();
-
-        //        for (iCol = 0; iCol & lt; dgv.Columns.Count; iCol++)
-        //        {
-        //            datarw[iCol] = row.Cells[iCol].Value;
-        //        }
-
-        //        table.Rows.Add(datarw);
-        //    }
-
-        //    return table;
-        //}
     }
 }

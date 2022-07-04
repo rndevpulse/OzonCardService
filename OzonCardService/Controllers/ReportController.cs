@@ -57,10 +57,10 @@ namespace OzonCardService.Controllers
                 var t = Task.Factory.StartNew(async () =>
                 {
                     ExcelManager.CreateWorkbook(
-                        Path.Combine(path, id.ToString() + ".xls"),
+                        Path.Combine(path, id.ToString() + ".xlsx"),
                         _service.CreateReportBiz(userId, reportOption).Result.ToList(),
                         title);
-                    await _service.SaveFile(id, "xls", title, userId);
+                    await _service.SaveFile(id, "xlsx", title, userId);
                 });
                 progress.SetTask(t);
                 
