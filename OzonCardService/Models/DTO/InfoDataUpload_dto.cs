@@ -13,6 +13,7 @@ namespace OzonCardService.Models.DTO
         public int CountCustomersCorporateNutritions { get; set; }
 
         public bool isCompleted { get; set; }
+        public bool isCancel { get; set; }
         public TimeSpan TimeCompleted { get; set; }
 
         public static InfoDataUpload_dto operator +(InfoDataUpload_dto left, InfoDataUpload_dto right)  

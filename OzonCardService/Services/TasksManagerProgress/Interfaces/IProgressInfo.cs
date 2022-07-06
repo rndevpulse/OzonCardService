@@ -6,6 +6,7 @@ namespace OzonCardService.Services.TasksManagerProgress.Interfaces
     {
         IInfoData Status { get; }
         void isCompleted(bool complete);
+        void isCancel(bool cancel);
         void TimeCompleted(TimeSpan timeComplete);
     }
 }

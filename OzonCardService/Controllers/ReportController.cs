@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OzonCardService.Controllers
@@ -54,15 +55,22 @@ namespace OzonCardService.Controllers
                 var path = new FileManager().GetDirectory();
                 var id = Guid.NewGuid();
                 var title = $"{reportOption.Title}";
+
+                var cancelTokenSource = new CancellationTokenSource();
+                var token = cancelTokenSource.Token;
+
                 var t = Task.Factory.StartNew(async () =>
                 {
+                    var report = _service.CreateReportBiz(userId, reportOption, token).Result.ToList();
+                    if (token.IsCancellationRequested)
+                        return;
                     ExcelManager.CreateWorkbook(
-                        Path.Combine(path, id.ToString() + ".xlsx"),
-                        _service.CreateReportBiz(userId, reportOption).Result.ToList(),
-                        title);
+                        Path.Combine(path, id.ToString() + ".xlsx"), report, title);
+                    if (token.IsCancellationRequested)
+                        return;
                     await _service.SaveFile(id, "xlsx", title, userId);
-                });
-                progress.SetTask(t);
+                }, token);
+                progress.SetTask(t, cancelTokenSource);
                 
                 return _tasksManager.AddTask(progress);
             }

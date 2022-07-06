@@ -7,12 +7,11 @@ export interface IInfoDataUpload extends IInfoData{
     countCustomersCategory: number
     countCustomersCorporateNutritions: number
 
-    isCompleted :boolean
-    timeCompleted: string
 }
 
 export interface IInfoData {
     isCompleted: boolean
+    isCancel: boolean
     timeCompleted: string
 }
 

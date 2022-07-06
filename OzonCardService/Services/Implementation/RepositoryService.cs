@@ -13,6 +13,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OzonCardService.Services.Implementation
@@ -126,7 +127,7 @@ namespace OzonCardService.Services.Implementation
         /// <summary>
         /// Выгрузка списка пользователей в биз
         /// </summary>
-        public async Task UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers_excel, IProgress<ProgressInfo> progress)
+        public async Task UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers_excel, IProgress<ProgressInfo> progress, CancellationToken token)
         {
             var info = new InfoDataUpload_dto();
             info.CountCustomersAll = customers_excel.Count();
@@ -141,6 +142,9 @@ namespace OzonCardService.Services.Implementation
             var category = organization.Categories.First(x=>x.Id == infoUpload.CategoryId);
             var corporateNutrition = organization.CorporateNutritions.First(x=>x.Id == infoUpload.CorporateNutritionId);
 
+            if (token.IsCancellationRequested)
+                return;
+
             var session = await _client.GetSession(organization.Login, organization.Password);
             ///1. Находим разницу customers - rep_customers = получим новых пользователей, которых нет в бд
             var customers_rep_cards = customers_rep.SelectMany(x => x.Cards).Select(x => x.Track);
@@ -148,13 +152,13 @@ namespace OzonCardService.Services.Implementation
             customers_excel_new.RemoveAll(x => customers_rep_cards.Contains(x.Card));
 
             var new_customers = new List<Customer>();
-            //customers_excel           содержить весь список из ексоля
-            //customers_excel_newTab    содержить пользователей, которых еще нет в базе с такими табельниками
             ///ебучая задержка для отладки фронта
             //System.Threading.Thread.Sleep(1000 *300);//5 min
 
             foreach (var customer_excel in customers_excel_new)
             {
+                if (token.IsCancellationRequested)
+                    break;
                 ///=> для каждого из нового списка выполняем
                 ///0.1 Ищем гостя в бизе по карте
                 ///0.2 Если нашли, то берем все данные оттуда
@@ -170,15 +174,20 @@ namespace OzonCardService.Services.Implementation
                 if (res.Key != null)
                     new_customers.Add(res.Key);
             }
+
             ///1.5 Сохраняем новых в бд
             if (new_customers.Count > 0)
                 await _repository.AttachRangeCustomer(new_customers);
-
+            if (token.IsCancellationRequested)
+                return;
             ///2. Проходимся по списку rep_customers
             ///3. Сохраняем в базу rep_customers со всеми изменениями
-            
+
             foreach (var customer in customers_rep)
             {
+                if (token.IsCancellationRequested)
+                    break;
+
                 var excel = customers_excel.FirstOrDefault(x => customer.Cards.Any(c => c.Track == x.Card));
                 customer.TabNumber = customer.TabNumber == String.Empty
                     ? excel.TabNumber 
@@ -291,7 +300,7 @@ namespace OzonCardService.Services.Implementation
 
 
 
-        public async Task<IEnumerable<ReportCN_dto>> CreateReportBiz(Guid userId, ReportOption_vm reportOption)
+        public async Task<IEnumerable<ReportCN_dto>> CreateReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token)
         {
             reportOption.DateTo = Convert.ToDateTime(reportOption.DateTo).AddDays(1).ToString("yyyy-MM-dd");
 
@@ -310,6 +319,8 @@ namespace OzonCardService.Services.Implementation
                     reportOption.OrganizationId, reportOption.CorporateNutritionId,
                     reportOption.DateFrom,
                     reportOption.DateTo));
+            if (token.IsCancellationRequested)
+                return new List<ReportCN_dto>();
             //фильтрация пользователей по запрашиваемой категории, если необходимо
             if (reportOption.CategoryId != Guid.Empty)
             {

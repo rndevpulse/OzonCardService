@@ -39,7 +39,9 @@ export default class TaskStore {
         }
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
-
+    async onCancelTask(taskId: string) {
+        await TaskService.cancelTask(taskId)
+    }
     onRemoveTask(taskId :string) {
         this.tasks = this.tasks.filter(t => t.taskId !== taskId)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))

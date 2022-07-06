@@ -7,5 +7,6 @@ namespace OzonCardService.Services.TasksManagerProgress.Interfaces
     {
         Guid AddTask(ProgressTask<ProgressInfo> progress);
         IInfoData GetStatusTask(Guid taskId);
+        void CancelTask(Guid taskId);
     }
 }

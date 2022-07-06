@@ -41,7 +41,28 @@ namespace OzonCardService.Controllers
                 });
             }
         }
-
+        [HttpGet("cancel/{taskId}")]
+        [AuthorizeRoles(EnumRules.Basic)]
+        [Consumes("application/json")]
+        public ActionResult CancelTask(Guid taskId)
+        {
+            try
+            {
+                log.Information("CancelTask {@taskId}", taskId);
+                _tasksManager.CancelTask(taskId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "GetTaskInformation {@taskId}", taskId);
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 404,
+                    Message = ex.Message,
+                    Description = ex.InnerException?.ToString()
+                });
+            }
+        }
 
     }
 }

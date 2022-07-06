@@ -21,6 +21,10 @@ namespace OzonCardService.Services.TasksManagerProgress.Implementation
         {
             InfoData.isCompleted = complete;
         }
+        public void isCancel(bool cancel)
+        {
+            InfoData.isCancel = cancel;
+        }
 
         public void TimeCompleted(TimeSpan timeComplete)
         {

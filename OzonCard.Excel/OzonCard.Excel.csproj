@@ -17,12 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="ExcelLibrary">
-      <HintPath>ExcelLibrary.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="ExcelManager.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>

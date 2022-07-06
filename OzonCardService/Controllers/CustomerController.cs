@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OzonCardService.Controllers
@@ -57,14 +58,12 @@ namespace OzonCardService.Controllers
                     customers = new ExcelManager(new FileManager().GetFile(infoUpload.FileReport))
                     .GetClients().ToList();
                 var progress = new ProgressTask<ProgressInfo>();
-
+                var cancelTokenSource = new CancellationTokenSource();
+                var token = cancelTokenSource.Token;
                 var t = 
-                    _service.UploadCustomers(
-                    userId,
-                    infoUpload,
-                    customers, progress);
+                    _service.UploadCustomers(userId, infoUpload, customers, progress, token);
                 
-                progress.SetTask(t);
+                progress.SetTask(t, cancelTokenSource);
                 return _tasksManager.AddTask(progress);
             }
             catch (Exception ex)

@@ -36,7 +36,31 @@ const TasksForm: FC = () => {
                         <li>Время создания: {task.created}</li>
                     </ul>
                 </dd>
-                )
+            )
+        }
+    }
+    const taskTitle = (task: ITask) => {
+        if (!task.isCompleted) {
+            return (
+                <dt>
+                {task.deskription}
+                <i className="material-icons red-text"
+                    onClick={() => taskstore.onCancelTask(task.taskId)}>
+                    cancel
+                </i>
+                </dt>
+            )
+        }
+        else {
+            return (
+                <dt>
+                    {task.deskription}
+                    <i className="material-icons red-text"
+                        onClick={() => taskstore.onRemoveTask(task.taskId)}>
+                        delete
+                    </i>
+                </dt>
+            )
         }
     }
     if (taskstore.tasks.length === 0) {
@@ -50,22 +74,17 @@ const TasksForm: FC = () => {
                 <ul>
                     {taskstore.tasks && taskstore.tasks.map(task => {
                         const classes = ['task']
-                        if (task.isCompleted) {
+                        if (task.isCompleted && !task.taskInfo.isCancel) {
                             classes.push('completed')
+                        }
+                        if (task.taskInfo.isCancel) {
+                            classes.push('canceled')
                         }
                         return (
                             <li className={classes.join(' ')} key={task.taskId}>
+                                {taskTitle(task)}
                                 
-                                <dt>
-                                    {task.deskription}
-                                    <i className="material-icons red-text"
-                                        onClick={() => taskstore.onRemoveTask(task.taskId)}>
-                                        delete
-                                    </i>
-                                </dt>
                                 {taskDescription(task)}
-                                
-                                
                             </li>
                         );
                     })

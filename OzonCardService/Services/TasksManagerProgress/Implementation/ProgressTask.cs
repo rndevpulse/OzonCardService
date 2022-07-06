@@ -10,6 +10,7 @@ namespace OzonCardService.Services.TasksManagerProgress.Implementation
     {
         private volatile T _progressInfo;
         private Task _task { get; set; }
+        private System.Threading.CancellationTokenSource _cancellationToken { get; set; }
         private readonly Stopwatch _sw;
         private readonly Timer _timer;
         public T Vallue
@@ -35,23 +36,30 @@ namespace OzonCardService.Services.TasksManagerProgress.Implementation
         }
 
 
-        public void SetTask(Task task)
+        public void SetTask(Task task, System.Threading.CancellationTokenSource cancellationToken)
         {
             _task = task;
+            _cancellationToken = cancellationToken;
             _task.ContinueWith(t =>
             {
                 _progressInfo.isCompleted(true);
                 Report(_progressInfo);
             });
+            
         }
-
+        public void Cancel()
+        {
+            _cancellationToken.Cancel();
+            _progressInfo.isCancel(true);
+        }
         public void Report(T value)
         {
-            if (value.Status.isCompleted == true)
+            if (value.Status.isCompleted == true || value.Status.isCancel == true)
             {
                 _sw.Stop();
                 _timer.Stop();
                 _timer.Dispose();
+                _cancellationToken.Dispose();
             }
             value.TimeCompleted(_sw.Elapsed);
             _progressInfo = value;

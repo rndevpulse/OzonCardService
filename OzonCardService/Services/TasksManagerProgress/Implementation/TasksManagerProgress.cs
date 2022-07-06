@@ -20,12 +20,18 @@ namespace OzonCardService.Services.TasksManagerProgress.Implementation
             ProgressTask<ProgressInfo> progress;
             DictionaryTasks.TryGetValue(taskId, out progress);
             var status = progress?.Vallue?.Status ?? null;
-            if (status != null && status.isCompleted)
+            if (status != null && (status.isCompleted || status.isCancel))
             {
                 DictionaryTasks.Remove(taskId);
             }
             return status ?? default;
 
+        }
+        public void CancelTask(Guid taskId)
+        {
+            ProgressTask<ProgressInfo> progress;
+            DictionaryTasks.TryGetValue(taskId, out progress);
+            progress.Cancel();
         }
     }
 }

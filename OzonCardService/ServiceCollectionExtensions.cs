@@ -94,8 +94,6 @@ namespace OzonCardService
         {
             
             services.AddTransient<IServiceDatabase, ServiceDatabase>();
-            //services.AddTransient<Workers.IDeleteOld, Workers.DeleteOld>();
-            //services.AddTransient<Workers.IModerationsAuto, Workers.ModerationsAuto>();
             services.AddQuartz(q =>
             {
                 // base quartz scheduler, job and trigger configuration
@@ -109,7 +107,7 @@ namespace OzonCardService
                         JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
                         TimeSpan.FromHours(1).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
                     .WithSchedule(CronScheduleBuilder
-                        .DailyAtHourAndMinute(1, 0)
+                        .DailyAtHourAndMinute(10, 0)
                         .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time")))
                     );
 
