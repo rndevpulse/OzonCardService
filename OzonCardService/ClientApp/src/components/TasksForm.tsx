@@ -74,10 +74,10 @@ const TasksForm: FC = () => {
                 <ul>
                     {taskstore.tasks && taskstore.tasks.map(task => {
                         const classes = ['task']
-                        if (task.isCompleted && !task.taskInfo.isCancel) {
+                        if (task.isCompleted && task.taskInfo?.isCancel === false) {
                             classes.push('completed')
                         }
-                        if (task.taskInfo.isCancel) {
+                        if (task.isCancel || task.taskInfo?.isCancel === true) {
                             classes.push('canceled')
                         }
                         return (

@@ -33,15 +33,23 @@ export default class TaskStore {
         if (response.status === 200) {
             this.tasks[index].taskInfo = response.data
             this.tasks[index].isCompleted = response.data.isCompleted
+            this.tasks[index].isCancel = response.data.isCancel
         }
         else {
             this.tasks[index].isCompleted = true
         }
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
+
     async onCancelTask(taskId: string) {
+        const t = this.tasks.filter(t => t.taskId === taskId)[0]
+        t.isCancel = true
+        this.tasks = this.tasks.filter(t => t.taskId !== taskId)
+        this.tasks.push(t)
+        localStorage.setItem('tasks', JSON.stringify(this.tasks))
         await TaskService.cancelTask(taskId)
     }
+
     onRemoveTask(taskId :string) {
         this.tasks = this.tasks.filter(t => t.taskId !== taskId)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
@@ -52,6 +60,7 @@ export default class TaskStore {
             deskription: deskription,
             taskInfo: undefined,
             isCompleted: false,
+            isCancel:false,
             created: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`
         }
         this.tasks.push(task)

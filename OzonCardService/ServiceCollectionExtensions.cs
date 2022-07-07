@@ -107,10 +107,9 @@ namespace OzonCardService
                         JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
                         TimeSpan.FromHours(1).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
                     .WithSchedule(CronScheduleBuilder
-                        .DailyAtHourAndMinute(10, 0)
+                        .DailyAtHourAndMinute(configuration.GetValue<int>("TimeBackup"), 0)
                         .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time")))
                     );
-
 
             });
             services.AddQuartzServer(options =>

@@ -19,6 +19,7 @@ export interface ITask {
     taskId: string,
     deskription: string,
     isCompleted: boolean,
+    isCancel:boolean,
     taskInfo: IInfoDataUpload | undefined,
     created: string
 }
