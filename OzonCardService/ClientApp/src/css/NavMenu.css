@@ -59,19 +59,33 @@
 
 
 .styledMenu {
-    top: 64px;
+    top: 0px;
     width: 35vw;
     position: fixed;
     background-color: #F0F0F0;
     z-index: 2;
     padding: 1rem 0;
     flex-direction: column;
-    display: none;
+    transform: translateX(+150%)
 }
+    
     .styledMenu.open {
+        transform: translateX(+150%);
+        animation: ani 1s forwards;
         display: flex;
+        
         right: 0;
     }
+       
+@keyframes ani {
+    0% {
+    transform: translateX(+150%);
+    }
+
+    100% {
+    transform: translateY(0);
+    }
+}
 
 .styledLink {
     padding-left: 2rem;

@@ -207,7 +207,8 @@ namespace OzonCard.Excel
                     var table = range.CreateTable();
                     table.Theme = XLTableTheme.TableStyleLight15;
                     table.ShowTotalsRow = true;
-
+                    table.Column(2).SetDataType(XLDataType.Text);
+                    table.Column(2).Style.NumberFormat.SetFormat("@");
                     for (int i = 0; i < dt.Columns.Count; i++)
                     {
                         // Add column header

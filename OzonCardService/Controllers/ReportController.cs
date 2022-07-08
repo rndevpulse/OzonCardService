@@ -54,8 +54,7 @@ namespace OzonCardService.Controllers
                 progress.Report(new ProgressInfo(new InfoData()));
                 var path = new FileManager().GetDirectory();
                 var id = Guid.NewGuid();
-                var title = $"{reportOption.Title}";
-
+                var headerexel = $"{reportOption.Title} в период с {DateTime.Parse(reportOption.DateFrom)} по {DateTime.Parse(reportOption.DateTo).AddSeconds(-1)}";
                 var cancelTokenSource = new CancellationTokenSource();
                 var token = cancelTokenSource.Token;
 
@@ -65,10 +64,12 @@ namespace OzonCardService.Controllers
                     if (token.IsCancellationRequested)
                         return;
                     ExcelManager.CreateWorkbook(
-                        Path.Combine(path, id.ToString() + ".xlsx"), report, title);
+                        Path.Combine(path, id.ToString() + ".xlsx"), 
+                        report,
+                        headerexel);
                     if (token.IsCancellationRequested)
                         return;
-                    await _service.SaveFile(id, "xlsx", title, userId);
+                    await _service.SaveFile(id, "xlsx", reportOption.Title, userId);
                 }, token);
                 progress.SetTask(t, cancelTokenSource);
                 
