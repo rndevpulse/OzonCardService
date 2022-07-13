@@ -83,11 +83,11 @@ namespace OzonCard.Excel
                     CardCol = 3 + offset;
                     PositionCol = 4 + offset;
                     break;
-                case 9:
+                case 8:
                     PositionCol = 1 + offset;
                     NameCol = 2 + offset;
                     TabNumberCol = 3 + offset;
-                    CardCol = 7 + offset;
+                    CardCol = 6 + offset;
                     break;
                 default:
                     var ex = $"Колличество столбцов ({useColumns}) не соответствует заданному для парсинга количеству (3:5:9)";
@@ -181,12 +181,12 @@ namespace OzonCard.Excel
         }
 
 
-        public static void CreateWorkbook<T>(String filePath, IList<T> list, string? title = null)
+        public static void CreateWorkbook<T>(String filePath, IList<T> list, string? title = null, bool TotalsRow = true)
         {
             var dataset = ToDataSet<T>(list);
-            CreateWorkbook(filePath, dataset, title);
+            CreateWorkbook(filePath, dataset, title, TotalsRow);
         }
-        public static void CreateWorkbook(String filePath, DataSet dataset, string? title = null)
+        public static void CreateWorkbook(String filePath, DataSet dataset, string? title = null, bool TotalsRow = true)
         {
             try
             {
@@ -206,9 +206,7 @@ namespace OzonCard.Excel
                     var range = worksheet.Range(2, 1, dt.Rows.Count + 1, dt.Columns.Count);
                     var table = range.CreateTable();
                     table.Theme = XLTableTheme.TableStyleLight15;
-                    table.ShowTotalsRow = true;
-                    table.Column(2).SetDataType(XLDataType.Text);
-                    table.Column(2).Style.NumberFormat.SetFormat("@");
+                    
                     for (int i = 0; i < dt.Columns.Count; i++)
                     {
                         // Add column header
@@ -219,12 +217,19 @@ namespace OzonCard.Excel
                             //Если нулевые значения, заменяем на пустые строки
                             worksheet.Cell(j + 2, i + 1).Value = dt.Rows[j][i] == DBNull.Value ? "" : dt.Rows[j][i];
                     }
-                    table.Field(0).TotalsRowLabel = "Сотрудников";
-                    table.Field(1).TotalsRowFunction = XLTotalsRowFunction.Count;
+                    if (TotalsRow)
+                    {
+                        table.ShowTotalsRow = true;
+                        table.Column(2).SetDataType(XLDataType.Text);
+                        table.Column(2).Style.NumberFormat.SetFormat("@");
+                        table.Field(0).TotalsRowLabel = "Сотрудников";
+                        table.Field(1).TotalsRowFunction = XLTotalsRowFunction.Count;
+
+                        table.Field(dt.Columns.Count - 5).TotalsRowLabel = "Количество обедов";
+                        table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
+                        table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
+                    }
                     
-                    table.Field(dt.Columns.Count - 5).TotalsRowLabel = "Количество обедов";
-                    table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
-                    table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
                 }
 
                 log.Information("Save file report to {0}", filePath);

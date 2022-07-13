@@ -299,7 +299,21 @@ namespace OzonCard.BizClient.Services.Implementation
                 return await GerReportCN(access_session, organizationId, corporateNutritionId, dateFrom, dateTo);
             }
         }
-
+        public async Task<IEnumerable<TransactionsReport>> GerTransactionsReport(Session access_session, Guid organizationId, string dateFrom, string dateTo)
+        {
+            try
+            {
+                var type = TransactionType.PayFromWallet.ToString();
+                var list = await _client.Send<IEnumerable<TransactionsReport>>($"organization/{organizationId}/transactions_report?date_from={dateFrom}&date_to={dateTo}&access_token={access_session.Token}");
+                return list?.Where(x => x.transactionType == type).ToList()
+                ?? new List<TransactionsReport>();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GerTransactionsReport(access_session, organizationId, dateFrom, dateTo);
+            }
+        }
         public async Task<IEnumerable<MetricCustomer>> GetMetricsCustomers(Session access_session, Guid organizationId, IEnumerable<Guid> guids)
         {
             try

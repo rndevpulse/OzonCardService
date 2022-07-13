@@ -12,6 +12,9 @@ export default class BizService {
     static async ReportFromBiz(option: IReportOptionResponse): Promise<AxiosResponse<string>> {
         return api.post<string>('/report', option)
     }
+    static async TransactionsFromBiz(option: IReportOptionResponse): Promise<AxiosResponse<string>> {
+        return api.post<string>('/report/transactions', option)
+    }
     static async SearchCustomerFromBiz(option: ISearchCustomer): Promise<AxiosResponse<IInfoSearhCustomerResponse[]>> {
         return api.post<IInfoSearhCustomerResponse[]>('/customer/search', option)
     }

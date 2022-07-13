@@ -24,7 +24,8 @@ namespace OzonCardService.Services.Interfaces
         Task<bool> DelUserForOrganization(Guid userId, Guid organizationId);
         Task UploadCustomers(Guid userId, InfoCustomersUpload_vm infoUpload, List<ShortCustomerInfo_excel> customers, 
             IProgress<ProgressInfo> progress, CancellationToken token);
-        Task<IEnumerable<ReportCN_dto>> CreateReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token);
+        Task<IEnumerable<ReportCN_dto>> PeriodReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token);
+        Task<IEnumerable<TransactionsReport_dto>> TransactionsReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token);
         Task SaveFile(Guid id, string format, string name, Guid userId);
         Task RemoveFile(string url);
         Task<IEnumerable<File_dto>> GetFiles(Guid userId);

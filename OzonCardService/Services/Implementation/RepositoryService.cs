@@ -300,9 +300,9 @@ namespace OzonCardService.Services.Implementation
 
 
 
-        public async Task<IEnumerable<ReportCN_dto>> CreateReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token)
+        public async Task<IEnumerable<ReportCN_dto>> PeriodReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token)
         {
-            reportOption.DateTo = Convert.ToDateTime(reportOption.DateTo).AddDays(1).ToString("yyyy-MM-dd");
+            //reportOption.DateTo = Convert.ToDateTime(reportOption.DateTo).AddDays(1).ToString("yyyy-MM-dd");
 
             var organization = await _repository.GetOrganization(reportOption.OrganizationId) ??
                 throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found");
@@ -412,6 +412,38 @@ namespace OzonCardService.Services.Implementation
 
             return customer_dto;
 
+        }
+
+        public async Task<IEnumerable<TransactionsReport_dto>> TransactionsReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token)
+        {
+            //reportOption.DateTo = Convert.ToDateTime(reportOption.DateTo).AddDays(1).ToString("yyyy-MM-dd");
+
+            var organization = await _repository.GetOrganization(reportOption.OrganizationId) ??
+                throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found");
+            if (!organization.Users.Any(x => x.Id == userId))
+                throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found in current user");
+            
+
+
+            var session = await _client.GetSession(organization.Login, organization.Password);
+            var biz_transactions = await _client.GerTransactionsReport(session, reportOption.OrganizationId, reportOption.DateFrom, reportOption.DateTo);
+            var report = _mapper.Map<IEnumerable<TransactionsReport_dto>>(biz_transactions);
+            if (token.IsCancellationRequested)
+                return new List<TransactionsReport_dto>();
+            
+
+
+            var customers = await _repository.GetCustomersForOrganization(organization.Id);
+            foreach (var row in report)
+            {
+                var customer = customers.FirstOrDefault(x => x.Cards.Any(c=>row.СardNumbers.Contains(c.Number)));
+                if (customer != null)
+                {
+                    row.TabNumber = customer.TabNumber;
+                    row.Name = customer.Name;
+                }
+            }
+            return report;
         }
     }
 }

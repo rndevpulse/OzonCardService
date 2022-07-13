@@ -48,8 +48,7 @@ namespace OzonCardService.Controllers
                 await Task.Run(() => Guid.TryParse(
                         User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
                 );
-
-                
+                               
                 var progress = new ProgressTask<ProgressInfo>();
                 progress.Report(new ProgressInfo(new InfoData()));
                 var path = new FileManager().GetDirectory();
@@ -60,7 +59,7 @@ namespace OzonCardService.Controllers
 
                 var t = Task.Factory.StartNew(async () =>
                 {
-                    var report = _service.CreateReportBiz(userId, reportOption, token).Result.ToList();
+                    var report = _service.PeriodReportBiz(userId, reportOption, token).Result.ToList();
                     if (token.IsCancellationRequested)
                         return;
                     ExcelManager.CreateWorkbook(
@@ -73,6 +72,58 @@ namespace OzonCardService.Controllers
                 }, token);
                 progress.SetTask(t, cancelTokenSource);
                 
+                return _tasksManager.AddTask(progress);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "UploadCustomersReport {@reportOption}", reportOption);
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 400,
+                    Message = ex.Message,
+                    Description = ex.InnerException?.ToString()
+                });
+            }
+        }
+
+
+
+        [HttpPost("transactions")]
+        [Consumes("application/json")]
+        public async Task<ActionResult<Guid>> TransactionsIkoBiz(ReportOption_vm reportOption)
+        {
+            try
+            {
+                log.Information("TransactionsIkoBiz {@reportOption}", reportOption);
+                Guid userId = new Guid();
+                await Task.Run(() => Guid.TryParse(
+                        User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
+                );
+
+
+                var progress = new ProgressTask<ProgressInfo>();
+                progress.Report(new ProgressInfo(new InfoData()));
+                var path = new FileManager().GetDirectory();
+                var id = Guid.NewGuid();
+                var headerexel = $"{reportOption.Title} в период с {DateTime.Parse(reportOption.DateFrom)} по {DateTime.Parse(reportOption.DateTo).AddSeconds(-1)}";
+                var cancelTokenSource = new CancellationTokenSource();
+                var token = cancelTokenSource.Token;
+
+                var t = Task.Factory.StartNew(async () =>
+                {
+                    var report = _service.TransactionsReportBiz(userId, reportOption, token).Result;
+                    if (token.IsCancellationRequested)
+                        return;
+                    ExcelManager.CreateWorkbook(
+                        Path.Combine(path, id.ToString() + ".xlsx"),
+                        report.ToList(),
+                        headerexel, false);
+                    if (token.IsCancellationRequested)
+                        return;
+                    await _service.SaveFile(id, "xlsx", reportOption.Title, userId);
+                }, token);
+                progress.SetTask(t, cancelTokenSource);
+
                 return _tasksManager.AddTask(progress);
             }
             catch (Exception ex)

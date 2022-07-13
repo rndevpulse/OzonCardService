@@ -26,6 +26,11 @@ namespace OzonCardService.Helpers
 					.Where(x=>x.isActive).Select(x=>x.name)))
 				;
 
+			CreateMap<BizModel.TransactionsReport, Models.DTO.TransactionsReport_dto>()
+				.ForMember(m=>m.Date, opt=>opt.MapFrom(b=>b.transactionCreateDate.ToString("yyyy-MM-dd")))
+				.ForMember(m=>m.Time, opt=>opt.MapFrom(b=>b.transactionCreateDate.ToString("HH:mm:ss")))
+				.ForMember(m=>m.СardNumbers, opt=>opt.MapFrom(b=>b.cardNumbers))
+				;
 		}
 	}
 }
