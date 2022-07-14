@@ -181,11 +181,14 @@ namespace OzonCard.Excel
         }
 
 
+       
+
         public static void CreateWorkbook<T>(String filePath, IList<T> list, string? title = null, bool TotalsRow = true)
         {
             var dataset = ToDataSet<T>(list);
             CreateWorkbook(filePath, dataset, title, TotalsRow);
         }
+        
         public static void CreateWorkbook(String filePath, DataSet dataset, string? title = null, bool TotalsRow = true)
         {
             try
@@ -197,7 +200,7 @@ namespace OzonCard.Excel
                 var workbook = new XLWorkbook();
                 foreach (DataTable dt in dataset.Tables)
                 {
-                    var worksheet = workbook.Worksheets.Add("Отчет");
+                    var worksheet = workbook.Worksheets.Add(dt.TableName);
 
                     if (title != null)
                     {
@@ -217,14 +220,14 @@ namespace OzonCard.Excel
                             //Если нулевые значения, заменяем на пустые строки
                             worksheet.Cell(j + 2, i + 1).Value = dt.Rows[j][i] == DBNull.Value ? "" : dt.Rows[j][i];
                     }
+                    
                     if (TotalsRow)
                     {
                         table.ShowTotalsRow = true;
-                        table.Column(2).SetDataType(XLDataType.Text);
-                        table.Column(2).Style.NumberFormat.SetFormat("@");
                         table.Field(0).TotalsRowLabel = "Сотрудников";
                         table.Field(1).TotalsRowFunction = XLTotalsRowFunction.Count;
-
+                        table.Column(2).SetDataType(XLDataType.Text);
+                        table.Column(2).Style.NumberFormat.SetFormat("@");
                         table.Field(dt.Columns.Count - 5).TotalsRowLabel = "Количество обедов";
                         table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
                         table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
@@ -250,7 +253,7 @@ namespace OzonCard.Excel
                 )).ToList();
             elementType.RemoveAll(x => x.Value == null);
             DataSet ds = new DataSet();
-            DataTable t = new DataTable();
+            DataTable t = new DataTable("Отчет");
             ds.Tables.Add(t);
 
             DataRow row = t.NewRow();

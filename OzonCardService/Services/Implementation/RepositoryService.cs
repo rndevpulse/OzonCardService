@@ -414,7 +414,7 @@ namespace OzonCardService.Services.Implementation
 
         }
 
-        public async Task<IEnumerable<TransactionsReport_dto>> TransactionsReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token)
+        public async Task<TransactionsReport> TransactionsReportBiz(Guid userId, ReportOption_vm reportOption, CancellationToken token)
         {
             //reportOption.DateTo = Convert.ToDateTime(reportOption.DateTo).AddDays(1).ToString("yyyy-MM-dd");
 
@@ -422,28 +422,65 @@ namespace OzonCardService.Services.Implementation
                 throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found");
             if (!organization.Users.Any(x => x.Id == userId))
                 throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found in current user");
-            
+            var TransactionsReport = new TransactionsReport();
 
 
             var session = await _client.GetSession(organization.Login, organization.Password);
-            var biz_transactions = await _client.GerTransactionsReport(session, reportOption.OrganizationId, reportOption.DateFrom, reportOption.DateTo);
-            var report = _mapper.Map<IEnumerable<TransactionsReport_dto>>(biz_transactions);
-            if (token.IsCancellationRequested)
-                return new List<TransactionsReport_dto>();
-            
-
-
+            var dateTo_transaction = DateTime.Parse(reportOption.DateTo).AddDays(-1).ToString("yyyy-MM-dd");
+            var biz_transactions =
+                await _client.GerTransactionsReport(session, reportOption.OrganizationId, reportOption.DateFrom, dateTo_transaction);
+            if (token.IsCancellationRequested || !biz_transactions.Any())
+                return TransactionsReport;
+            var biz_report = await _client.GerReportCN(
+                    session, reportOption.OrganizationId, reportOption.CorporateNutritionId,
+                    reportOption.DateFrom, reportOption.DateTo);
             var customers = await _repository.GetCustomersForOrganization(organization.Id);
-            foreach (var row in report)
-            {
-                var customer = customers.FirstOrDefault(x => x.Cards.Any(c=>row.СardNumbers.Contains(c.Number)));
-                if (customer != null)
+            if (token.IsCancellationRequested)
+                return TransactionsReport;
+
+
+            TransactionsReport.Transactions = 
+                (from t in biz_transactions
+                join r in biz_report on t.cardNumbers equals r.guestCardTrack
+                join c in customers on r.guestId equals c.iikoBizId
+                select new TransactionsReport_dto()
                 {
-                    row.TabNumber = customer.TabNumber;
-                    row.Name = customer.Name;
-                }
+                    Date = t.transactionCreateDate.ToString("yyyy-MM-dd"),
+                    Time = t.transactionCreateDate.ToString("HH:mm:ss"),
+                    TabNumber = c.TabNumber,
+                    Name = c.Name,
+                    Division = c.Position,
+                    Categories = r.guestCategoryNames,
+                    СardNumbers = r.guestCardTrack,
+                    Eating = GetNameEating(t.transactionCreateDate)
+                }).ToList();
+
+            var reportSummary = new List<TransactionsSummaryReport_dto>();
+            foreach (var group_customer in TransactionsReport.Transactions.GroupBy(x=>x.Name))
+            {
+                var customer = group_customer.First();
+                reportSummary.Add(new TransactionsSummaryReport_dto()
+                {
+                    Name = group_customer.Key,
+                    Categories = customer.Categories,
+                    Division = customer.Division,
+                    CountDay = group_customer.GroupBy(x=>x.Date).Count()
+                });
+
             }
-            return report;
+            TransactionsReport.TransactionsSummary = reportSummary;
+            return TransactionsReport;
+        }
+        string GetNameEating(DateTime date)
+        {
+            var time = date.TimeOfDay;
+            if (time > new TimeSpan(3, 0, 0) && time <= new TimeSpan(11, 0, 0))
+                return "Завтрак";
+            if (time > new TimeSpan(11, 0, 0) && time <= new TimeSpan(16, 0, 0))
+                return "Обед";
+            if (time > new TimeSpan(16, 0, 0) && time <= new TimeSpan(21, 0, 0))
+                return "Ужин";
+            return "Ночной ужин";
         }
     }
 }

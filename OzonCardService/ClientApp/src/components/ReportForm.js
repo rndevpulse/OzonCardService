@@ -132,7 +132,7 @@ var ReportForm = function () {
                         option = {
                             organizationId: organizationId,
                             categoryId: isFilter ? categoryId : "00000000-0000-0000-0000-000000000000",
-                            corporateNutritionId: "00000000-0000-0000-0000-000000000000",
+                            corporateNutritionId: corporateNutritionId,
                             dateFrom: (moment(dateFrom)).format("YYYY-MM-DD"),
                             dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
                             title: fileName === ''
@@ -191,6 +191,8 @@ var ReportForm = function () {
                 React.createElement(react_tabs_1.TabPanel, null,
                     React.createElement("label", { htmlFor: "organizations" }, "\u041E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438"),
                     React.createElement(CustomSelect, { id: "organizations", value: organizationId, options: organizationstore.organizations, onChange: onOrganizationSelectChange }),
+                    React.createElement("label", { htmlFor: "corporateNutritions" }, "\u041F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u044B \u043F\u0438\u0442\u0430\u043D\u0438\u044F"),
+                    React.createElement(CustomSelect, { id: "corporateNutritions", value: corporateNutritionId, options: corporateNutritions, onChange: function (event) { return setCorporateNutritionId(event.target.value); } }),
                     div_datePickers(),
                     div_nameFileReport(),
                     React.createElement("button", { className: "button", onClick: transactionsFromBiz }, "\u0412\u044B\u0433\u0440\u0443\u0437\u0438\u0442\u044C"))))));

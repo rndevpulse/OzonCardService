@@ -88,7 +88,7 @@ const ReportForm: FC = () => {
         const option: IReportOptionResponse = {
             organizationId: organizationId,
             categoryId: isFilter ? categoryId : "00000000-0000-0000-0000-000000000000",
-            corporateNutritionId: "00000000-0000-0000-0000-000000000000",
+            corporateNutritionId: corporateNutritionId,
             dateFrom: (moment(dateFrom)).format("YYYY-MM-DD"),
             dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
             title: fileName === ''
@@ -201,6 +201,9 @@ const ReportForm: FC = () => {
                         <label htmlFor="organizations">Организации</label>
                         <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                             onChange={onOrganizationSelectChange} />
+                        <label htmlFor="corporateNutritions">Программы питания</label>
+                        <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
+                            onChange={event => setCorporateNutritionId(event.target.value)} />
                         {div_datePickers()}
                         {div_nameFileReport()}
                         <button className="button"

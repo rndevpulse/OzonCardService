@@ -368,7 +368,7 @@ namespace OzonCard.Context.Repositories
             {
                 var customers = await context.Customers
                     .Where(x => x.Organization.Id == organizationId)
-                    .Include(x=>x.Cards)
+                   
                     .ToListAsync();
                 return customers;
             }

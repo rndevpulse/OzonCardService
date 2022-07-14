@@ -116,7 +116,7 @@ namespace OzonCardService.Controllers
                         return;
                     ExcelManager.CreateWorkbook(
                         Path.Combine(path, id.ToString() + ".xlsx"),
-                        report.ToList(),
+                        report.GetDataSet(),
                         headerexel, false);
                     if (token.IsCancellationRequested)
                         return;
