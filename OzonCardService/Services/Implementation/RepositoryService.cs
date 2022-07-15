@@ -8,7 +8,6 @@ using OzonCardService.Models.DTO;
 using OzonCardService.Models.View;
 using OzonCardService.Services.Interfaces;
 using OzonCardService.Services.TasksManagerProgress.Implementation;
-using OzonCardService.Services.TasksManagerProgress.Interfaces;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -362,7 +361,19 @@ namespace OzonCardService.Services.Implementation
         {
             await _repository.RemoveFile(url);
         }
+        public async Task ChangeCustomerCategory(ChangeCustomerCategory_vm customer)
+        {
+            var organization = await _repository.GetOrganization(customer.OrganizationId) ??
+                throw new ArgumentException($"Organization with {customer.OrganizationId} not found");
+            if (!organization.Categories.Any(x => x.Id == customer.CategoryId))
+                throw new ArgumentException($"Category with {customer.CategoryId} not found");
+            var session = await _client.GetSession(organization.Login, organization.Password);
 
+            if (customer.isRemove)
+                await _client.DelCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
+            else
+                await _client.AddCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
+        }
         public async Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer)
         {
             var organization = await _repository.GetOrganization(customer.OrganizationId) ??
@@ -394,9 +405,10 @@ namespace OzonCardService.Services.Implementation
             foreach(var c in customers_db)
             {
                 var customer_biz = await _client.GetCustomerForId(session, c.iikoBizId, organization.Id);
+                if (customer_biz == null)
+                    continue;
                 customer_biz.comment = organization.Name;
                 customer_dto.Add(_mapper.Map<InfoSearchCustomer_dto>(customer_biz));
-                    
             };
             DateTime now = DateTime.Now;
             var dateFrom = new DateTime(now.Year, now.Month, 1);
@@ -482,5 +494,7 @@ namespace OzonCardService.Services.Implementation
                 return "Ужин";
             return "Ночной ужин";
         }
+
+       
     }
 }

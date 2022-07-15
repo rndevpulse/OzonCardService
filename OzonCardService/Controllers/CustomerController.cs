@@ -99,5 +99,28 @@ namespace OzonCardService.Controllers
                 });
             }
         }
+
+        [HttpPost("change_category")]
+        [AuthorizeRoles(EnumRules.Basic)]
+        [Consumes("application/json")]
+        public async Task<ActionResult> ChangeCategoryCustomer(ChangeCustomerCategory_vm customer)
+        {
+            try
+            {
+                await _service.ChangeCustomerCategory(customer);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "SearchCustomers {@customers}", customer);
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 400,
+                    Message = ex.Message,
+                    Description = ex.InnerException?.ToString()
+                });
+            }
+        }
+
     }
 }

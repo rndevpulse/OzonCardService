@@ -3,12 +3,11 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { Context } from '..';
-import axios from 'axios';
 import BizService from '../services/BizServise';
 import '../css/SearchForm.css'
 import { IInfoSearhCustomerResponse } from '../models/IInfoSearhCustomerResponse';
-import { ISearchCustomer } from '../models/ISearchCustomer';
 import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
+import { ICategoryResponse } from '../models/ICategoryResponse';
 
 
 
@@ -18,6 +17,8 @@ const SearchCustomerForm: FC = () => {
     const [organizationId, setOrganizationId] = useState('');
     const [corporateNutritions, setCorporateNutritions] = useState<ICorporateNutritionResponse[]>([]);
     const [corporateNutritionId, setCorporateNutritionId] = useState('');
+    const [categoryId, setCategoryId] = useState('');
+    const [categories, setCategories] = useState<ICategoryResponse[]>([]);
 
     const [customerName, setCustomerName] = useState('');
     const [customerCard, setCustomerCard] = useState('');
@@ -39,6 +40,8 @@ const SearchCustomerForm: FC = () => {
         const organization = organizationstore.organizations.find(org => org.id === orgId);
 
         setOrganizationId(organization?.id ?? '')
+        setCategories(organization?.categories ?? [])
+        setCategoryId(organization?.categories[0]?.id ?? '')
         setCorporateNutritions(organization?.corporateNutritions ?? [])
         setCorporateNutritionId(organization?.corporateNutritions[0]?.id ?? '')
 
@@ -48,7 +51,8 @@ const SearchCustomerForm: FC = () => {
         setOrganizationId(organizationstore.organizations[0]?.id ?? '');
         setCorporateNutritions(organizationstore.organizations[0]?.corporateNutritions ?? [])
         setCorporateNutritionId(organizationstore.organizations[0]?.corporateNutritions[0]?.id ?? '')
-
+        setCategories(organizationstore.organizations[0]?.categories ?? []);
+        setCategoryId(organizationstore.organizations[0]?.categories[0]?.id ?? '');
 
         organizationstore.setLoading(false);
         //console.log('isLoading false')
@@ -86,6 +90,44 @@ const SearchCustomerForm: FC = () => {
             setCustomersInfo([])
         }
     }
+    async function ChangeCustomerCategory(id: string, name: string, isRemove: boolean) {
+        const catName = categories.filter(x => x.id === categoryId)[0].name
+        if (!isRemove && customersInfo.find(x => x.id === id)?.categories.includes(catName)
+            || isRemove && !customersInfo.find(x => x.id === id)?.categories.includes(catName)) {
+            return
+        }
+
+        await BizService.ChangeCustomerBizCategory({
+            id,
+            organizationId,
+            categoryId,
+            isRemove
+        })
+        setIsLoadCustomers(true)
+
+        if (isRemove) {
+            const customer_categories = customersInfo.find(x => x.id === id)?.categories.filter(x => x !== catName)
+            const new_arr = customersInfo
+            console.log(customer_categories)
+            if (customer_categories)
+                new_arr.find(x => x.id === id)!.categories = customer_categories
+            console.log(new_arr)
+            setCustomersInfo(new_arr)
+            confirm(`У пользователя "${name}" удалена указанная категория`)
+        }
+        else {
+            const new_arr = customersInfo
+            new_arr.find(x => x.id === id)?.categories.push(catName)
+            
+            console.log(new_arr)
+            setCustomersInfo(new_arr)
+            confirm(`Пользователю "${name}" добавлена указанная категория`)
+        }
+        setIsLoadCustomers(false)
+
+
+    }
+    
     function getCustomersInfo() {
         //console.log("getCustomersInfo length", customersInfo.length)
         if (isLoadCustomers) {
@@ -101,6 +143,19 @@ const SearchCustomerForm: FC = () => {
                         return (
                             <li key={customer.id}>
                                 <dt>{customer.name}</dt>
+                                <div>
+                                    <label>Добавить или удалить выбранную категорию</label>
+                                    <span>
+                                        <button className="button"
+                                            onClick={() => ChangeCustomerCategory(customer.id, customer.name, true)}>
+                                            Удалить
+                                        </button>
+                                        <button className="button"
+                                            onClick={() => ChangeCustomerCategory(customer.id, customer.name, false)}>
+                                            Добавить
+                                        </button>
+                                    </span>
+                                </div>
                                 <dd>
                                     <ul>
                                         <li>Организация: {customer.organization}</li>
@@ -116,6 +171,7 @@ const SearchCustomerForm: FC = () => {
                                         })}
                                     </ul>
                                 </dd>
+                                
                             </li>
                         )
                     })}
@@ -160,7 +216,10 @@ const SearchCustomerForm: FC = () => {
                         value={customerCard}
                         type='text'
                         placeholder='xxxxxxxx'
-                        /></label>
+                    /></label>
+                <br/>
+                <label htmlFor="categories">Категории</label>
+                <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)} />
             </div>
             {getCustomersInfo()}
             

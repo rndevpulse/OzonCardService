@@ -32,5 +32,6 @@ namespace OzonCardService.Services.Interfaces
 
 
         Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer);
+        Task ChangeCustomerCategory(ChangeCustomerCategory_vm customer);
     }
 }

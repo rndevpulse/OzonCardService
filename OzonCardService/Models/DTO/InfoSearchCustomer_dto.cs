@@ -20,6 +20,7 @@ namespace OzonCardService.Models.DTO
 
         internal void SetMetrics(ReportCN report)
         {
+            if (report == null) return;
             Sum = report?.payFromWalletSum ?? 0;
             Orders = (int)(report?.paidOrdersCount ?? 0);
 

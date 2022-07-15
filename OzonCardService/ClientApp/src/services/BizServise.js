@@ -68,6 +68,13 @@ var BizService = /** @class */ (function () {
             });
         });
     };
+    BizService.ChangeCustomerBizCategory = function (option) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, http_1.default.post('/customer/change_category', option)];
+            });
+        });
+    };
     return BizService;
 }());
 exports.default = BizService;

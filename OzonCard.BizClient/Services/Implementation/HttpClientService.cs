@@ -186,7 +186,19 @@ namespace OzonCard.BizClient.Services.Implementation
                 return await AddCategotyCustomer(access_session, iikoBizId, organizationId, categoryId);
             }
         }
-
+        public async Task<bool> DelCategotyCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid categoryId)
+        {
+            try
+            {
+                await _client.Send<object>($"customers/{iikoBizId}/remove_category?access_token={access_session.Token}&organization={organizationId}&categoryId={categoryId}", "POST");
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await DelCategotyCustomer(access_session, iikoBizId, organizationId, categoryId);
+            }
+        }
         public async Task<Guid> AddCorporateNutritionCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid corporateNutritionId)
         {
             try
