@@ -408,6 +408,7 @@ namespace OzonCardService.Services.Implementation
                 if (customer_biz == null)
                     continue;
                 customer_biz.comment = organization.Name;
+                customer_biz.userData = c.TabNumber;
                 customer_dto.Add(_mapper.Map<InfoSearchCustomer_dto>(customer_biz));
             };
             DateTime now = DateTime.Now;

@@ -83,11 +83,11 @@ namespace OzonCard.Excel
                     CardCol = 3 + offset;
                     PositionCol = 4 + offset;
                     break;
-                case 8:
+                case 9:
                     PositionCol = 1 + offset;
                     NameCol = 2 + offset;
                     TabNumberCol = 3 + offset;
-                    CardCol = 6 + offset;
+                    CardCol = 7 + offset;
                     break;
                 default:
                     var ex = $"Колличество столбцов ({useColumns}) не соответствует заданному для парсинга количеству (3:5:9)";
@@ -205,17 +205,15 @@ namespace OzonCard.Excel
                     if (title != null)
                     {
                         worksheet.Cell(1, 1).Value = title;
+                        worksheet.Range(1,1,1,5).Merge();
                     }
                     var range = worksheet.Range(2, 1, dt.Rows.Count + 1, dt.Columns.Count);
                     var table = range.CreateTable();
-                    table.Theme = XLTableTheme.TableStyleLight15;
-                    
+                    table.Theme = XLTableTheme.TableStyleLight8;
                     for (int i = 0; i < dt.Columns.Count; i++)
                     {
                         // Add column header
                         //worksheet.Cells[0, i] = new Cell(dt.Columns[i].ColumnName);
-
-                        // Populate row data
                         for (int j = 0; j < dt.Rows.Count; j++)
                             //Если нулевые значения, заменяем на пустые строки
                             worksheet.Cell(j + 2, i + 1).Value = dt.Rows[j][i] == DBNull.Value ? "" : dt.Rows[j][i];
@@ -232,7 +230,8 @@ namespace OzonCard.Excel
                         table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
                         table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
                     }
-                    
+                    worksheet.Columns().AdjustToContents();
+
                 }
 
                 log.Information("Save file report to {0}", filePath);

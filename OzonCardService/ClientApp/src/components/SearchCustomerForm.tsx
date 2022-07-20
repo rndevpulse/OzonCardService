@@ -160,6 +160,7 @@ const SearchCustomerForm: FC = () => {
                                     <ul>
                                         <li>Организация: {customer.organization}</li>
                                         <li>Карта: {customer.card}</li>
+                                        <li>Табельный №: {customer.tabNumber}</li>
                                         <li>Баланс: {customer.balanse}</li>
                                         <li>Сумма заказов: {customer.sum}</li>
                                         <li>Количество заказов: {customer.orders}</li>
@@ -218,7 +219,7 @@ const SearchCustomerForm: FC = () => {
                         placeholder='xxxxxxxx'
                     /></label>
                 <br/>
-                <label htmlFor="categories">Категории</label>
+                <label htmlFor="categories">Укажите категорию для добавления/удаления у пользователя</label>
                 <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)} />
             </div>
             {getCustomersInfo()}

@@ -11,6 +11,7 @@ namespace OzonCardService.Models.DTO
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Card { get; set; }
+        public string TabNumber { get; set; }
         public string Organization { get; set; }
         public double Balanse { get; set; }
         public double Sum { get; set; }

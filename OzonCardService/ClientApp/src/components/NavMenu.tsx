@@ -121,7 +121,7 @@ const NavMenu: FC = () => {
                     
                         <div >
                             <img src="../logo.png" alt="logo" className="logo_image"/>
-                        <NavbarBrand tag={Link} to="/" >Corporate Catering Card Service </NavbarBrand>
+                        <NavbarBrand tag={Link} to="/" >Corporate Catering Card Service</NavbarBrand>
                         </div>
                    
 

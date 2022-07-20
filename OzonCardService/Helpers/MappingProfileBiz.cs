@@ -21,6 +21,7 @@ namespace OzonCardService.Helpers
 			CreateMap<BizModel.Customer, Models.DTO.InfoSearchCustomer_dto>()
 				.ForMember(m=>m.Card, opt=> opt.MapFrom(b=>b.cards.First(x=>x.isActivated).number))
 				.ForMember(m => m.Organization, opt => opt.MapFrom(b => b.comment))
+				.ForMember(m => m.TabNumber, opt => opt.MapFrom(b => b.userData))
 				.ForMember(m => m.Balanse, opt => opt.MapFrom(b => b.walletBalances.First().balance))
 				.ForMember(m => m.Categories, opt => opt.MapFrom(b => b.categories
 					.Where(x=>x.isActive).Select(x=>x.name)))

@@ -1,7 +1,6 @@
-﻿import { FC, useContext, useState } from 'react';
+﻿import { FC, useContext, useState, useEffect } from 'react';
 import * as React from 'react'
 import UserService from '../services/UserService';
-import { useEffect } from 'react';
 import { IUserResponce } from '../models/IUserResponse';
 import { Context } from '..';
 import { observer } from 'mobx-react-lite';

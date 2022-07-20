@@ -1,7 +1,6 @@
-﻿import { FC, useContext, useState } from 'react';
+﻿import { FC, useContext, useState, useEffect } from 'react';
 import * as React from 'react'
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
 import { Context } from '..';
 import { ICategoryResponse } from '../models/ICategoryResponse';
 import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
