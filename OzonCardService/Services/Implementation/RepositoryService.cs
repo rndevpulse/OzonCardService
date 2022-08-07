@@ -138,7 +138,7 @@ namespace OzonCardService.Services.Implementation
             var customers_rep = _repository.GetCustomersForCardNumber(customers_excel.Select(x => x.Card))
                 .Result.ToList();
 
-            var category = organization.Categories.First(x=>x.Id == infoUpload.CategoryId);
+            
             var corporateNutrition = organization.CorporateNutritions.First(x=>x.Id == infoUpload.CorporateNutritionId);
 
             if (token.IsCancellationRequested)
@@ -166,7 +166,7 @@ namespace OzonCardService.Services.Implementation
                 ///1.2 Присваиваем гостю категорию
                 ///1.3 Назначаем гостю кошелек в программе
                 ///1.4 Изменяем при необходимости баланс
-                var res = await UploadCustomerInBiz(infoUpload, session, customer_excel, organization, category, corporateNutrition);
+                var res = await UploadCustomerInBiz(infoUpload, session, customer_excel, organization, organization.Categories, corporateNutrition);
                 info += res.Value;
                 progress.Report(new ProgressInfo(info));
 
@@ -204,13 +204,15 @@ namespace OzonCardService.Services.Implementation
                 
 
                 ///2.1 Если у пользователя нет категории присваиваем ее
-                if (!customer.Categories.Any(x=>x.CategoryId == category.Id) )
-                {
-                    await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id);
-                    //category.Customers.Add(customer);
-                    customer.Categories.Add(new CategoryCustomer { Category = category, Customer = customer});
-                    info.CountCustomersCategory++;
-                }
+                foreach (var categoryId in infoUpload.CategoriesId)
+                    if (!customer.Categories.Any(x=>x.CategoryId == categoryId) )
+                    {
+                        var category = organization.Categories.FirstOrDefault(x=>x.Id == categoryId);
+                        await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id);
+                        //category.Customers.Add(customer);
+                        customer.Categories.Add(new CategoryCustomer { Category = category, Customer = customer});
+                        info.CountCustomersCategory++;
+                    }
                 ///2.2 Если у пользователя нет кошелька создаем
                 var wallet = corporateNutrition.Wallets.First();
                 if (!customer.Wallets.Select(x=>x.Wallet).Any(x => wallet.Equals(x)))
@@ -236,7 +238,7 @@ namespace OzonCardService.Services.Implementation
 
         async Task<KeyValuePair<Customer, InfoDataUpload_dto>> UploadCustomerInBiz(InfoCustomersUpload_vm infoUpload,
             OzonCard.BizClient.Models.Data.Session session, ShortCustomerInfo_excel customer_excel, 
-            Organization organization, Category category, CorporateNutrition corporateNutrition)
+            Organization organization, IEnumerable<Category> categories, CorporateNutrition corporateNutrition)
         {
             var customer = new Customer();
             var info = new InfoDataUpload_dto();
@@ -258,11 +260,13 @@ namespace OzonCardService.Services.Implementation
 
             info.CountCustomersNew++;
             //1.2
-            if (await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, category.Id))
-            {
-                customer.Categories.Add(new CategoryCustomer { Category = category, Customer = customer });
-                info.CountCustomersCategory++;
-            }
+            foreach (var categoryId in infoUpload.CategoriesId)
+                if (await _client.AddCategotyCustomer(session, customer.iikoBizId, organization.Id, categoryId))
+                {
+                    var category = categories.FirstOrDefault(c => c.Id == categoryId);
+                    customer.Categories.Add(new CategoryCustomer { Category = category, Customer = customer });
+                    info.CountCustomersCategory++;
+                }
             //1.3
             CustomerWallet customerWallet = new CustomerWallet();
             await _client.AddCorporateNutritionCustomer(session, customer.iikoBizId, organization.Id, corporateNutrition.Id);
@@ -498,6 +502,20 @@ namespace OzonCardService.Services.Implementation
             return "Ночной ужин";
         }
 
-        
+        public async Task<double> ChangeCustomerBalance(ChangeCustomerBalance_vm customer)
+        {
+            var organization = await _repository.GetOrganization(customer.OrganizationId) ??
+                throw new ArgumentException($"Organization with {customer.OrganizationId} not found");
+            if (!organization.CorporateNutritions.Any(x => x.Id == customer.CorporateNutritionId))
+                throw new ArgumentException($"CorporateNutrition with {customer.CorporateNutritionId} not found");
+            var session = await _client.GetSession(organization.Login, organization.Password);
+            var wallet = organization.CorporateNutritions.FirstOrDefault(x => x.Id == customer.CorporateNutritionId).Wallets.FirstOrDefault();
+
+            if (customer.isIncrement)
+                await _client.AddBalanceByCustomer(session, customer.Id, organization.Id, wallet.Id, customer.Balance);
+            else
+                await _client.DelBalanceByCustomer(session, customer.Id, organization.Id, wallet.Id, customer.Balance);
+            return (double)await _client.GetCustomerBalanceForId(session, customer.Id, organization.Id, wallet.Id);
+        }
     }
 }

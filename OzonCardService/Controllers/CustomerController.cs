@@ -112,7 +112,29 @@ namespace OzonCardService.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex, "SearchCustomers {@customers}", customer);
+                log.Error(ex, "ChangeCategoryCustomer {@customers}", customer);
+                return new BadRequestObjectResult(new Error_dto
+                {
+                    Code = 400,
+                    Message = ex.Message,
+                    Description = ex.InnerException?.ToString()
+                });
+            }
+        }
+
+
+        [HttpPost("change_balance")]
+        [AuthorizeRoles(EnumRules.Basic)]
+        [Consumes("application/json")]
+        public async Task<ActionResult> ChangeBalanceCustomer(ChangeCustomerBalance_vm customer)
+        {
+            try
+            {
+                return Ok(await _service.ChangeCustomerBalance(customer));
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "ChangeBalanceCustomer {@customers}", customer);
                 return new BadRequestObjectResult(new Error_dto
                 {
                     Code = 400,

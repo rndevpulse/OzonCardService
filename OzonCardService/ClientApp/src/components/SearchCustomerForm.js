@@ -56,13 +56,14 @@ var SearchCustomerForm = function () {
     var _c = react_1.useState(''), corporateNutritionId = _c[0], setCorporateNutritionId = _c[1];
     var _d = react_1.useState(''), categoryId = _d[0], setCategoryId = _d[1];
     var _e = react_1.useState([]), categories = _e[0], setCategories = _e[1];
-    var _f = react_1.useState(''), customerName = _f[0], setCustomerName = _f[1];
-    var _g = react_1.useState(''), customerCard = _g[0], setCustomerCard = _g[1];
-    var _h = react_1.useState([]), customersInfo = _h[0], setCustomersInfo = _h[1];
-    var _j = react_1.useState(false), isLoadCustomers = _j[0], setIsLoadCustomers = _j[1];
-    var _k = react_1.useState(new Date(new Date().setDate(1))), dateFrom = _k[0], setDateFrom = _k[1];
-    var _l = react_1.useState(new Date()), dateTo = _l[0], setDateTo = _l[1];
-    var _m = react_1.useState(false), isOffline = _m[0], setIsOffline = _m[1];
+    var _f = react_1.useState(0), balance = _f[0], setBalance = _f[1];
+    var _g = react_1.useState(''), customerName = _g[0], setCustomerName = _g[1];
+    var _h = react_1.useState(''), customerCard = _h[0], setCustomerCard = _h[1];
+    var _j = react_1.useState([]), customersInfo = _j[0], setCustomersInfo = _j[1];
+    var _k = react_1.useState(false), isLoadCustomers = _k[0], setIsLoadCustomers = _k[1];
+    var _l = react_1.useState(new Date(new Date().setDate(1))), dateFrom = _l[0], setDateFrom = _l[1];
+    var _m = react_1.useState(new Date()), dateTo = _m[0], setDateTo = _m[1];
+    var _o = react_1.useState(false), isOffline = _o[0], setIsOffline = _o[1];
     var CustomSelect = function (_a) {
         var id = _a.id, value = _a.value, options = _a.options, onChange = _a.onChange;
         return (React.createElement("select", { className: "custom-select", id: id, value: value, onChange: onChange }, options.map(function (option) {
@@ -182,6 +183,32 @@ var SearchCustomerForm = function () {
             });
         });
     }
+    function ChangeCustomerBalance(id, name, isIncrement) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, BizServise_1.default.ChangeCustomerBizBalance({
+                            id: id,
+                            organizationId: organizationId,
+                            corporateNutritionId: corporateNutritionId,
+                            isIncrement: isIncrement,
+                            balance: balance
+                        })];
+                    case 1:
+                        response = _a.sent();
+                        setIsLoadCustomers(true);
+                        if (isIncrement)
+                            confirm("\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044E \"" + name + "\" \u0437\u0430\u0447\u0438\u0441\u043B\u0435\u043D\u043E " + balance + " \u0440\u0443\u0431\u043B\u0435\u0439");
+                        else
+                            confirm("\u0423 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \"" + name + "\" \u0441\u043F\u0438\u0441\u0430\u043D\u043E " + balance + " \u0440\u0443\u0431\u043B\u0435\u0439");
+                        customersInfo.find(function (x) { return x.id === id; }).balanse = response.data;
+                        setIsLoadCustomers(false);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     function div_datePickers() {
         return (React.createElement("div", { className: "div-datePicker" },
             React.createElement("label", { htmlFor: "dateFrom" }, "\u041F\u0435\u0440\u0438\u043E\u0434 \u0441 "),
@@ -197,15 +224,30 @@ var SearchCustomerForm = function () {
         if (customersInfo.length === 0) {
             return React.createElement("div", { className: "center" }, "\u041D\u0435\u0442 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u043E\u0432");
         }
+        var div_ChangeCustomerCategory = function (customer) {
+            if (isOffline)
+                return;
+            return (React.createElement("div", null,
+                React.createElement("label", null, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0438\u043B\u0438 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u0443\u044E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044E"),
+                React.createElement("span", null,
+                    React.createElement("button", { className: "button", onClick: function () { return ChangeCustomerCategory(customer.id, customer.name, false); } }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C"),
+                    React.createElement("button", { className: "button red", onClick: function () { return ChangeCustomerCategory(customer.id, customer.name, true); } }, "\u0423\u0434\u0430\u043B\u0438\u0442\u044C"))));
+        };
+        var div_ChangeCustomerBalance = function (customer) {
+            if (isOffline)
+                return;
+            return (React.createElement("div", null,
+                React.createElement("label", null, "\u0418\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u0435 \u0431\u0430\u043B\u0430\u043D\u0441\u0430"),
+                React.createElement("span", null,
+                    React.createElement("button", { className: "button", onClick: function () { return ChangeCustomerBalance(customer.id, customer.name, true); } }, "\u041F\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u044C"),
+                    React.createElement("button", { className: "button red", onClick: function () { return ChangeCustomerBalance(customer.id, customer.name, false); } }, "\u0421\u043F\u0438\u0441\u0430\u0442\u044C"))));
+        };
         return (React.createElement("div", { className: "center search form-group col-md-12" },
             React.createElement("ul", null, customersInfo && customersInfo.map(function (customer) {
                 return (React.createElement("li", { key: customer.id },
                     React.createElement("dt", null, customer.name),
-                    React.createElement("div", null,
-                        React.createElement("label", null, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0438\u043B\u0438 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u0443\u044E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044E"),
-                        React.createElement("span", null,
-                            React.createElement("button", { className: "button", onClick: function () { return ChangeCustomerCategory(customer.id, customer.name, true); } }, "\u0423\u0434\u0430\u043B\u0438\u0442\u044C"),
-                            React.createElement("button", { className: "button", onClick: function () { return ChangeCustomerCategory(customer.id, customer.name, false); } }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C"))),
+                    div_ChangeCustomerCategory(customer),
+                    div_ChangeCustomerBalance(customer),
                     React.createElement("dd", null,
                         React.createElement("ul", null,
                             React.createElement("li", null,
@@ -233,6 +275,16 @@ var SearchCustomerForm = function () {
                             })))));
             }))));
     }
+    function div_OnlineParametrs() {
+        if (isOffline)
+            return;
+        return (React.createElement("div", null,
+            React.createElement("label", { htmlFor: "categories" }, "\u0423\u043A\u0430\u0436\u0438\u0442\u0435 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044E \u0434\u043B\u044F \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F/\u0443\u0434\u0430\u043B\u0435\u043D\u0438\u044F \u0443 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"),
+            React.createElement(CustomSelect, { id: "categories", value: categoryId, options: categories, onChange: function (event) { return setCategoryId(event.target.value); } }),
+            div_datePickers(),
+            React.createElement("label", { htmlFor: "balance" }, "\u0411\u0430\u043B\u0430\u043D\u0441"),
+            React.createElement("input", { id: 'balance', onChange: function (e) { return setBalance(parseInt(e.target.value)); }, value: balance, type: 'number', placeholder: '\u0411\u0430\u043B\u0430\u043D\u0441' })));
+    }
     react_2.useEffect(function () {
         firstInit();
         //console.log('SearchCustomerForm useEffect');
@@ -259,9 +311,7 @@ var SearchCustomerForm = function () {
                 React.createElement("input", { id: 'customerCard', onChange: function (e) { return onChangeCustomerCard(e.target.value); }, value: customerCard, type: 'text', placeholder: 'xxxxxxxx' })),
             React.createElement("button", { className: "button", onClick: clickSearchButton }, "\u041D\u0430\u0439\u0442\u0438"),
             React.createElement("br", null),
-            React.createElement("label", { htmlFor: "categories" }, "\u0423\u043A\u0430\u0436\u0438\u0442\u0435 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044E \u0434\u043B\u044F \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F/\u0443\u0434\u0430\u043B\u0435\u043D\u0438\u044F \u0443 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"),
-            React.createElement(CustomSelect, { id: "categories", value: categoryId, options: categories, onChange: function (event) { return setCategoryId(event.target.value); } }),
-            div_datePickers()),
+            div_OnlineParametrs()),
         getCustomersInfo()));
 };
 exports.default = mobx_react_lite_1.observer(SearchCustomerForm);

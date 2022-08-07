@@ -3,7 +3,7 @@
 export interface ICustomerOptionResponse {
     organizationId: string
     corporateNutritionId: string
-    categoryId: string
+    categoriesId: string[]
     balance: number
     fileReport: string
     options: IAdvancedOptionsResponse,

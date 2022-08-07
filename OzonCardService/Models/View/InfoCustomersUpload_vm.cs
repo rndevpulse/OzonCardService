@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OzonCardService.Models.View
 {
     public class InfoCustomersUpload_vm
     {
         public Guid OrganizationId { get; set; }
-        public Guid CategoryId { get; set; }
+        public IEnumerable<Guid> CategoriesId { get; set; }
         public Guid CorporateNutritionId { get; set; }
         public string FileReport { get; set; }
         public double Balance { get; set; }
