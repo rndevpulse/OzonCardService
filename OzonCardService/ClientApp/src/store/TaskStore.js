@@ -116,7 +116,7 @@ var TaskStore = /** @class */ (function () {
             isCancel: false,
             created: new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
         };
-        this.tasks.push(task);
+        this.tasks.unshift(task);
         localStorage.setItem('tasks', JSON.stringify(this.tasks));
     };
     return TaskStore;

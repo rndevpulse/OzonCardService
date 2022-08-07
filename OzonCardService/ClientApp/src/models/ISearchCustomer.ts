@@ -5,4 +5,7 @@ export interface ISearchCustomer {
     card: string;
     organizationId: string;
     corporateNutritionId: string;
+    dateFrom: string;
+    dateTo: string;
+    isOffline: boolean;
 }

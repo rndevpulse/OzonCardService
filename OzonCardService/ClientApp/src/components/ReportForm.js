@@ -150,10 +150,10 @@ var ReportForm = function () {
         });
     }
     function div_datePickers() {
-        return (React.createElement("div", null,
-            React.createElement("label", { htmlFor: "dateFrom" }, "\u041F\u0435\u0440\u0438\u043E\u0434 \u0441"),
-            React.createElement(react_datepicker_1.default, { className: "ccenter", dateFormat: 'dd MMMM yyyy', selected: dateFrom, selectsStart: true, startDate: dateFrom, endDate: dateTo, onChange: function (date) { return setDateFrom(date); }, id: "dateFrom", locale: 'ru', placeholderText: "\u041F\u0435\u0440\u0438\u043E\u0434 \u0441" }),
-            React.createElement("label", { htmlFor: "dateTo" }, "\u041F\u0435\u0440\u0438\u043E\u0434 \u043F\u043E"),
+        return (React.createElement("div", { className: "div-datePicker" },
+            React.createElement("label", { htmlFor: "dateFrom" }, "\u041F\u0435\u0440\u0438\u043E\u0434 \u0441 "),
+            React.createElement(react_datepicker_1.default, { dateFormat: 'dd MMMM yyyy', selected: dateFrom, selectsStart: true, startDate: dateFrom, endDate: dateTo, onChange: function (date) { return setDateFrom(date); }, id: "dateFrom", locale: 'ru', placeholderText: "\u041F\u0435\u0440\u0438\u043E\u0434 \u0441" }),
+            React.createElement("label", { htmlFor: "dateTo" }, " \u043F\u043E "),
             React.createElement(react_datepicker_1.default, { dateFormat: 'dd MMMM yyyy', selected: dateTo, selectsEnd: true, startDate: dateFrom, endDate: dateTo, minDate: dateFrom, onChange: function (date) { return setDateTo(date); }, name: "dateTo", locale: 'ru', placeholderText: "\u041F\u0435\u0440\u0438\u043E\u0434 \u043F\u043E" })));
     }
     function div_nameFileReport() {

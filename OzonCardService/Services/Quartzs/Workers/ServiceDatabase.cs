@@ -47,7 +47,7 @@ namespace OzonCardService.Services.Quartzs.Workers
                 foreach (var file in files)
                     if (new FileInfo(file).CreationTimeUtc < date)
                     {
-                        Directory.Delete(file);
+                        File.Delete(file);
                         count++;
                     }
                 log.Information($"Remove {count} old files with date created < {date}");

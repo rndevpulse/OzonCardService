@@ -9,6 +9,7 @@ namespace OzonCard.Context.Interfaces
         Task<Organization?> GetMyOrganization(Guid userId, Guid organizationId);
         Task AddOrganizations(IEnumerable<Organization> organizations, Guid userId);
         Task<Organization?> GetOrganization(Guid organizationId);
+        Task<IEnumerable<Organization>> GetOrganizations();
 
         //взаимодействие с категориями
         Task<IEnumerable<Category>> GetCategories(Guid organizationId);

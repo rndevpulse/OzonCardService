@@ -143,7 +143,18 @@ namespace OzonCard.Context.Repositories
                 return organizations;
             }
         }
-
+        public async Task<IEnumerable<Organization>> GetOrganizations()
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var organizations = await context.Organizations
+                   .Include(x => x.Categories)
+                   .Include(x => x.CorporateNutritions)
+                   .ThenInclude(x => x.Wallets)
+                   .ToListAsync();
+                return organizations;
+            }
+        }
         #endregion
 
 
@@ -317,6 +328,10 @@ namespace OzonCard.Context.Repositories
                 var customers = await context.Customers
                     .Where(x => x.Name.ToLower().Contains(str))
                     .Include(x=>x.Organization)
+                    .Include(x => x.Wallets)
+                    .Include(x=>x.Cards)
+                    .Include(x=>x.Categories)
+                    .ThenInclude(x=>x.Category)
                     .ToListAsync();
 
                 return customers;
@@ -354,7 +369,12 @@ namespace OzonCard.Context.Repositories
                 var customers = await context.Cards
                     .Where(x => x.Track.ToLower().Contains(cardnumber))
                     .Include(x => x.Customer)
-                    .ThenInclude(x => x.Organization)
+                        .ThenInclude(x => x.Organization)
+                    .Include(x => x.Customer)
+                        .ThenInclude(x => x.Wallets)
+                    .Include(x => x.Customer)
+                        .ThenInclude(x => x.Categories)
+                            .ThenInclude(x => x.Category)
                     .Select(x => x.Customer)
                     .ToListAsync();
 

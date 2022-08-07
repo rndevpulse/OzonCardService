@@ -8,6 +8,12 @@ import '../css/SearchForm.css'
 import { IInfoSearhCustomerResponse } from '../models/IInfoSearhCustomerResponse';
 import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
 import { ICategoryResponse } from '../models/ICategoryResponse';
+import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker'
+import "react-datepicker/dist/react-datepicker.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ru from "date-fns/locale/ru";
+import * as moment from 'moment';
+registerLocale("ru", ru);
 
 
 
@@ -25,6 +31,11 @@ const SearchCustomerForm: FC = () => {
 
     const [customersInfo, setCustomersInfo] = useState<IInfoSearhCustomerResponse[]>([]);
     const [isLoadCustomers, setIsLoadCustomers] = useState(false);
+
+    const [dateFrom, setDateFrom] = useState<Date>(new Date(new Date().setDate(1)));
+    const [dateTo, setDateTo] = useState<Date>(new Date());
+
+    const [isOffline, setIsOffline] = useState(false);
 
     const CustomSelect = ({ id, value, options, onChange }) => {
         return (
@@ -59,36 +70,33 @@ const SearchCustomerForm: FC = () => {
 
     }
 
-    async function getCustomers(name: string, card: string) {
-        setIsLoadCustomers(true)
-        const response = await BizService.SearchCustomerFromBiz({
-            name,
-            card,
-            organizationId,
-            corporateNutritionId
-        })
-        //console.log('customers: ', response.data)
-        setCustomersInfo(response.data)
-        setIsLoadCustomers(false)
-
-    }
 
     function onChangeCustomerName(value: string) {
         setCustomerName(value)
-        if (value.length > 4) {
-            getCustomers(value, customerCard)
-        } else if (value.length == 0 && customerCard.length == 0) {
+        if (value.length == 0 && customerCard.length == 0) {
             setCustomersInfo([])
         }
     }
     function onChangeCustomerCard(value: string) {
         setCustomerCard(value)
-        if (value.length > 5) {
-            getCustomers(customerName, value)
-        }
-        else if (value.length == 0 && customerName.length == 0) {
+        if (value.length == 0 && customerName.length == 0) {
             setCustomersInfo([])
         }
+    }
+    async function clickSearchButton() {
+        setIsLoadCustomers(true)
+        const response = await BizService.SearchCustomerFromBiz({
+            name:customerName,
+            card:customerCard,
+            organizationId,
+            corporateNutritionId,
+            dateFrom: (moment(dateFrom)).format("YYYY-MM-DD"),
+            dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
+            isOffline
+        })
+        //console.log('customers: ', response.data)
+        setCustomersInfo(response.data)
+        setIsLoadCustomers(false)
     }
     async function ChangeCustomerCategory(id: string, name: string, isRemove: boolean) {
         const catName = categories.filter(x => x.id === categoryId)[0].name
@@ -127,7 +135,39 @@ const SearchCustomerForm: FC = () => {
 
 
     }
-    
+    function div_datePickers() {
+        return (
+            <div className="div-datePicker">
+                <label htmlFor="dateFrom" >Период с </label>
+                <DatePicker
+                    dateFormat='dd MMMM yyyy'
+                    selected={dateFrom}
+                    selectsStart
+                    startDate={dateFrom}
+                    endDate={dateTo}
+                    onChange={date => setDateFrom(date)}
+                    id="dateFrom"
+                    locale='ru'
+                    placeholderText="Период с"
+
+                />
+
+                <label htmlFor="dateTo" > по </label>
+                <DatePicker
+                    dateFormat='dd MMMM yyyy'
+                    selected={dateTo}
+                    selectsEnd
+                    startDate={dateFrom}
+                    endDate={dateTo}
+                    minDate={dateFrom}
+                    onChange={date => setDateTo(date)}
+                    name="dateTo"
+                    locale='ru'
+                    placeholderText="Период по"
+                />
+            </div>
+        )
+    }
     function getCustomersInfo() {
         //console.log("getCustomersInfo length", customersInfo.length)
         if (isLoadCustomers) {
@@ -193,7 +233,15 @@ const SearchCustomerForm: FC = () => {
 
         <div>
             <h1 className="center form-group col-md-12">Поиск сотрудника</h1>
-
+            <label htmlFor="isOffline" className="label-checkbox-category">
+                <input id='isOffline' type='checkbox' checked={isOffline}
+                    onChange={() => setIsOffline(!isOffline)}
+                />
+                Работать в оффлайн режиме
+                <i className="check_box material-icons red-text">
+                    {isOffline ? 'check_box' : 'check_box_outline_blank'}
+                </i>
+            </label>
             <div className="center form-group col-md-12">
                 <label htmlFor="organizations">Организации</label>
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
@@ -218,9 +266,14 @@ const SearchCustomerForm: FC = () => {
                         type='text'
                         placeholder='xxxxxxxx'
                     /></label>
+                <button className="button"
+                    onClick={clickSearchButton}>
+                    Найти
+                </button>
                 <br/>
                 <label htmlFor="categories">Укажите категорию для добавления/удаления у пользователя</label>
                 <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)} />
+                {div_datePickers()}
             </div>
             {getCustomersInfo()}
             

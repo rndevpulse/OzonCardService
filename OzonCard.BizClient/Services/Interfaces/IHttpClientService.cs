@@ -22,6 +22,7 @@ namespace OzonCard.BizClient.Services.Interfaces
         Task<Guid> AddCorporateNutritionCustomer(Session access_session, Guid iikoBizId, Guid organizationId, Guid corporateNutritionId);
         Task<Customer?> GetCustomerForId(Session session, Guid iikoBizId, Guid organizationId);
         Task<double?> GetCustomerBalanceForId(Session session, Guid iikoBizId, Guid organizationId, Guid walletId);
+        Task<IEnumerable<GuestBalance>> GetCustomersBalanceForIds(Session session, IEnumerable<Guid> iikoBizIds, Guid organizationId, Guid walletId);
         Task<Customer?> GetCustomerForCard(Session access_session, string card, Guid organizationId);
         Task<bool> AddBalanceByCustomer(Session session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance);
         Task<bool> DelBalanceByCustomer(Session session, Guid iikoBizId, Guid organizationId, Guid walletId, double balance);

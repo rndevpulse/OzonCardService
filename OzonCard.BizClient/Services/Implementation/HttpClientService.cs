@@ -345,5 +345,21 @@ namespace OzonCard.BizClient.Services.Implementation
                 return await GetMetricsCustomers(access_session, organizationId, guids);
             }
         }
+
+
+        public async Task<IEnumerable<GuestBalance>> GetCustomersBalanceForIds(Session access_session, IEnumerable<Guid> iikoBizIds, Guid organizationId, Guid walletId)
+        {
+            try
+            {
+                var ids = new { guestIds = iikoBizIds };
+                return await _client.Send<IEnumerable<GuestBalance>>($"customers/get_balances_by_guests_and_wallet?organization={organizationId}&wallet={walletId}&access_token={access_session.Token}", "POST", ids)
+                ?? new List<GuestBalance>();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                access_session = await SessionAlive(access_session);
+                return await GetCustomersBalanceForIds(access_session, iikoBizIds, organizationId, walletId);
+}
+        }
     }
 }

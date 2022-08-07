@@ -43,6 +43,12 @@ var react_2 = require("react");
 var __1 = require("..");
 var BizServise_1 = require("../services/BizServise");
 require("../css/SearchForm.css");
+var react_datepicker_1 = require("react-datepicker");
+require("react-datepicker/dist/react-datepicker.css");
+require("bootstrap/dist/css/bootstrap.min.css");
+var ru_1 = require("date-fns/locale/ru");
+var moment = require("moment");
+react_datepicker_1.registerLocale("ru", ru_1.default);
 var SearchCustomerForm = function () {
     var organizationstore = react_1.useContext(__1.Context).organizationstore;
     var _a = react_1.useState(''), organizationId = _a[0], setOrganizationId = _a[1];
@@ -54,6 +60,9 @@ var SearchCustomerForm = function () {
     var _g = react_1.useState(''), customerCard = _g[0], setCustomerCard = _g[1];
     var _h = react_1.useState([]), customersInfo = _h[0], setCustomersInfo = _h[1];
     var _j = react_1.useState(false), isLoadCustomers = _j[0], setIsLoadCustomers = _j[1];
+    var _k = react_1.useState(new Date(new Date().setDate(1))), dateFrom = _k[0], setDateFrom = _k[1];
+    var _l = react_1.useState(new Date()), dateTo = _l[0], setDateTo = _l[1];
+    var _m = react_1.useState(false), isOffline = _m[0], setIsOffline = _m[1];
     var CustomSelect = function (_a) {
         var id = _a.id, value = _a.value, options = _a.options, onChange = _a.onChange;
         return (React.createElement("select", { className: "custom-select", id: id, value: value, onChange: onChange }, options.map(function (option) {
@@ -89,7 +98,19 @@ var SearchCustomerForm = function () {
             });
         });
     }
-    function getCustomers(name, card) {
+    function onChangeCustomerName(value) {
+        setCustomerName(value);
+        if (value.length == 0 && customerCard.length == 0) {
+            setCustomersInfo([]);
+        }
+    }
+    function onChangeCustomerCard(value) {
+        setCustomerCard(value);
+        if (value.length == 0 && customerName.length == 0) {
+            setCustomersInfo([]);
+        }
+    }
+    function clickSearchButton() {
         return __awaiter(this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {
@@ -97,10 +118,13 @@ var SearchCustomerForm = function () {
                     case 0:
                         setIsLoadCustomers(true);
                         return [4 /*yield*/, BizServise_1.default.SearchCustomerFromBiz({
-                                name: name,
-                                card: card,
+                                name: customerName,
+                                card: customerCard,
                                 organizationId: organizationId,
-                                corporateNutritionId: corporateNutritionId
+                                corporateNutritionId: corporateNutritionId,
+                                dateFrom: (moment(dateFrom)).format("YYYY-MM-DD"),
+                                dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
+                                isOffline: isOffline
                             })
                             //console.log('customers: ', response.data)
                         ];
@@ -113,24 +137,6 @@ var SearchCustomerForm = function () {
                 }
             });
         });
-    }
-    function onChangeCustomerName(value) {
-        setCustomerName(value);
-        if (value.length > 4) {
-            getCustomers(value, customerCard);
-        }
-        else if (value.length == 0 && customerCard.length == 0) {
-            setCustomersInfo([]);
-        }
-    }
-    function onChangeCustomerCard(value) {
-        setCustomerCard(value);
-        if (value.length > 5) {
-            getCustomers(customerName, value);
-        }
-        else if (value.length == 0 && customerName.length == 0) {
-            setCustomersInfo([]);
-        }
     }
     function ChangeCustomerCategory(id, name, isRemove) {
         var _a, _b, _c, _d;
@@ -175,6 +181,13 @@ var SearchCustomerForm = function () {
                 }
             });
         });
+    }
+    function div_datePickers() {
+        return (React.createElement("div", { className: "div-datePicker" },
+            React.createElement("label", { htmlFor: "dateFrom" }, "\u041F\u0435\u0440\u0438\u043E\u0434 \u0441 "),
+            React.createElement(react_datepicker_1.default, { dateFormat: 'dd MMMM yyyy', selected: dateFrom, selectsStart: true, startDate: dateFrom, endDate: dateTo, onChange: function (date) { return setDateFrom(date); }, id: "dateFrom", locale: 'ru', placeholderText: "\u041F\u0435\u0440\u0438\u043E\u0434 \u0441" }),
+            React.createElement("label", { htmlFor: "dateTo" }, " \u043F\u043E "),
+            React.createElement(react_datepicker_1.default, { dateFormat: 'dd MMMM yyyy', selected: dateTo, selectsEnd: true, startDate: dateFrom, endDate: dateTo, minDate: dateFrom, onChange: function (date) { return setDateTo(date); }, name: "dateTo", locale: 'ru', placeholderText: "\u041F\u0435\u0440\u0438\u043E\u0434 \u043F\u043E" })));
     }
     function getCustomersInfo() {
         //console.log("getCustomersInfo length", customersInfo.length)
@@ -229,6 +242,10 @@ var SearchCustomerForm = function () {
     }
     return (React.createElement("div", null,
         React.createElement("h1", { className: "center form-group col-md-12" }, "\u041F\u043E\u0438\u0441\u043A \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u0430"),
+        React.createElement("label", { htmlFor: "isOffline", className: "label-checkbox-category" },
+            React.createElement("input", { id: 'isOffline', type: 'checkbox', checked: isOffline, onChange: function () { return setIsOffline(!isOffline); } }),
+            "\u0420\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0432 \u043E\u0444\u0444\u043B\u0430\u0439\u043D \u0440\u0435\u0436\u0438\u043C\u0435",
+            React.createElement("i", { className: "check_box material-icons red-text" }, isOffline ? 'check_box' : 'check_box_outline_blank')),
         React.createElement("div", { className: "center form-group col-md-12" },
             React.createElement("label", { htmlFor: "organizations" }, "\u041E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438"),
             React.createElement(CustomSelect, { id: "organizations", value: organizationId, options: organizationstore.organizations, onChange: onOrganizationSelectChange }),
@@ -240,9 +257,11 @@ var SearchCustomerForm = function () {
             React.createElement("label", { className: "search_label", htmlFor: "customerCard" },
                 "\u041A\u0430\u0440\u0442\u0430 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u043A\u0430",
                 React.createElement("input", { id: 'customerCard', onChange: function (e) { return onChangeCustomerCard(e.target.value); }, value: customerCard, type: 'text', placeholder: 'xxxxxxxx' })),
+            React.createElement("button", { className: "button", onClick: clickSearchButton }, "\u041D\u0430\u0439\u0442\u0438"),
             React.createElement("br", null),
             React.createElement("label", { htmlFor: "categories" }, "\u0423\u043A\u0430\u0436\u0438\u0442\u0435 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044E \u0434\u043B\u044F \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F/\u0443\u0434\u0430\u043B\u0435\u043D\u0438\u044F \u0443 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"),
-            React.createElement(CustomSelect, { id: "categories", value: categoryId, options: categories, onChange: function (event) { return setCategoryId(event.target.value); } })),
+            React.createElement(CustomSelect, { id: "categories", value: categoryId, options: categories, onChange: function (event) { return setCategoryId(event.target.value); } }),
+            div_datePickers()),
         getCustomersInfo()));
 };
 exports.default = mobx_react_lite_1.observer(SearchCustomerForm);

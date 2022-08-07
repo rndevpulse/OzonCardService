@@ -40,6 +40,10 @@ namespace OzonCardService
                 configuration.GetConnectionString("DefaultConnection"),
                 provider.GetService<IRepositoryContextFactory>())
             );
+            services.AddScoped<IBalanceRepository>(provider => new BalanceRepository(
+                configuration.GetConnectionString("DefaultConnection"),
+                provider.GetService<IRepositoryContextFactory>())
+            );
             services.AddScoped<IRepositoryService, RepositoryService>();
             services.AddScoped<IIdentityService, IdentityService>();
 
@@ -94,6 +98,7 @@ namespace OzonCardService
         {
             
             services.AddTransient<IServiceDatabase, ServiceDatabase>();
+            services.AddTransient<IServiceBalance, ServiceBalance>();
             services.AddQuartz(q =>
             {
                 // base quartz scheduler, job and trigger configuration
@@ -109,6 +114,16 @@ namespace OzonCardService
                     .WithSchedule(CronScheduleBuilder
                         .DailyAtHourAndMinute(configuration.GetValue<int>("TimeBackup"), 0)
                         .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time")))
+                    );
+
+
+                q.ScheduleJob<ServiceBalanceJob>(t => t
+                    .WithIdentity("Timeout_Job", "Balance")
+                    .UsingJobData(
+                        JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
+                        TimeSpan.FromMinutes(5).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
+                    .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(1).RepeatForever(); })
+                    //.StartAt(DateTimeOffset.Now.AddMinutes(1))
                     );
 
             });

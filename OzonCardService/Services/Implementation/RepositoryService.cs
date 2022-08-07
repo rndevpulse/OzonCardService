@@ -400,7 +400,11 @@ namespace OzonCardService.Services.Implementation
             customers_db = customers_db.Where(x => x.Organization.Id == customer.OrganizationId).ToList();
             if (customers_db.Count == 0)
                 return customer_dto;
-            
+            if (customer.isOffline)
+            {
+                customer_dto.AddRange(_mapper.Map<IEnumerable<InfoSearchCustomer_dto>>(customers_db));
+                return customer_dto;
+            }
             var session = await _client.GetSession(organization.Login, organization.Password);
             foreach(var c in customers_db)
             {
@@ -411,15 +415,13 @@ namespace OzonCardService.Services.Implementation
                 customer_biz.userData = c.TabNumber;
                 customer_dto.Add(_mapper.Map<InfoSearchCustomer_dto>(customer_biz));
             };
-            DateTime now = DateTime.Now;
-            var dateFrom = new DateTime(now.Year, now.Month, 1);
-            var dateTo = dateFrom.AddMonths(1);
+            
             //переделать но запрос отчета
             //ид организации есть
             //ид корпита передавать из веб формы
             //даты подставлять автоматически с начала месяца
             var report = await _client.GerReportCN(session, organization.Id, customer.CorporateNutritionId,
-                dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
+                customer.DateFrom, customer.DateTo);
             foreach (var c in customer_dto)
                 c.SetMetrics(report.FirstOrDefault(x => x.guestId == c.Id));
 
@@ -496,6 +498,6 @@ namespace OzonCardService.Services.Implementation
             return "Ночной ужин";
         }
 
-       
+        
     }
 }

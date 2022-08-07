@@ -103,9 +103,9 @@ const ReportForm: FC = () => {
 
     function div_datePickers() {
         return (
-            <div>
-                <label htmlFor="dateFrom" >Период с</label>
-                <DatePicker className="ccenter"
+            <div className="div-datePicker">
+                <label htmlFor="dateFrom" >Период с </label>
+                <DatePicker 
                     dateFormat='dd MMMM yyyy'
                     selected={dateFrom}
                     selectsStart
@@ -118,8 +118,8 @@ const ReportForm: FC = () => {
                     
                 />
                 
-                <label htmlFor="dateTo" >Период по</label>
-                <DatePicker
+                <label htmlFor="dateTo" > по </label>
+                <DatePicker 
                     dateFormat='dd MMMM yyyy'
                     selected={dateTo}
                     selectsEnd
