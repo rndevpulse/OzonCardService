@@ -1,4 +1,5 @@
 ﻿import { FC, useContext, useState, useEffect } from 'react';
+import Select from 'react-select'
 import * as React from 'react'
 import { observer } from 'mobx-react-lite';
 import { Context } from '..';
@@ -19,7 +20,7 @@ const UploadForm: FC = () => {
 
 
     const [organizationId, setOrganizationId] = useState('');
-    const [categoryId, setCategoryId] = useState('');
+    
     const [corporateNutritionId, setCorporateNutritionId] = useState('');
     const [file, setFile] = useState('');
     const [fileName, setFileName] = useState('');
@@ -32,8 +33,19 @@ const UploadForm: FC = () => {
     const [balance, setBalance] = useState<number>(0);
 
 
+
     const [customerName, setCustomerName] = useState('');
     const [customerCard, setCustomerCard] = useState('');
+
+    const [currentCategories, setCurrentCategories] = useState<string[]>([]);
+    const getValue = () => {
+        return currentCategories
+            ? categories.filter(c => currentCategories.indexOf(c.id) >= 0)
+            : [] 
+    }
+    const onChangeCategory = (newCategory: any) => {
+        setCurrentCategories(newCategory.map(c => c.id))
+    }
 
     const CustomSelect = ({ id, value, options, onChange }) => {
         return (
@@ -51,9 +63,11 @@ const UploadForm: FC = () => {
 
         setOrganizationId(organization?.id ?? '')
         setCategories(organization?.categories ?? [])
-        setCategoryId(organization?.categories[0]?.id ?? '')
+        
         setCorporateNutritions(organization?.corporateNutritions ?? [])
         setCorporateNutritionId(organization?.corporateNutritions[0]?.id ?? '')
+
+        setCurrentCategories([]);
     }
     async function firstInit() {
         await organizationstore.requestOrganizations();
@@ -67,11 +81,11 @@ const UploadForm: FC = () => {
     function setSetters() {
         setOrganizationId(organizationstore.organizations[0]?.id ?? '');
         setCategories(organizationstore.organizations[0]?.categories ?? []);
-        setCategoryId(organizationstore.organizations[0]?.categories[0]?.id ?? '');
+        
 
         setCorporateNutritions(organizationstore.organizations[0]?.corporateNutritions ?? [])
         setCorporateNutritionId(organizationstore.organizations[0]?.corporateNutritions[0]?.id ?? '')
-
+        setCurrentCategories([]);
     }
 
     async function  onChangeFile(e) {
@@ -95,7 +109,7 @@ const UploadForm: FC = () => {
         const option: ICustomerOptionResponse = {
             organizationId: organizationId,
             corporateNutritionId: corporateNutritionId,
-            categoryId: categoryId,
+            categoriesId: currentCategories,
             balance: balance,
             fileReport: file,
             options: {
@@ -116,7 +130,7 @@ const UploadForm: FC = () => {
         const option: ICustomerOptionResponse = {
             organizationId: organizationId,
             corporateNutritionId: corporateNutritionId,
-            categoryId: categoryId,
+            categoriesId: currentCategories,
             balance: balance,
             fileReport: file,
             options: {
@@ -158,7 +172,16 @@ const UploadForm: FC = () => {
                 <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                     onChange={onOrganizationSelectChange} />
                 <label htmlFor="categories">Категории</label>
-                <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)}/>
+                
+                <Select
+                    id= 'categories'
+                    onChange={onChangeCategory}
+                    value={getValue()}
+                    options={categories}
+                    getOptionLabel={option => option.name}
+                    getOptionValue={option => option.id}
+                    placeholder='Категории'
+                    isMulti />
                 <label htmlFor="corporateNutritions">Программы питания</label>
                 <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
                     onChange={event => setCorporateNutritionId(event.target.value)} />

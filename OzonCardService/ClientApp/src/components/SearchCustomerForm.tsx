@@ -25,6 +25,7 @@ const SearchCustomerForm: FC = () => {
     const [corporateNutritionId, setCorporateNutritionId] = useState('');
     const [categoryId, setCategoryId] = useState('');
     const [categories, setCategories] = useState<ICategoryResponse[]>([]);
+    const [balance, setBalance] = useState<number>(0);
 
     const [customerName, setCustomerName] = useState('');
     const [customerCard, setCustomerCard] = useState('');
@@ -135,6 +136,20 @@ const SearchCustomerForm: FC = () => {
 
 
     }
+    async function ChangeCustomerBalance(id: string, name: string, isIncrement: boolean) {
+        await BizService.ChangeCustomerBizBalance({
+            id,
+            organizationId,
+            corporateNutritionId,
+            isIncrement,
+            balance
+        })
+        if (isIncrement)
+            confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
+        else
+            confirm(`У пользователя "${name}" списано ${balance} рублей`)
+
+    }
     function div_datePickers() {
         return (
             <div className="div-datePicker">
@@ -176,6 +191,40 @@ const SearchCustomerForm: FC = () => {
         if (customersInfo.length === 0) {
             return <div className="center">Нет результатов</div>
         }
+        const div_ChangeCustomerCategory = (customer:IInfoSearhCustomerResponse) => {
+            if (isOffline)
+                return;
+            return (<div>
+                <label>Добавить или удалить выбранную категорию</label>
+                <span>
+                    <button className="button"
+                        onClick={() => ChangeCustomerCategory(customer.id, customer.name, false)}>
+                        Добавить
+                    </button>
+                    <button className="button red"
+                        onClick={() => ChangeCustomerCategory(customer.id, customer.name, true)}>
+                        Удалить
+                    </button>
+                </span>
+            </div>)
+        }
+        const div_ChangeCustomerBalance = (customer: IInfoSearhCustomerResponse) => {
+            if (isOffline)
+                return;
+            return (<div>
+                <label>Изменение баланса</label>
+                <span>
+                    <button className="button"
+                        onClick={() => ChangeCustomerBalance(customer.id, customer.name, true)}>
+                        Пополнить
+                    </button>
+                    <button className="button red"
+                        onClick={() => ChangeCustomerBalance(customer.id, customer.name, false)}>
+                        Списать
+                    </button>
+                </span>
+            </div>)
+        }
         return (
             <div className="center search form-group col-md-12">
                 <ul>
@@ -183,19 +232,8 @@ const SearchCustomerForm: FC = () => {
                         return (
                             <li key={customer.id}>
                                 <dt>{customer.name}</dt>
-                                <div>
-                                    <label>Добавить или удалить выбранную категорию</label>
-                                    <span>
-                                        <button className="button"
-                                            onClick={() => ChangeCustomerCategory(customer.id, customer.name, true)}>
-                                            Удалить
-                                        </button>
-                                        <button className="button"
-                                            onClick={() => ChangeCustomerCategory(customer.id, customer.name, false)}>
-                                            Добавить
-                                        </button>
-                                    </span>
-                                </div>
+                                {div_ChangeCustomerCategory(customer)}
+                                {div_ChangeCustomerBalance(customer)}
                                 <dd>
                                     <ul>
                                         <li>Организация: {customer.organization}</li>
@@ -218,6 +256,26 @@ const SearchCustomerForm: FC = () => {
                     })}
                 </ul>
 
+            </div>
+        )
+    }
+
+    function div_OnlineParametrs() {
+        if (isOffline)
+            return;
+        return (
+            <div>
+                <label htmlFor="categories">Укажите категорию для добавления/удаления у пользователя</label>
+                <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)} />
+                { div_datePickers() }
+                <label htmlFor="balance">Баланс</label>
+                    <input
+                        id='balance'
+                    onChange={e => setBalance(parseInt(e.target.value))}
+                        value={balance}
+                        type='number'
+                        placeholder='Баланс'
+            />
             </div>
         )
     }
@@ -270,10 +328,9 @@ const SearchCustomerForm: FC = () => {
                     onClick={clickSearchButton}>
                     Найти
                 </button>
-                <br/>
-                <label htmlFor="categories">Укажите категорию для добавления/удаления у пользователя</label>
-                <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)} />
-                {div_datePickers()}
+                <br />
+                {div_OnlineParametrs()}
+                
             </div>
             {getCustomersInfo()}
             

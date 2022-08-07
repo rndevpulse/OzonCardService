@@ -26,6 +26,7 @@
     "react-router": "5.0.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-select": "^5.4.0",
     "react-tabs": "^5.1.0",
     "reactstrap": "^9.0.2",
     "svgo": "^2.8.0",

@@ -38,8 +38,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.API_URL = void 0;
 var axios_1 = require("axios");
-exports.API_URL = 'https://192.168.1.100:5401/api';
-//export const API_URL = 'https://ozon.pulse.keenetic.link/api'
+//export const API_URL = 'https://192.168.1.100:5401/api'
+exports.API_URL = 'https://ozon.pulse.keenetic.link/api';
 var api = axios_1.default.create({
     withCredentials: true,
     baseURL: exports.API_URL

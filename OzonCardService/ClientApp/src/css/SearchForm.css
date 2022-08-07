@@ -27,19 +27,22 @@
             align-items: flex-start;
             justify-content: space-between;
             cursor: default;
-            padding: 0.2rem 1rem;
+            padding-inline: 1rem;
             background: #f3f3f3;
+
         }
-        .search li div label{
-            margin: auto;
-            color: black;
-            margin-inline-start: inherit;
-            font-size: 14px;
-        }
+            .search li div label {
+                margin: auto;
+                color: black;
+                margin-inline-start: inherit;
+                font-size: 14px;
+                width: 40%;
+            }
             .search li div button {
                 margin-block: 8px 6px;
-               
+                width: 120px;
             }
+       
 .search_label {
     padding-right: 0.5rem;
     padding-top: 1rem;

@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = require("react");
+var react_select_1 = require("react-select");
 var React = require("react");
 var mobx_react_lite_1 = require("mobx-react-lite");
 var __1 = require("..");
@@ -47,17 +48,25 @@ var UploadForm = function () {
     var navigate = react_router_dom_1.useNavigate();
     var _a = react_1.useContext(__1.Context), organizationstore = _a.organizationstore, taskstore = _a.taskstore;
     var _b = react_1.useState(''), organizationId = _b[0], setOrganizationId = _b[1];
-    var _c = react_1.useState(''), categoryId = _c[0], setCategoryId = _c[1];
-    var _d = react_1.useState(''), corporateNutritionId = _d[0], setCorporateNutritionId = _d[1];
-    var _e = react_1.useState(''), file = _e[0], setFile = _e[1];
-    var _f = react_1.useState(''), fileName = _f[0], setFileName = _f[1];
-    var _g = react_1.useState(false), refreshBalance = _g[0], setRefreshBalance = _g[1];
-    var _h = react_1.useState(false), rename = _h[0], setRename = _h[1];
-    var _j = react_1.useState([]), categories = _j[0], setCategories = _j[1];
-    var _k = react_1.useState([]), corporateNutritions = _k[0], setCorporateNutritions = _k[1];
-    var _l = react_1.useState(0), balance = _l[0], setBalance = _l[1];
-    var _m = react_1.useState(''), customerName = _m[0], setCustomerName = _m[1];
-    var _o = react_1.useState(''), customerCard = _o[0], setCustomerCard = _o[1];
+    var _c = react_1.useState(''), corporateNutritionId = _c[0], setCorporateNutritionId = _c[1];
+    var _d = react_1.useState(''), file = _d[0], setFile = _d[1];
+    var _e = react_1.useState(''), fileName = _e[0], setFileName = _e[1];
+    var _f = react_1.useState(false), refreshBalance = _f[0], setRefreshBalance = _f[1];
+    var _g = react_1.useState(false), rename = _g[0], setRename = _g[1];
+    var _h = react_1.useState([]), categories = _h[0], setCategories = _h[1];
+    var _j = react_1.useState([]), corporateNutritions = _j[0], setCorporateNutritions = _j[1];
+    var _k = react_1.useState(0), balance = _k[0], setBalance = _k[1];
+    var _l = react_1.useState(''), customerName = _l[0], setCustomerName = _l[1];
+    var _m = react_1.useState(''), customerCard = _m[0], setCustomerCard = _m[1];
+    var _o = react_1.useState([]), currentCategories = _o[0], setCurrentCategories = _o[1];
+    var getValue = function () {
+        return currentCategories
+            ? categories.filter(function (c) { return currentCategories.indexOf(c.id) >= 0; })
+            : [];
+    };
+    var onChangeCategory = function (newCategory) {
+        setCurrentCategories(newCategory.map(function (c) { return c.id; }));
+    };
     var CustomSelect = function (_a) {
         var id = _a.id, value = _a.value, options = _a.options, onChange = _a.onChange;
         return (React.createElement("select", { className: "custom-select", id: id, value: value, onChange: onChange }, options.map(function (option) {
@@ -65,14 +74,14 @@ var UploadForm = function () {
         })));
     };
     var onOrganizationSelectChange = function (e) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e;
         var orgId = e.target.options[e.target.selectedIndex].value;
         var organization = organizationstore.organizations.find(function (org) { return org.id === orgId; });
         setOrganizationId((_a = organization === null || organization === void 0 ? void 0 : organization.id) !== null && _a !== void 0 ? _a : '');
         setCategories((_b = organization === null || organization === void 0 ? void 0 : organization.categories) !== null && _b !== void 0 ? _b : []);
-        setCategoryId((_d = (_c = organization === null || organization === void 0 ? void 0 : organization.categories[0]) === null || _c === void 0 ? void 0 : _c.id) !== null && _d !== void 0 ? _d : '');
-        setCorporateNutritions((_e = organization === null || organization === void 0 ? void 0 : organization.corporateNutritions) !== null && _e !== void 0 ? _e : []);
-        setCorporateNutritionId((_g = (_f = organization === null || organization === void 0 ? void 0 : organization.corporateNutritions[0]) === null || _f === void 0 ? void 0 : _f.id) !== null && _g !== void 0 ? _g : '');
+        setCorporateNutritions((_c = organization === null || organization === void 0 ? void 0 : organization.corporateNutritions) !== null && _c !== void 0 ? _c : []);
+        setCorporateNutritionId((_e = (_d = organization === null || organization === void 0 ? void 0 : organization.corporateNutritions[0]) === null || _d === void 0 ? void 0 : _d.id) !== null && _e !== void 0 ? _e : '');
+        setCurrentCategories([]);
     };
     function firstInit() {
         return __awaiter(this, void 0, void 0, function () {
@@ -89,12 +98,12 @@ var UploadForm = function () {
         });
     }
     function setSetters() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         setOrganizationId((_b = (_a = organizationstore.organizations[0]) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : '');
         setCategories((_d = (_c = organizationstore.organizations[0]) === null || _c === void 0 ? void 0 : _c.categories) !== null && _d !== void 0 ? _d : []);
-        setCategoryId((_g = (_f = (_e = organizationstore.organizations[0]) === null || _e === void 0 ? void 0 : _e.categories[0]) === null || _f === void 0 ? void 0 : _f.id) !== null && _g !== void 0 ? _g : '');
-        setCorporateNutritions((_j = (_h = organizationstore.organizations[0]) === null || _h === void 0 ? void 0 : _h.corporateNutritions) !== null && _j !== void 0 ? _j : []);
-        setCorporateNutritionId((_m = (_l = (_k = organizationstore.organizations[0]) === null || _k === void 0 ? void 0 : _k.corporateNutritions[0]) === null || _l === void 0 ? void 0 : _l.id) !== null && _m !== void 0 ? _m : '');
+        setCorporateNutritions((_f = (_e = organizationstore.organizations[0]) === null || _e === void 0 ? void 0 : _e.corporateNutritions) !== null && _f !== void 0 ? _f : []);
+        setCorporateNutritionId((_j = (_h = (_g = organizationstore.organizations[0]) === null || _g === void 0 ? void 0 : _g.corporateNutritions[0]) === null || _h === void 0 ? void 0 : _h.id) !== null && _j !== void 0 ? _j : '');
+        setCurrentCategories([]);
     }
     function onChangeFile(e) {
         return __awaiter(this, void 0, void 0, function () {
@@ -131,7 +140,7 @@ var UploadForm = function () {
                         option = {
                             organizationId: organizationId,
                             corporateNutritionId: corporateNutritionId,
-                            categoryId: categoryId,
+                            categoriesId: currentCategories,
                             balance: balance,
                             fileReport: file,
                             options: {
@@ -159,7 +168,7 @@ var UploadForm = function () {
                         option = {
                             organizationId: organizationId,
                             corporateNutritionId: corporateNutritionId,
-                            categoryId: categoryId,
+                            categoriesId: currentCategories,
                             balance: balance,
                             fileReport: file,
                             options: {
@@ -208,7 +217,7 @@ var UploadForm = function () {
             React.createElement("label", { htmlFor: "organizations" }, "\u041E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438"),
             React.createElement(CustomSelect, { id: "organizations", value: organizationId, options: organizationstore.organizations, onChange: onOrganizationSelectChange }),
             React.createElement("label", { htmlFor: "categories" }, "\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438"),
-            React.createElement(CustomSelect, { id: "categories", value: categoryId, options: categories, onChange: function (event) { return setCategoryId(event.target.value); } }),
+            React.createElement(react_select_1.default, { id: 'categories', onChange: onChangeCategory, value: getValue(), options: categories, getOptionLabel: function (option) { return option.name; }, getOptionValue: function (option) { return option.id; }, placeholder: '\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438', isMulti: true }),
             React.createElement("label", { htmlFor: "corporateNutritions" }, "\u041F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u044B \u043F\u0438\u0442\u0430\u043D\u0438\u044F"),
             React.createElement(CustomSelect, { id: "corporateNutritions", value: corporateNutritionId, options: corporateNutritions, onChange: function (event) { return setCorporateNutritionId(event.target.value); } }),
             React.createElement("label", { htmlFor: "balance" },

@@ -70,6 +70,7 @@
     <None Remove="ClientApp\src\index.ts" />
     <None Remove="ClientApp\src\models\IAdvancedOptionsResponse.ts" />
     <None Remove="ClientApp\src\models\ICategoryResponse.ts" />
+    <None Remove="ClientApp\src\models\IChangeCustomerBalance.ts" />
     <None Remove="ClientApp\src\models\IChangeCustomerCategory.ts" />
     <None Remove="ClientApp\src\models\IFileResponse.ts" />
     <None Remove="ClientApp\src\models\IInfoSearhCustomerResponse.ts" />
@@ -103,6 +104,7 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\components\FilesForm.tsx" />
     <TypeScriptCompile Include="ClientApp\src\http\index.ts" />
+    <TypeScriptCompile Include="ClientApp\src\models\IChangeCustomerBalance.ts" />
     <TypeScriptCompile Include="ClientApp\src\models\IChangeCustomerCategory.ts" />
     <TypeScriptCompile Include="ClientApp\src\models\IFileResponse.ts">
       <SubType>Code</SubType>

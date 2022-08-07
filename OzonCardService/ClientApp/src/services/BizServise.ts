@@ -1,5 +1,6 @@
 ﻿import { AxiosResponse } from "axios";
 import api from "../http";
+import { IChangeCustomerBalance } from "../models/IChangeCustomerBalance";
 import { IChangeCustomerCategory } from "../models/IChangeCustomerCategory";
 import { ICustomerOptionResponse } from "../models/ICustomerOptionResponse";
 import { IInfoSearhCustomerResponse } from "../models/IInfoSearhCustomerResponse";
@@ -22,5 +23,7 @@ export default class BizService {
     static async ChangeCustomerBizCategory(option: IChangeCustomerCategory): Promise<AxiosResponse<void>> {
         return api.post<void>('/customer/change_category', option)
     }
-
+    static async ChangeCustomerBizBalance(option: IChangeCustomerBalance): Promise<AxiosResponse<void>> {
+        return api.post<void>('/customer/change_balance', option)
+    }
 }
