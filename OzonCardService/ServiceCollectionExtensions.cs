@@ -44,6 +44,10 @@ namespace OzonCardService
                 configuration.GetConnectionString("DefaultConnection"),
                 provider.GetService<IRepositoryContextFactory>())
             );
+            services.AddScoped<IEventRepository>(provider => new EventRepository(
+               configuration.GetConnectionString("DefaultConnection"),
+               provider.GetService<IRepositoryContextFactory>())
+           );
             services.AddScoped<IRepositoryService, RepositoryService>();
             services.AddScoped<IIdentityService, IdentityService>();
 
@@ -99,6 +103,7 @@ namespace OzonCardService
             
             services.AddTransient<IServiceDatabase, ServiceDatabase>();
             services.AddTransient<IServiceBalance, ServiceBalance>();
+            services.AddTransient<IServiceEvent, ServiceEvent>();
             services.AddQuartz(q =>
             {
                 // base quartz scheduler, job and trigger configuration
@@ -123,6 +128,16 @@ namespace OzonCardService
                         JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
                         TimeSpan.FromMinutes(5).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
                     .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(1).RepeatForever(); })
+                    //.StartAt(DateTimeOffset.Now.AddMinutes(1))
+                    );
+
+
+                q.ScheduleJob<ServiceEventJob>(t => t
+                    .WithIdentity("Timeout_Job", "Event")
+                    .UsingJobData(
+                        JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
+                        TimeSpan.FromMinutes(30).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
+                    .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(4).RepeatForever(); })
                     //.StartAt(DateTimeOffset.Now.AddMinutes(1))
                     );
 

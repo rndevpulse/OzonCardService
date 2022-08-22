@@ -16,6 +16,7 @@ namespace OzonCardService.Helpers
 				.ForMember(m => m.Description, opt => opt.MapFrom(b => b.description == null ? string.Empty : b.description));
 			CreateMap<BizModel.Wallet, RepModel.Wallet>();
 			CreateMap<BizModel.ReportCN, Models.DTO.ReportCN_dto>();
+			CreateMap<BizModel.ReportCN, RepModel.CustomerReport>();
 
 
 			CreateMap<BizModel.Customer, Models.DTO.InfoSearchCustomer_dto>()
@@ -31,6 +32,11 @@ namespace OzonCardService.Helpers
 				.ForMember(m=>m.Date, opt=>opt.MapFrom(b=>b.transactionCreateDate.ToString("yyyy-MM-dd")))
 				.ForMember(m=>m.Time, opt=>opt.MapFrom(b=>b.transactionCreateDate.ToString("HH:mm:ss")))
 				.ForMember(m=>m.СardNumbers, opt=>opt.MapFrom(b=>b.cardNumbers))
+				;
+
+			CreateMap<BizModel.TransactionsReport, RepModel.Event>()
+				.ForMember(m => m.Create, opt => opt.MapFrom(b => b.transactionCreateDate.ToString("yyyy-MM-dd")))
+				.ForMember(m => m.CardNumbers, opt => opt.MapFrom(b => b.cardNumbers))
 				;
 		}
 	}

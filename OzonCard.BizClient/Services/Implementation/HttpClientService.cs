@@ -58,6 +58,7 @@ namespace OzonCard.BizClient.Services.Implementation
                     Token = await CreateToken(identification),
                     Created = DateTime.UtcNow
                 };
+                TokenOrganizations.Remove(identification);
                 TokenOrganizations.Add(identification, session);
                 return session;
             }
@@ -311,13 +312,14 @@ namespace OzonCard.BizClient.Services.Implementation
                 return await GerReportCN(access_session, organizationId, corporateNutritionId, dateFrom, dateTo);
             }
         }
-        public async Task<IEnumerable<TransactionsReport>> GerTransactionsReport(Session access_session, Guid organizationId, string dateFrom, string dateTo)
+        public async Task<IEnumerable<TransactionsReport>> GerTransactionsReport(Session access_session, Guid organizationId, string dateFrom, string dateTo, TransactionType? type = TransactionType.PayFromWallet)
         {
             try
             {
-                var type = TransactionType.PayFromWallet.ToString();
                 var list = await _client.Send<IEnumerable<TransactionsReport>>($"organization/{organizationId}/transactions_report?date_from={dateFrom}&date_to={dateTo}&access_token={access_session.Token}");
-                return list?.Where(x => x.transactionType == type).ToList()
+                if (type == null)
+                    return list?.ToList() ?? new List<TransactionsReport>();
+                return list?.Where(x => x.transactionType == type.ToString()).ToList()
                 ?? new List<TransactionsReport>();
             }
             catch (UnauthorizedAccessException)

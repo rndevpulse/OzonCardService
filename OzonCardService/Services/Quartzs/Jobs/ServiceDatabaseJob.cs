@@ -21,6 +21,7 @@ namespace OzonCardService.Services.Quartzs.Jobs
             await _serviceDatabase.CreateBackup(Path.Combine(path, "Backup"), 6);
             await _serviceDatabase.RemoveOldFile(Path.Combine(path, "FileReports"), 7);
             await _serviceDatabase.RemoveOldTokensRefresh(10);
+            await _serviceDatabase.RemoveOldEvents(70);
         }
 
     }

@@ -23,7 +23,21 @@ namespace OzonCard.Context.Repositories
 			}
 		}
 
-		public async Task<bool> RemoveOldFile(int countDays)
+        public async Task<bool> RemoveOldEvents(int countDays)
+        {
+			using (var context = ContextFactory.CreateDbContext(ConnectionString))
+			{
+				var date = DateTime.UtcNow.AddDays(-countDays);
+				var events = await context.Events
+					.Where(x=>x.Create < date)
+					.ToListAsync();
+				context.RemoveRange(events);
+				await context.SaveChangesAsync();
+				return true;
+			}
+		}
+
+        public async Task<bool> RemoveOldFile(int countDays)
         {
 			using (var context = ContextFactory.CreateDbContext(ConnectionString))
 			{

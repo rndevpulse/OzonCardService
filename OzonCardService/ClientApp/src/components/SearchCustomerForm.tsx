@@ -137,8 +137,7 @@ const SearchCustomerForm: FC = () => {
 
     }
     async function ChangeCustomerBalance(id: string, name: string, isIncrement: boolean) {
-
-        const response = await BizService.ChangeCustomerBizBalance({
+        await BizService.ChangeCustomerBizBalance({
             id,
             organizationId,
             corporateNutritionId,
@@ -150,12 +149,18 @@ const SearchCustomerForm: FC = () => {
             confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
         else
             confirm(`У пользователя "${name}" списано ${balance} рублей`)
-        customersInfo.find(x => x.id === id)!.balanse = response.data
+        const old_summ = customersInfo.find(x => x.id === id).balanse
+       
+        customersInfo.find(x => x.id === id).balanse = isIncrement
+            ? old_summ + balance
+            : old_summ - balance
 
+        console.log(customersInfo)
+        setCustomersInfo(customersInfo)
         setIsLoadCustomers(false)
 
-
     }
+
     function div_datePickers() {
         return (
             <div className="div-datePicker">

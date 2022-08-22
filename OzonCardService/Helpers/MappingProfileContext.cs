@@ -24,6 +24,7 @@ namespace OzonCardService.Helpers
 				.ForMember(m => m.Balanse, opt => opt.MapFrom(b => b.Wallets.First().Balance))
 				.ForMember(m => m.Categories, opt => opt.MapFrom(b => b.Categories.Select(x => x.Category.Name)))
 				;
+			CreateMap<CustomerReport, ReportCN_dto>();
 		}
 	}
 }

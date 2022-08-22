@@ -185,7 +185,7 @@ var SearchCustomerForm = function () {
     }
     function ChangeCustomerBalance(id, name, isIncrement) {
         return __awaiter(this, void 0, void 0, function () {
-            var response;
+            var old_summ;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, BizServise_1.default.ChangeCustomerBizBalance({
@@ -196,13 +196,18 @@ var SearchCustomerForm = function () {
                             balance: balance
                         })];
                     case 1:
-                        response = _a.sent();
+                        _a.sent();
                         setIsLoadCustomers(true);
                         if (isIncrement)
                             confirm("\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044E \"" + name + "\" \u0437\u0430\u0447\u0438\u0441\u043B\u0435\u043D\u043E " + balance + " \u0440\u0443\u0431\u043B\u0435\u0439");
                         else
                             confirm("\u0423 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \"" + name + "\" \u0441\u043F\u0438\u0441\u0430\u043D\u043E " + balance + " \u0440\u0443\u0431\u043B\u0435\u0439");
-                        customersInfo.find(function (x) { return x.id === id; }).balanse = response.data;
+                        old_summ = customersInfo.find(function (x) { return x.id === id; }).balanse;
+                        customersInfo.find(function (x) { return x.id === id; }).balanse = isIncrement
+                            ? old_summ + balance
+                            : old_summ - balance;
+                        console.log(customersInfo);
+                        setCustomersInfo(customersInfo);
                         setIsLoadCustomers(false);
                         return [2 /*return*/];
                 }
