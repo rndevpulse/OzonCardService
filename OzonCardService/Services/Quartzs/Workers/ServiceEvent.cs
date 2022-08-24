@@ -33,14 +33,20 @@ namespace OzonCardService.Services.Quartzs.Workers
             log.Information("Start download events from biz");
             var organizations = await _repository.GetOrganizations();
             var tasks = new List<Task>();
-            tasks.AddRange(organizations.ToList().Select(organization => Task.Run(async () =>
+            tasks.AddRange(organizations.ToList()
+                .Where(x=>x.Id == Guid.Parse("5F850000-90A3-0025-9950-08D87FE04A96"))
+                .Select(organization => Task.Run(async () =>
             //organizations.ToList().ForEach(async organization =>
             {
+                    
+
                 var oldEvent = await _repository.GetLastEventOrganization(organization.Id);
                 var now = DateTime.Now;
-                //var now = new DateTime(2022, 8, 14);
                 var first = new DateTime(now.Year, now.Month, 1);
                 var dateFrom = oldEvent?.Create ?? first;
+
+               
+                dateFrom = new DateTime(2022, 8, 15);
                 log.Information($"Get report from biz organization '{organization.Name}'");
                 var session = await _client.GetSession(organization.Login, organization.Password);
                 var events = await _client.GerTransactionsReport(session, organization.Id,
@@ -64,6 +70,7 @@ namespace OzonCardService.Services.Quartzs.Workers
                         MarketingCampaignName = x?.marketingCampaignName ?? string.Empty,
                     }));
                 log.Information($"add to database '{rows}' events in '{organization.Name}' from {dateFrom.ToString("yyyy-MM-dd")} to {now.ToString("yyyy-MM-dd")}");
+                //проверяем потеряшек
                 var customers = await _repository.GetCustomersOrganization(organization.Id);
                 var newCustomersCard = customers.SelectMany(x => x.Cards.Select(c => c.Number));
                 newCustomersCard = events?.Select(x => x.cardNumbers).Distinct().Except(newCustomersCard).ToArray();
@@ -101,6 +108,23 @@ namespace OzonCardService.Services.Quartzs.Workers
                     }
                     await _repository.AttachRangeCustomer(newCustomers);
                 }
+                //проверяем у кого были удалены категории
+                var cmd = new List<CategoryCustomer>();
+                foreach (var group in events.Where(e=>e.transactionType== "RemoveGuestCategory")
+                                        .GroupBy(e => e.comment))
+                {
+                    var category = organization.Categories.FirstOrDefault(x=>x.Name == group.Key);
+                    if (category == null)
+                        continue;
+                    var cards = group.Select(e => e.cardNumbers).ToList();
+                    var customersIds = customers
+                        .Where(c => c.Cards.Any(card => cards.Contains(card.Number)))
+                        .Select(c=>c.Id);
+                    var command = category.Customers.Where(x => customersIds.Contains(x.CustomerId));
+                    cmd.AddRange(command);
+                }
+                if (cmd.Any())
+                    await _repository.UpdateCategory(cmd);
 
             })));
             Task.WaitAll(tasks.ToArray());

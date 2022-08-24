@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OzonCard.Context.Interfaces;
 using OzonCard.Data.Models;
+using System.Text;
 
 namespace OzonCard.Context.Repositories
 {
@@ -130,6 +131,8 @@ namespace OzonCard.Context.Repositories
                     .Include(x=>x.Categories)
                     .Include(x=>x.CorporateNutritions)
                     .ThenInclude(x=>x.Wallets)
+                    .Include(x => x.Categories)
+                    .ThenInclude(x => x.Customers)
                    .ToListAsync();
                 return organizations;
             }
@@ -153,6 +156,14 @@ namespace OzonCard.Context.Repositories
 
                 await context.SaveChangesAsync();
             }
+        }
+        public async Task UpdateCategory(IEnumerable<CategoryCustomer> categories)
+        {
+            var sb = new StringBuilder();
+            foreach (var category in categories)
+                sb.AppendLine($"DELETE FROM [CategoryCustomer] WHERE  [CategoryId] = '{category.CategoryId}' and [CustomerId] = '{category.CustomerId}';");
+            using var context = ContextFactory.CreateDbContext(ConnectionString);
+            await context.Database.ExecuteSqlRawAsync(sb.ToString());
         }
     }
 }
