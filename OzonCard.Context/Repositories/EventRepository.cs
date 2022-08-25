@@ -80,8 +80,8 @@ namespace OzonCard.Context.Repositories
                     employeeNumber = x.TabNumber,
                     position = x.Position,
                     guestPhone = x.Phone,
-                    guestCardTrack = string.Join(",", x.Cards.Select(c=>c.Track)),
-                    guestCategoryNames = string.Join(",", x.Categories.Select(c => c.Category.Name))
+                    guestCardTrack = string.Join(",", x.Cards.Select(c=>c.Track).OrderBy(x => x)),
+                    guestCategoryNames = string.Join(",", x.Categories.Select(c => c.Category.Name).OrderBy(x=>x))
                 }).ToList();
 
                 var group = events.GroupBy(x => x.CardNumbers);

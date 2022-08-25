@@ -1,8 +1,6 @@
 ﻿using OzonCard.BizClient.Models;
-using OzonCard.BizClient.Models.Data;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OzonCardService.Models.DTO
 {
@@ -13,7 +11,8 @@ namespace OzonCardService.Models.DTO
         public string Card { get; set; }
         public string TabNumber { get; set; }
         public string Organization { get; set; }
-        public double Balanse { get; set; }
+        public double Balance { get; set; }
+        public DateTime? TimeUpdateBalance { get; set; }
         public double Sum { get; set; }
         public int Orders { get; set; }
         public IEnumerable<string> Categories { get; set; }

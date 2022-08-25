@@ -202,8 +202,8 @@ var SearchCustomerForm = function () {
                             confirm("\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044E \"" + name + "\" \u0437\u0430\u0447\u0438\u0441\u043B\u0435\u043D\u043E " + balance + " \u0440\u0443\u0431\u043B\u0435\u0439");
                         else
                             confirm("\u0423 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \"" + name + "\" \u0441\u043F\u0438\u0441\u0430\u043D\u043E " + balance + " \u0440\u0443\u0431\u043B\u0435\u0439");
-                        old_summ = customersInfo.find(function (x) { return x.id === id; }).balanse;
-                        customersInfo.find(function (x) { return x.id === id; }).balanse = isIncrement
+                        old_summ = customersInfo.find(function (x) { return x.id === id; }).balance;
+                        customersInfo.find(function (x) { return x.id === id; }).balance = isIncrement
                             ? old_summ + balance
                             : old_summ - balance;
                         console.log(customersInfo);
@@ -266,7 +266,7 @@ var SearchCustomerForm = function () {
                                 customer.tabNumber),
                             React.createElement("li", null,
                                 "\u0411\u0430\u043B\u0430\u043D\u0441: ",
-                                customer.balanse),
+                                customer.balance),
                             React.createElement("li", null,
                                 "\u0421\u0443\u043C\u043C\u0430 \u0437\u0430\u043A\u0430\u0437\u043E\u0432: ",
                                 customer.sum),
@@ -274,11 +274,23 @@ var SearchCustomerForm = function () {
                                 "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u0437\u0430\u043A\u0430\u0437\u043E\u0432: ",
                                 customer.orders)),
                         React.createElement("ul", null,
+                            React.createElement("li", null,
+                                "\u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u043E: ",
+                                convertUTCDateToLocalDate(customer.timeUpdateBalance)),
                             React.createElement("li", null, "\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438:"),
                             customer.categories && customer.categories.map(function (category) {
                                 return (React.createElement("li", null, category));
                             })))));
             }))));
+    }
+    function convertUTCDateToLocalDate(date_string) {
+        date_string = date_string.replace('Z', '');
+        console.log("string", date_string);
+        var date = new Date(date_string);
+        console.log("date", date);
+        var newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+        console.log("newDate", newDate);
+        return newDate.toLocaleDateString() + ' ' + newDate.toLocaleTimeString();
     }
     function div_OnlineParametrs() {
         if (isOffline)

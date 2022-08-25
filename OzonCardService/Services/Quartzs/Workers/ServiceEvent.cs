@@ -46,7 +46,7 @@ namespace OzonCardService.Services.Quartzs.Workers
                 var dateFrom = oldEvent?.Create ?? first;
 
                
-                dateFrom = new DateTime(2022, 8, 15);
+                //dateFrom = new DateTime(2022, 8, 15);
                 log.Information($"Get report from biz organization '{organization.Name}'");
                 var session = await _client.GetSession(organization.Login, organization.Password);
                 var events = await _client.GerTransactionsReport(session, organization.Id,
@@ -73,15 +73,16 @@ namespace OzonCardService.Services.Quartzs.Workers
                 //проверяем потеряшек
                 var customers = await _repository.GetCustomersOrganization(organization.Id);
                 var newCustomersCard = customers.SelectMany(x => x.Cards.Select(c => c.Number));
-                newCustomersCard = events?.Select(x => x.cardNumbers).Distinct().Except(newCustomersCard).ToArray();
+                newCustomersCard = events?.SelectMany(x => x.cardNumbers.Split(",")).Distinct().Except(newCustomersCard).ToArray();
                 if (newCustomersCard.Any())
                 {
                     log.Information($"In '{organization.Name}' find {newCustomersCard.Count()} new customers from {dateFrom.ToString("yyyy-MM-dd")} to {now.ToString("yyyy-MM-dd")}");
                     var newCustomers = new List<Customer>();
                     //запрашиваем у биза потеряшек
                     foreach (var card in newCustomersCard)
-                    { 
-                        var biz = await _client.GetCustomerForCard(session, card, organization.Id);
+                    {
+                        var c = card.Split(",")[0];
+                        var biz = await _client.GetCustomerForCard(session, c, organization.Id);
                         if (biz == null)
                             continue;
                         var customer = new Customer();

@@ -149,9 +149,9 @@ const SearchCustomerForm: FC = () => {
             confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
         else
             confirm(`У пользователя "${name}" списано ${balance} рублей`)
-        const old_summ = customersInfo.find(x => x.id === id).balanse
+        const old_summ = customersInfo.find(x => x.id === id).balance
        
-        customersInfo.find(x => x.id === id).balanse = isIncrement
+        customersInfo.find(x => x.id === id).balance = isIncrement
             ? old_summ + balance
             : old_summ - balance
 
@@ -250,11 +250,12 @@ const SearchCustomerForm: FC = () => {
                                         <li>Организация: {customer.organization}</li>
                                         <li>Карта: {customer.card}</li>
                                         <li>Табельный №: {customer.tabNumber}</li>
-                                        <li>Баланс: {customer.balanse}</li>
+                                        <li>Баланс: {customer.balance}</li>
                                         <li>Сумма заказов: {customer.sum}</li>
                                         <li>Количество заказов: {customer.orders}</li>
                                     </ul>
                                     <ul>
+                                        <li>Обновлено: {convertUTCDateToLocalDate(customer.timeUpdateBalance)}</li>
                                         <li>Категории:</li>
                                         {customer.categories && customer.categories.map(category => {
                                             return (<li>{category}</li>)
@@ -270,7 +271,17 @@ const SearchCustomerForm: FC = () => {
             </div>
         )
     }
+    function convertUTCDateToLocalDate(date_string: string): string {
+        date_string = date_string.replace('Z', '');
+        console.log("string",date_string);
+        var date = new Date(date_string);
+        console.log("date", date);
 
+        var newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+        console.log("newDate", newDate);
+
+        return newDate.toLocaleDateString() + ' ' + newDate.toLocaleTimeString();
+    }
     function div_OnlineParametrs() {
         if (isOffline)
             return;

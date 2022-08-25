@@ -122,14 +122,14 @@ namespace OzonCardService
                     );
 
 
-                //q.ScheduleJob<ServiceBalanceJob>(t => t
-                //    .WithIdentity("Timeout_Job", "Balance")
-                //    .UsingJobData(
-                //        JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
-                //        TimeSpan.FromMinutes(5).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
-                //    .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(1).RepeatForever(); })
-                //    //.StartAt(DateTimeOffset.Now.AddMinutes(1))
-                //    );
+                q.ScheduleJob<ServiceBalanceJob>(t => t
+                    .WithIdentity("Timeout_Job", "Balance")
+                    .UsingJobData(
+                        JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
+                        TimeSpan.FromMinutes(5).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
+                    .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(1).RepeatForever(); })
+                    //.StartAt(DateTimeOffset.Now.AddMinutes(1))
+                    );
 
 
                 q.ScheduleJob<ServiceEventJob>(t => t
