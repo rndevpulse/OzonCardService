@@ -11,6 +11,6 @@ namespace OzonCard.Context.Interfaces
         Task<IEnumerable<CustomerReport>> GetCustomersReportOrganization(Guid organizationId, DateTime dateFrom, DateTime dateTo, string programmName);
         Task<IEnumerable<Customer>> GetCustomersOrganization(Guid organizationId);
         Task AttachRangeCustomer(IEnumerable<Customer> newCustomers);
-        Task UpdateCategory(IEnumerable<CategoryCustomer> changedCategory);
+        Task UpdateCategory(IEnumerable<CategoryCustomer> changedCategory, bool isRemove);
     }
 }

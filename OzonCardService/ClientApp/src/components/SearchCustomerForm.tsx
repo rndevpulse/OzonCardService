@@ -149,9 +149,9 @@ const SearchCustomerForm: FC = () => {
             confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
         else
             confirm(`У пользователя "${name}" списано ${balance} рублей`)
-        const old_summ = customersInfo.find(x => x.id === id).balance
+        const old_summ = customersInfo.find(x => x.id === id)!.balance
        
-        customersInfo.find(x => x.id === id).balance = isIncrement
+        customersInfo.find(x => x.id === id)!.balance = isIncrement
             ? old_summ + balance
             : old_summ - balance
 

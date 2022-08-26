@@ -157,11 +157,14 @@ namespace OzonCard.Context.Repositories
                 await context.SaveChangesAsync();
             }
         }
-        public async Task UpdateCategory(IEnumerable<CategoryCustomer> categories)
+        public async Task UpdateCategory(IEnumerable<CategoryCustomer> categories,bool isRemove)
         {
             var sb = new StringBuilder();
             foreach (var category in categories)
-                sb.AppendLine($"DELETE FROM [CategoryCustomer] WHERE  [CategoryId] = '{category.CategoryId}' and [CustomerId] = '{category.CustomerId}';");
+                if (isRemove)
+                    sb.AppendLine($"DELETE FROM [CategoryCustomer] WHERE  [CategoryId] = '{category.CategoryId}' and [CustomerId] = '{category.CustomerId}';");
+                else
+                    sb.AppendLine($"INSERT INTO [CategoryCustomer] ([CustomerId], [CategoryId]) VALUES ('{category.CategoryId}','{category.CustomerId}');");
             using var context = ContextFactory.CreateDbContext(ConnectionString);
             await context.Database.ExecuteSqlRawAsync(sb.ToString());
         }

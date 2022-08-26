@@ -399,6 +399,11 @@ namespace OzonCardService.Services.Implementation
                 await _client.DelCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
             else
                 await _client.AddCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
+            await _eventRepository.UpdateCategory(new CategoryCustomer[] {new CategoryCustomer
+                    {
+                        CategoryId = customer.CategoryId,
+                        CustomerId = customer.Id
+                    }}, customer.isRemove);
         }
         public async Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer)
         {

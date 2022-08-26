@@ -34,7 +34,7 @@ namespace OzonCardService.Services.Quartzs.Workers
             var organizations = await _repository.GetOrganizations();
             var tasks = new List<Task>();
             tasks.AddRange(organizations.ToList()
-                .Where(x=>x.Id == Guid.Parse("5F850000-90A3-0025-9950-08D87FE04A96"))
+                //.Where(x=>x.Id == Guid.Parse("5F850000-90A3-0025-9950-08D87FE04A96"))
                 .Select(organization => Task.Run(async () =>
             //organizations.ToList().ForEach(async organization =>
             {
@@ -125,7 +125,7 @@ namespace OzonCardService.Services.Quartzs.Workers
                     cmd.AddRange(command);
                 }
                 if (cmd.Any())
-                    await _repository.UpdateCategory(cmd);
+                    await _repository.UpdateCategory(cmd, isRemove: true);
 
             })));
             Task.WaitAll(tasks.ToArray());
