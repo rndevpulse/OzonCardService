@@ -10,5 +10,7 @@ namespace OzonCardService.Models.View
         public string DateFrom { get; set; }
         public string DateTo { get; set; }
         public string Title { get; set; }
+        public bool IsOffline { get; set; }
+
     }
 }

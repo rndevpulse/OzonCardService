@@ -1,4 +1,5 @@
 ﻿using OzonCard.BizClient.Models;
+using OzonCard.Data.Models;
 using System;
 using System.Collections.Generic;
 
@@ -19,6 +20,13 @@ namespace OzonCardService.Models.DTO
 
 
         internal void SetMetrics(ReportCN report)
+        {
+            if (report == null) return;
+            Sum = report?.payFromWalletSum ?? 0;
+            Orders = (int)(report?.paidOrdersCount ?? 0);
+
+        }
+        internal void SetMetrics(CustomerReport report)
         {
             if (report == null) return;
             Sum = report?.payFromWalletSum ?? 0;

@@ -320,7 +320,7 @@ namespace OzonCard.Context.Repositories
 
 
         #region Покупатели
-        public async Task<IEnumerable<Customer>> GetCustomersForName(string name)
+        public async Task<IEnumerable<Customer>> GetCustomersForName(Guid organizationId, string name)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
@@ -328,6 +328,7 @@ namespace OzonCard.Context.Repositories
                 var customers = await context.Customers
                     .Where(x => x.Name.ToLower().Contains(str))
                     .Include(x=>x.Organization)
+                    .Where(x => x.Organization.Id == organizationId)
                     .Include(x => x.Wallets)
                     .Include(x=>x.Cards)
                     .Include(x=>x.Categories)
@@ -339,7 +340,7 @@ namespace OzonCard.Context.Repositories
         }
 
 
-        public async Task<IEnumerable<Customer>> GetCustomersForCardNumber(IEnumerable<string> cardnumbers)
+        public async Task<IEnumerable<Customer>> GetCustomersForCardNumber(Guid organizationId, IEnumerable<string> cardnumbers)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
@@ -356,13 +357,23 @@ namespace OzonCard.Context.Repositories
                     .ThenInclude(x => x.Wallet)
                     .Include(x => x.Cards)
                     .Include(x=>x.Organization)
+                    .Where(x=>x.Organization.Id == organizationId)
                     .ToListAsync();
 
                 return customers;
             }
         }
+        public async Task<Customer> GetCustomersForIikoBizID(Guid iikoBizID)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var customer = await context.Customers
+                    .FirstOrDefaultAsync(x => x.iikoBizId == iikoBizID);
+                return customer;
+            }
+        }
 
-        public async Task<IEnumerable<Customer>> GetCustomersForCardNumber(string cardnumber)
+        public async Task<IEnumerable<Customer>> GetCustomersForCardNumber(Guid organizationId, string cardnumber)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
@@ -370,6 +381,7 @@ namespace OzonCard.Context.Repositories
                     .Where(x => x.Track.ToLower().Contains(cardnumber))
                     .Include(x => x.Customer)
                         .ThenInclude(x => x.Organization)
+                    .Where(x => x.Customer.Organization.Id == organizationId)
                     .Include(x => x.Customer)
                         .ThenInclude(x => x.Wallets)
                     .Include(x => x.Customer)

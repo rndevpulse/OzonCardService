@@ -81,7 +81,9 @@ namespace OzonCard.Context.Repositories
                     position = x.Position,
                     guestPhone = x.Phone,
                     guestCardTrack = string.Join(",", x.Cards.Select(c=>c.Track).OrderBy(x => x)),
-                    guestCategoryNames = string.Join(",", x.Categories.Select(c => c.Category.Name).OrderBy(x=>x))
+                    guestCategoryNames = string.Join(",", x.Categories
+                        .Where(c=>c.Category.isActive)
+                        .Select(c => c.Category.Name).OrderBy(x=>x))
                 }).ToList();
 
                 var group = events.GroupBy(x => x.CardNumbers);
@@ -164,7 +166,27 @@ namespace OzonCard.Context.Repositories
                 if (isRemove)
                     sb.AppendLine($"DELETE FROM [CategoryCustomer] WHERE  [CategoryId] = '{category.CategoryId}' and [CustomerId] = '{category.CustomerId}';");
                 else
-                    sb.AppendLine($"INSERT INTO [CategoryCustomer] ([CustomerId], [CategoryId]) VALUES ('{category.CategoryId}','{category.CustomerId}');");
+                    sb.AppendLine($"INSERT INTO [CategoryCustomer] ([CustomerId], [CategoryId]) VALUES ('{category.CustomerId}','{category.CategoryId}');");
+            using var context = ContextFactory.CreateDbContext(ConnectionString);
+            await context.Database.ExecuteSqlRawAsync(sb.ToString());
+        }
+
+        public async Task SetCategories(IEnumerable<(Guid guestId, string guestCategoryNames)> enumerable, Guid organizationId)
+        {
+            var customers = await GetCustomersOrganization(organizationId);
+            var categories = GetOrganizations().Result.FirstOrDefault(x=>x.Id == organizationId)!.Categories;
+
+            var sb = new StringBuilder();
+            enumerable = enumerable.Join(customers, e=>e.guestId, c=>c.iikoBizId,
+                (e,c)=> (c.Id, e.guestCategoryNames)).ToArray();
+            foreach (var custom in enumerable)
+            {
+                sb.AppendLine($"DELETE FROM [CategoryCustomer] WHERE [CustomerId] = '{custom.guestId}';");
+                foreach (var c in categories.Where(x=>custom.guestCategoryNames.Contains(x.Name)).ToArray())
+                {
+                    sb.AppendLine($"INSERT INTO [CategoryCustomer] ([CustomerId], [CategoryId]) VALUES ('{custom.guestId}','{c.Id}');");
+                }
+            }
             using var context = ContextFactory.CreateDbContext(ConnectionString);
             await context.Database.ExecuteSqlRawAsync(sb.ToString());
         }

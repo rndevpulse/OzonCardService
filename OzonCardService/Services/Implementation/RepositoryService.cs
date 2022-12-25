@@ -137,7 +137,7 @@ namespace OzonCardService.Services.Implementation
                 throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found");
             if (!organization.Users.Any(x => x.Id == userId))
                 throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found in current user");
-            var customers_rep = _repository.GetCustomersForCardNumber(customers_excel.Select(x => x.Card))
+            var customers_rep = _repository.GetCustomersForCardNumber(organization.Id, customers_excel.Select(x => x.Card))
                 .Result.ToList();
 
             
@@ -319,12 +319,9 @@ namespace OzonCardService.Services.Implementation
 
             var dateTo = DateTime.Parse(reportOption.DateTo).AddDays(-1);
             IEnumerable<ReportCN_dto> report = new List<ReportCN_dto>();
-            //если дата запрашиваемого отчета вчера или дальше 
-            //и последнее событие по данной организации позже чем запрашиваемая дата
-            if (dateTo.Date < DateTime.UtcNow.Date
-                && _eventRepository.GetLastEventOrganization(organization.Id).Result.Create >= dateTo)
+            if (reportOption.IsOffline)
             {
-                var CN = organization.CorporateNutritions.FirstOrDefault(x=>x.Id == reportOption.CorporateNutritionId);
+                var CN = organization.CorporateNutritions.FirstOrDefault(x => x.Id == reportOption.CorporateNutritionId);
                 report = _mapper.Map<IEnumerable<ReportCN_dto>>(
                     await _eventRepository.GetCustomersReportOrganization(organization.Id, DateTime.Parse(reportOption.DateFrom), dateTo, CN.Name)
                 );
@@ -353,8 +350,11 @@ namespace OzonCardService.Services.Implementation
                     }
                 }
 
+                //синхронизируем категории принудительно из биза
+                //    await _eventRepository.SetCategories(report.Select(x => (x.guestId, x.guestCategoryNames)), organization.Id);
             }
-                
+
+
             //фильтрация пользователей по запрашиваемой категории, если необходимо
             if (reportOption.CategoryId != Guid.Empty)
             {
@@ -399,10 +399,11 @@ namespace OzonCardService.Services.Implementation
                 await _client.DelCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
             else
                 await _client.AddCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
+            var c = await _repository.GetCustomersForIikoBizID(customer.Id);
             await _eventRepository.UpdateCategory(new CategoryCustomer[] {new CategoryCustomer
                     {
                         CategoryId = customer.CategoryId,
-                        CustomerId = customer.Id
+                        CustomerId = c.Id
                     }}, customer.isRemove);
         }
         public async Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer)
@@ -417,9 +418,9 @@ namespace OzonCardService.Services.Implementation
             var customers_db_names = new List<Customer>();
             var customers_db_cards = new List<Customer>();
             if (customer.Name != String.Empty)
-                customers_db_names.AddRange(await _repository.GetCustomersForName(customer.Name));
+                customers_db_names.AddRange(await _repository.GetCustomersForName(organization.Id, customer.Name));
             if (customer.Card != String.Empty)
-                customers_db_cards.AddRange(await _repository.GetCustomersForCardNumber(customer.Card));
+                customers_db_cards.AddRange(await _repository.GetCustomersForCardNumber(organization.Id, customer.Card));
             if (customer.Name != String.Empty && customer.Card != String.Empty)
                 customers_db = customers_db_names.Intersect(customers_db_cards).ToList();
             else
@@ -434,6 +435,10 @@ namespace OzonCardService.Services.Implementation
             if (customer.isOffline)
             {
                 customer_dto.AddRange(_mapper.Map<IEnumerable<InfoSearchCustomer_dto>>(customers_db));
+                var report_db = await _eventRepository.GetCustomersReportOrganization(organization.Id, DateTime.Parse(customer.DateFrom), DateTime.Parse(customer.DateTo), 
+                    organization.CorporateNutritions.FirstOrDefault(x=>x.Id == customer.CorporateNutritionId)?.Name);
+                foreach (var c in customer_dto)
+                    c.SetMetrics(report_db.FirstOrDefault(x => x.guestId == c.Id));
                 return customer_dto;
             }
             var session = await _client.GetSession(organization.Login, organization.Password);
@@ -471,11 +476,10 @@ namespace OzonCardService.Services.Implementation
             var TransactionsReport = new TransactionsReport();
             var dateTo_transaction = DateTime.Parse(reportOption.DateTo).AddDays(-1);
             IEnumerable<Event> transactions = new List<Event>();
-            IEnumerable<CustomerReport> report = new List<CustomerReport>(); 
+            IEnumerable<CustomerReport> report = new List<CustomerReport>();
             //если дата запрашиваемого отчета вчера или дальше 
             //и последнее событие по данной организации позже чем запрашиваемая дата
-            if (dateTo_transaction.Date <= DateTime.UtcNow.Date
-                && _eventRepository.GetLastEventOrganization(organization.Id).Result.Create >= dateTo_transaction)
+            if (reportOption.IsOffline)
             {
                 //берем события из базы
                 var CN = organization.CorporateNutritions.FirstOrDefault(x => x.Id == reportOption.CorporateNutritionId);
@@ -495,6 +499,7 @@ namespace OzonCardService.Services.Implementation
                 var biz_report = await _client.GerReportCN(
                         session, reportOption.OrganizationId, reportOption.CorporateNutritionId,
                         reportOption.DateFrom, reportOption.DateTo);
+                report = _mapper.Map<IEnumerable<CustomerReport>>(biz_report);
             }
             
             var customers = await _repository.GetCustomersForOrganization(organization.Id);
@@ -531,7 +536,7 @@ namespace OzonCardService.Services.Implementation
                 });
 
             }
-            TransactionsReport.TransactionsSummary = reportSummary;
+            TransactionsReport.TransactionsSummary = reportSummary.OrderBy(x=>x.Name);
             return TransactionsReport;
         }
         string GetNameEating(DateTime date)

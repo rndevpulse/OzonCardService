@@ -1,8 +1,8 @@
 ﻿import axios from 'axios'
 import { IAuthResponce } from '../models/IAuthResponse'
 
-//export const API_URL = 'https://192.168.1.100:5401/api'
-export const API_URL = 'https://ozon.pulse.keenetic.link/api'
+export const API_URL = 'https://192.168.1.100:5401/api'
+//export const API_URL = 'https://ozon.pulse.keenetic.link/api'
 
 const api = axios.create({
     withCredentials: true,

@@ -37,7 +37,7 @@ namespace OzonCardService.Helpers
 				;
 
 			CreateMap<BizModel.TransactionsReport, RepModel.Event>()
-				.ForMember(m => m.Create, opt => opt.MapFrom(b => b.transactionCreateDate.ToString("yyyy-MM-dd")))
+				.ForMember(m => m.Create, opt => opt.MapFrom(b => b.transactionCreateDate))
 				.ForMember(m => m.CardNumbers, opt => opt.MapFrom(b => b.cardNumbers))
 				;
 		}

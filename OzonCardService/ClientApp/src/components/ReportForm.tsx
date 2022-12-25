@@ -34,6 +34,7 @@ const ReportForm: FC = () => {
     const [dateTo, setDateTo] = useState<Date>(new Date());
     
     const [isFilter, setIsFilter] = useState(true);
+    const [isOffline, setIsOffline] = useState(false);
 
 
     const CustomSelect = ({ id, value, options, onChange }) => {
@@ -78,7 +79,8 @@ const ReportForm: FC = () => {
             dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
             title: fileName === ''
                 ? `Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`
-                : fileName
+                : fileName,
+            isOffline
         }
         const response = await BizService.ReportFromBiz(option)
         taskstore.onAddTask(response.data, 'Отчет: ' + option.title)
@@ -93,7 +95,8 @@ const ReportForm: FC = () => {
             dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
             title: fileName === ''
                 ? `Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`
-                : fileName
+                : fileName,
+            isOffline
         }
         const response = await BizService.TransactionsFromBiz(option)
         taskstore.onAddTask(response.data, 'Отчет: ' + option.title)
@@ -165,6 +168,15 @@ const ReportForm: FC = () => {
         <div>
             <h1 className="center form-group col-md-12">Отчеты</h1>
             <div className="center form-group col-md-12">
+                <label htmlFor="isOffline" className="label-checkbox-category">
+                    <input id='isOffline' type='checkbox' checked={isOffline}
+                        onChange={() => setIsOffline(!isOffline)}
+                    />
+                    Работать в оффлайн режиме
+                    <i className="check_box material-icons red-text">
+                        {isOffline ? 'check_box' : 'check_box_outline_blank'}
+                    </i>
+                </label>
                 <Tabs className="Tabs">
                     <TabList>
                         <Tab>Отчет за период</Tab>

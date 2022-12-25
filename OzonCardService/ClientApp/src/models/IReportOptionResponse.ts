@@ -6,4 +6,5 @@ export interface IReportOptionResponse{
     dateFrom: string
     dateTo: string
     title: string
+    isOffline:boolean
 }

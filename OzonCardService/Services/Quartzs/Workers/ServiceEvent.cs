@@ -109,8 +109,30 @@ namespace OzonCardService.Services.Quartzs.Workers
                     }
                     await _repository.AttachRangeCustomer(newCustomers);
                 }
-                //проверяем у кого были удалены категории
                 var cmd = new List<CategoryCustomer>();
+                //проверяем у кого были добавлены категории
+                foreach (var group in events.Where(e => e.transactionType == "SetGuestCategory")
+                                        .GroupBy(e => e.comment))
+                {
+                    var category = organization.Categories.FirstOrDefault(x => x.Name == group.Key);
+                    if (category == null)
+                        continue;
+                    var cards = group.Select(e => e.cardNumbers).ToList();
+                    var customersIds = customers
+                        .Where(c => c.Cards.Any(card => cards.Contains(card.Number)))
+                        .Select(c => c.Id)
+                        .ToList();
+                    customersIds = customersIds.Except(category.Customers.Select(x=>x.CustomerId)).ToList(); 
+                    cmd.AddRange(customersIds.Select(x=>new CategoryCustomer
+                    {
+                        CustomerId = x,
+                        CategoryId= category.Id
+                    }));
+                }
+                if (cmd.Any())
+                    await _repository.UpdateCategory(cmd, isRemove: false);
+                //проверяем у кого были удалены категории
+                cmd.Clear();
                 foreach (var group in events.Where(e=>e.transactionType== "RemoveGuestCategory")
                                         .GroupBy(e => e.comment))
                 {
