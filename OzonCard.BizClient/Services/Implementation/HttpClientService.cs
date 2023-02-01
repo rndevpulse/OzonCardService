@@ -303,7 +303,9 @@ namespace OzonCard.BizClient.Services.Implementation
         {
             try
             {
-                return await _client.Send<IEnumerable<ReportCN>>($"organization/{organizationId}/corporate_nutrition_report?corporate_nutrition_id={corporateNutritionId}&date_from={dateFrom}&date_to={dateTo}&access_token={access_session.Token}")
+
+                return await _client.Send<IEnumerable<ReportCN>>($"organization/{organizationId}/corporate_nutrition_report?corporate_nutrition_id={corporateNutritionId}&date_from={dateFrom}&date_to={dateTo}&access_token={access_session.Token}",
+                    timeout: 300)
                 ?? new List<ReportCN>();
             }
             catch (UnauthorizedAccessException)

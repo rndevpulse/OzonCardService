@@ -15,8 +15,9 @@ namespace OzonCard.BizClient.HttpClients
             
         }
 
-        public async Task<T?> Send<T>(string query = "", string method = "GET", object? body = null)
+        public async Task<T?> Send<T>(string query = "", string method = "GET", object? body = null, int timeout = 180)
         {
+            _httpClient.Timeout =  TimeSpan.FromSeconds(timeout);
             log.Debug("Request api to {0}: {1}", method, query);
             var request = new HttpRequestMessage(new HttpMethod(method), query);
             
