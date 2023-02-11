@@ -11,4 +11,5 @@ export interface IInfoSearhCustomerResponse {
     sum: number;
     orders: string;
     categories: string[];
+    lastVisit: string;
 }

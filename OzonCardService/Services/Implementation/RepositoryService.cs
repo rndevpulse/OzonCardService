@@ -458,8 +458,17 @@ namespace OzonCardService.Services.Implementation
             //даты подставлять автоматически с начала месяца
             var report = await _client.GerReportCN(session, organization.Id, customer.CorporateNutritionId,
                 customer.DateFrom, customer.DateTo);
+            
+            // var reportCustomers = await _client.GetCustomersByPeriod(session, organization.Id, 
+            //     customer.DateFrom, customer.DateTo);
+            var evOrgCustomers = await _eventRepository.GetLastVisit(organization.Id, customer_dto.Select(x=>x.Card));
+            
             foreach (var c in customer_dto)
-                c.SetMetrics(report.FirstOrDefault(x => x.guestId == c.Id));
+            {
+                c.SetMetrics(report?.FirstOrDefault(x => x.guestId == c.Id) ?? null);
+                var visit = evOrgCustomers.Where(x => x.card == c.Card).Select(x=>x.date);
+                c.SetLastVisitDate(visit.FirstOrDefault());
+            }
 
             return customer_dto;
 

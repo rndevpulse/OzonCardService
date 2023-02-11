@@ -11,6 +11,24 @@ namespace OzonCard.Context.Repositories
         {
         }
 
+        public async Task<IEnumerable<(string card, DateTime date)>> GetLastVisit(Guid organizationId, IEnumerable<string> cards)
+        {
+            using (var context = ContextFactory.CreateDbContext(ConnectionString))
+            {
+                var r = await context.Events
+                    .Where(x => x.TransactionType == "PayFromWallet" 
+                                && x.OrganizationId == organizationId
+                                && cards.Contains(x.CardNumbers))
+                    .GroupBy(x => x.CardNumbers)
+                    .Select(x=> new
+                    {
+                        card = x.Key,
+                        date = x.Max(r=>r.Create)
+                    })
+                    .ToListAsync();
+                return r.Select(x=>(x.card,x.date));
+            }
+        }
         public async Task<int> AppendEventsOrganization(IEnumerable<Event> events)
         {
             if (events == null || events.Count() == 0)

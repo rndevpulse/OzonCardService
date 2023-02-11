@@ -260,6 +260,7 @@ const SearchCustomerForm: FC = () => {
                                         {customer.categories && customer.categories.map(category => {
                                             return (<li>{category}</li>)
                                         })}
+                                        <li>Последний визит: {customer.lastVisit}</li>
                                     </ul>
                                 </dd>
                                 

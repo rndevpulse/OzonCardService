@@ -6,8 +6,7 @@ namespace OzonCard.BizClient.Services.Interfaces
 {
     public interface IHttpClientService
     {
-
-        protected Task<string> CreateToken(Identification identification);
+        Task<string> CreateToken(Identification identification);
         Task<Session?> GetSession(string login, string password);
         Task<IEnumerable<Organization>> GetOrganizations(Session access_session);
         Task<IEnumerable<Category>> GetOrganizationCategories(Session access_session, Guid organizationId);
@@ -29,5 +28,8 @@ namespace OzonCard.BizClient.Services.Interfaces
         Task<IEnumerable<ReportCN>> GerReportCN(Session session, Guid organizationId, Guid corporateNutritionId, string dateFrom, string dateTo);
         Task<IEnumerable<TransactionsReport>> GerTransactionsReport(Session session, Guid organizationId, string dateFrom, string dateTo, TransactionType? type = TransactionType.PayFromWallet);
         Task<IEnumerable<MetricCustomer>> GetMetricsCustomers(Session session, Guid organizationId, IEnumerable<Guid> guids);
+        
+        
+        Task<IEnumerable<ShortGuestInfo>> GetCustomersByPeriod(Session session, Guid organizationId, string dateFrom, string dateTo);
     }
 }

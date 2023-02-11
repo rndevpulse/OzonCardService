@@ -304,8 +304,7 @@ namespace OzonCard.BizClient.Services.Implementation
             try
             {
 
-                return await _client.Send<IEnumerable<ReportCN>>($"organization/{organizationId}/corporate_nutrition_report?corporate_nutrition_id={corporateNutritionId}&date_from={dateFrom}&date_to={dateTo}&access_token={access_session.Token}",
-                    timeout: 300)
+                return await _client.Send<IEnumerable<ReportCN>>($"organization/{organizationId}/corporate_nutrition_report?corporate_nutrition_id={corporateNutritionId}&date_from={dateFrom}&date_to={dateTo}&access_token={access_session.Token}")
                 ?? new List<ReportCN>();
             }
             catch (UnauthorizedAccessException)
@@ -350,6 +349,20 @@ namespace OzonCard.BizClient.Services.Implementation
             }
         }
 
+        public async Task<IEnumerable<ShortGuestInfo>> GetCustomersByPeriod(Session session, Guid organizationId, string dateFrom, string dateTo)
+        {
+            try
+            {
+                return await _client.Send<IEnumerable<ShortGuestInfo>>($"customers/get_customers_by_organization_and_by_period?organization={organizationId}&access_token={session.Token}&date_from={dateFrom}&date_to={dateTo}")
+                       ?? new List<ShortGuestInfo>();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                session = await SessionAlive(session);
+                return await GetCustomersByPeriod(session, organizationId, dateFrom, dateTo);
+            }
+        }
+
 
         public async Task<IEnumerable<GuestBalance>> GetCustomersBalanceForIds(Session access_session, IEnumerable<Guid> iikoBizIds, Guid organizationId, Guid walletId)
         {
@@ -363,7 +376,7 @@ namespace OzonCard.BizClient.Services.Implementation
             {
                 access_session = await SessionAlive(access_session);
                 return await GetCustomersBalanceForIds(access_session, iikoBizIds, organizationId, walletId);
-}
+            }
         }
     }
 }

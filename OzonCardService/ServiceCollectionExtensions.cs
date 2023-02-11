@@ -83,7 +83,7 @@ namespace OzonCardService
             services.AddHttpClient<IClient, Client>(c =>
             {
                 c.BaseAddress = new Uri(HttpClientService.URL);
-                c.Timeout = TimeSpan.FromMinutes(3);
+                c.Timeout = TimeSpan.FromMinutes(10);
             });
             services.AddScoped<IHttpClientService, HttpClientService>();
 

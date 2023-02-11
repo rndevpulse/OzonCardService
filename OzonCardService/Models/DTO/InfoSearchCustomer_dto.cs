@@ -18,6 +18,7 @@ namespace OzonCardService.Models.DTO
         public int Orders { get; set; }
         public IEnumerable<string> Categories { get; set; }
 
+        public string LastVisit { get; set; }
 
         internal void SetMetrics(ReportCN report)
         {
@@ -26,12 +27,17 @@ namespace OzonCardService.Models.DTO
             Orders = (int)(report?.paidOrdersCount ?? 0);
 
         }
-        internal void SetMetrics(CustomerReport report)
+        internal void SetMetrics(CustomerReport? report)
         {
             if (report == null) return;
             Sum = report?.payFromWalletSum ?? 0;
             Orders = (int)(report?.paidOrdersCount ?? 0);
 
+        }
+
+        public void SetLastVisitDate(DateTime? lastVisit)
+        {
+            LastVisit = lastVisit?.ToString("dd.MM.yyyy HH:mm:ss") ?? string.Empty;
         }
     }
 }
