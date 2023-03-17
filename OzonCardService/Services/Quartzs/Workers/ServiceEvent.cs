@@ -83,7 +83,7 @@ namespace OzonCardService.Services.Quartzs.Workers
                     {
                         var c = card.Split(",")[0];
                         var biz = await _client.GetCustomerForCard(session, c, organization.Id);
-                        if (biz == null)
+                        if (biz == null || biz.name == null)
                             continue;
                         var customer = new Customer();
                         customer.iikoBizId = biz.id;

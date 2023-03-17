@@ -29,6 +29,8 @@ const ReportForm: FC = () => {
     const [categoryId, setCategoryId] = useState('');
     const [categories, setCategories] = useState<ICategoryResponse[]>([]);
 
+
+    
     const [fileName, setFileName] = useState('');
     const [dateFrom, setDateFrom] = useState<Date>(new Date(new Date().setDate(1)));
     const [dateTo, setDateTo] = useState<Date>(new Date());
@@ -213,6 +215,9 @@ const ReportForm: FC = () => {
                         <label htmlFor="organizations">Организации</label>
                         <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                             onChange={onOrganizationSelectChange} />
+                        
+                        
+                        
                         <label htmlFor="corporateNutritions">Программы питания</label>
                         <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
                             onChange={event => setCorporateNutritionId(event.target.value)} />
