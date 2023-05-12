@@ -377,8 +377,12 @@ namespace OzonCard.Context.Repositories
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
+                var cardsId = await context.Cards
+                    .Where(x => x.Number.Contains(cardnumber))
+                    .Select(x=>x.Id)
+                    .ToListAsync();
                 var customers = await context.Cards
-                    .Where(x => x.Track.ToLower().Contains(cardnumber))
+                    .Where(x => cardsId.Contains(x.Id))
                     .Include(x => x.Customer)
                         .ThenInclude(x => x.Organization)
                     .Where(x => x.Customer.Organization.Id == organizationId)
@@ -387,10 +391,12 @@ namespace OzonCard.Context.Repositories
                     .Include(x => x.Customer)
                         .ThenInclude(x => x.Categories)
                             .ThenInclude(x => x.Category)
+                    .Include(x => x.Customer)
+                        .ThenInclude(x=>x.Cards)
                     .Select(x => x.Customer)
                     .ToListAsync();
 
-                return customers;
+                return customers.ToArray();
             }
         }
 

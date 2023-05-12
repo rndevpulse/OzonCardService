@@ -19,6 +19,11 @@ namespace OzonCardService.Models.DTO
         public IEnumerable<string> Categories { get; set; }
 
         public string LastVisit { get; set; }
+        public int DaysGrant { get; set; }
+
+        public InfoSearchCustomer_dto()
+        {
+        }
 
         internal void SetMetrics(ReportCN report)
         {
@@ -35,9 +40,10 @@ namespace OzonCardService.Models.DTO
 
         }
 
-        public void SetLastVisitDate(DateTime? lastVisit)
-        {
+        public void SetLastVisitDate(DateTime? lastVisit) =>
             LastVisit = lastVisit?.ToString("dd.MM.yyyy HH:mm:ss") ?? string.Empty;
-        }
+
+        public void SetCountGrant(int count) 
+            => DaysGrant = count;
     }
 }

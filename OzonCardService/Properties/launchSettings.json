@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sqlDebugging": true,
-      "applicationUrl": "https://*:5200"
+      "applicationUrl": "https://*:5205"
     }
   }
 }

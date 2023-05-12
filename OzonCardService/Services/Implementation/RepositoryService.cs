@@ -356,17 +356,17 @@ namespace OzonCardService.Services.Implementation
 
 
             //фильтрация пользователей по запрашиваемой категории, если необходимо
-            if (reportOption.CategoryId != Guid.Empty)
+            if (reportOption.CategoriesId.Any())
             {
-                var categoryName = organization.Categories.FirstOrDefault(x => x.Id == reportOption.CategoryId)?.Name;
-                if (categoryName != String.Empty)
-                {
-                    report = report.Where(x=>x.guestCategoryNames?.Contains(categoryName) == true).ToList();
-                }
+                var namesCategories = organization.Categories
+                    .Where(x => x.isActive && !string.IsNullOrEmpty(x.Name)
+                                && reportOption.CategoriesId.Contains(x.Id))
+                    .Select(x => x.Name)
+                    .ToArray();
+                report = report
+                    .Where(x=> namesCategories.Any(category=> x.guestCategoryNames?.Contains(category) == true))
+                    .ToList();
             }
-
-
-            
             return report;
         }
 
@@ -452,10 +452,7 @@ namespace OzonCardService.Services.Implementation
                 customerDto.Add(_mapper.Map<InfoSearchCustomer_dto>(customerBiz));
             };
             
-            //переделать но запрос отчета
-            //ид организации есть
-            //ид корпита передавать из веб формы
-            //даты подставлять автоматически с начала месяца
+            //запрос отчета
             var report = await _client.GerReportCN(session, organization.Id, customer.CorporateNutritionId,
                 customer.DateFrom, customer.DateTo);
             
@@ -466,8 +463,9 @@ namespace OzonCardService.Services.Implementation
             foreach (var c in customerDto)
             {
                 c.SetMetrics(report?.FirstOrDefault(x => x.guestId == c.Id) ?? null);
-                var visit = evOrgCustomers.Where(x => x.card == c.Card).Select(x=>x.date);
-                c.SetLastVisitDate(visit.FirstOrDefault());
+                var events = evOrgCustomers.FirstOrDefault(x => x.Card == c.Card) ?? null;
+                c.SetLastVisitDate(events?.LastVisit ?? new DateTime());
+                c.SetCountGrant(events?.DaysGrant ?? 0);
             }
 
             return customerDto;
@@ -503,22 +501,36 @@ namespace OzonCardService.Services.Implementation
                 transactions = _mapper.Map<IEnumerable<Event>>(
                     await _client.GerTransactionsReport(session, reportOption.OrganizationId, reportOption.DateFrom, dateToTransaction.ToString("yyyy-MM-dd"))
                 );
-                if (token.IsCancellationRequested || transactions.Any())
+                log.Information("Transaction report contains {0} rows", transactions.Count());
+                if (token.IsCancellationRequested)
                     return transactionsReport;
                 var bizReport = await _client.GerReportCN(
                         session, reportOption.OrganizationId, reportOption.CorporateNutritionId,
                         reportOption.DateFrom, reportOption.DateTo);
                 report = _mapper.Map<IEnumerable<CustomerReport>>(bizReport);
+                log.Information("CorporateNutrition report contains {0} rows", report.Count());
             }
             
             var customers = await _repository.GetCustomersForOrganization(organization.Id);
             if (token.IsCancellationRequested)
                 return transactionsReport;
-
+            //фильтрация пользователей по запрашиваемой категории, если необходимо
+            if (reportOption.CategoriesId.Any())
+            {
+                var namesCategories = organization.Categories
+                    .Where(x => x.isActive && !string.IsNullOrEmpty(x.Name)
+                                           && reportOption.CategoriesId.Contains(x.Id))
+                    .Select(x => x.Name)
+                    .ToArray();
+                report = report
+                    .Where(x=> namesCategories.Any(category=> x.guestCategoryNames?.Contains(category) == true))
+                    .ToList();
+            }
+            
 
             transactionsReport.Transactions = 
                 (from t in transactions
-                join r in report on t.CardNumbers equals r.guestCardTrack
+                join r in report on t.CardNumbers.Split(',').First() equals r.guestCardTrack
                 join c in customers on r.guestId equals c.iikoBizId
                 select new TransactionsReport_dto()
                 {

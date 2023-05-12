@@ -4,7 +4,7 @@ namespace OzonCard.Context.Interfaces
 {
     public interface IEventRepository
     {
-        Task<IEnumerable<(string card, DateTime date)>> GetLastVisit(Guid organizationId, IEnumerable<string> cards);
+        Task<IEnumerable<CustomerTransactions>> GetLastVisit(Guid organizationId, IEnumerable<string> cards);
         Task<IEnumerable<Organization>> GetOrganizations();
         Task<IEnumerable<Event>> GetEventsOrganization(Guid organizationId, DateTime dateFrom, DateTime dateTo);
         Task<int> AppendEventsOrganization(IEnumerable<Event> events);

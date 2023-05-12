@@ -11,7 +11,7 @@ namespace OzonCard.Context.Repositories
         {
         }
 
-        public async Task<IEnumerable<(string card, DateTime date)>> GetLastVisit(Guid organizationId, IEnumerable<string> cards)
+        public async Task<IEnumerable<CustomerTransactions>> GetLastVisit(Guid organizationId, IEnumerable<string> cards)
         {
             using (var context = ContextFactory.CreateDbContext(ConnectionString))
             {
@@ -20,15 +20,32 @@ namespace OzonCard.Context.Repositories
                                 && x.OrganizationId == organizationId
                                 && cards.Contains(x.CardNumbers))
                     .GroupBy(x => x.CardNumbers)
-                    .Select(x=> new
-                    {
-                        card = x.Key,
-                        date = x.Max(r=>r.Create)
-                    })
+                    .Select(x=> new CustomerTransactions(x.Key, x.Max(r=>r.Create),x.Select(e=>e.Create)))
                     .ToListAsync();
-                return r.Select(x=>(x.card,x.date));
+                return r;
             }
         }
+
+        public async Task<IEnumerable<(string card, int days)>> GetDaysGrants(Guid organizationId, 
+            DateTime from, DateTime to,
+            IEnumerable<string> cards)
+        {
+            using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var r = await context.Events
+                .Where(x => x.TransactionType == "PayFromWallet"
+                            && x.Create >= from && x.Create <= to
+                            && x.OrganizationId == organizationId
+                            && cards.Contains(x.CardNumbers))
+                .GroupBy(x => x.CardNumbers)
+                .Select(x=> new
+                {
+                    card = x.Key,
+                    days = x.GroupBy(e=>e.Create.Date).Count()
+                })
+                .ToListAsync();
+            return r.Select(x=>(x.card,x.days));
+        }
+
         public async Task<int> AppendEventsOrganization(IEnumerable<Event> events)
         {
             if (events == null || events.Count() == 0)

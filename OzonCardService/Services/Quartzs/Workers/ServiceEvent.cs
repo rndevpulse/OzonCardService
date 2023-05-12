@@ -70,10 +70,12 @@ namespace OzonCardService.Services.Quartzs.Workers
                         MarketingCampaignName = x?.marketingCampaignName ?? string.Empty,
                     }));
                 log.Information($"add to database '{rows}' events in '{organization.Name}' from {dateFrom.ToString("yyyy-MM-dd")} to {now.ToString("yyyy-MM-dd")}");
+                
+                
                 //проверяем потеряшек
                 var customers = await _repository.GetCustomersOrganization(organization.Id);
                 var newCustomersCard = customers.SelectMany(x => x.Cards.Select(c => c.Number));
-                newCustomersCard = events?.SelectMany(x => x.cardNumbers.Split(",")).Distinct().Except(newCustomersCard).ToArray();
+                newCustomersCard = events.SelectMany(x => x.cardNumbers?.Split(",")).Distinct().Except(newCustomersCard).ToArray();
                 if (newCustomersCard.Any())
                 {
                     log.Information($"In '{organization.Name}' find {newCustomersCard.Count()} new customers from {dateFrom.ToString("yyyy-MM-dd")} to {now.ToString("yyyy-MM-dd")}");

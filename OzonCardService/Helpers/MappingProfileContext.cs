@@ -18,6 +18,7 @@ namespace OzonCardService.Helpers
 				.ForMember(m => m.Url, opt => opt.MapFrom(b => b.Id + "." + b.Format));
 
 			CreateMap<Customer, InfoSearchCustomer_dto>()
+				.ForMember(m=>m.Id, opt=>opt.MapFrom(b=>b.Id))
 				.ForMember(m => m.Card, opt => opt.MapFrom(b => b.Cards.First(x => x.IsActive).Number))
 				.ForMember(m => m.Organization, opt => opt.MapFrom(b => b.Organization.Name))
 				.ForMember(m => m.TabNumber, opt => opt.MapFrom(b => b.TabNumber))

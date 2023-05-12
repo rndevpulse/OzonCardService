@@ -54,6 +54,10 @@
     <None Remove="FileReports\**" />
     <None Remove="logs\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    <None Remove="ClientApp\build\**" />
+    <Compile Remove="ClientApp\build\**" />
+    <EmbeddedResource Remove="ClientApp\build\**" />
+    <Content Remove="ClientApp\build\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -135,6 +139,11 @@
     <None Update="ClientApp\public\logo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="ClientApp\build\asset-manifest.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\build\manifest.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
