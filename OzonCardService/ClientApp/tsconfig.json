@@ -2,6 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "checkJs": false,
+    
     "skipLibCheck": true,
     "noImplicitAny": false,
     "noEmitOnError": false,
@@ -28,13 +29,14 @@
     "isolatedModules": true,
     "noEmit": true,
     "experimentalDecorators": true,
-    "allowJs": true
+    "allowJs": false
   },
   "include": [
     "src/*"
   ],
   "exclude": [
     "node_modules",
+    "node_modules/*",
     "./node_modules",
     "./node_modules/*",
     "./node_modules/@types/node/index.d.ts"
