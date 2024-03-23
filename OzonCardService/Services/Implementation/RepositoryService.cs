@@ -347,6 +347,7 @@ namespace OzonCardService.Services.Implementation
                     {
                         row.position = customer.Position;
                         row.employeeNumber = customer.TabNumber;
+                        row.guestName = customer.Name;
                     }
                 }
 
@@ -550,12 +551,13 @@ namespace OzonCardService.Services.Implementation
             //     .Where(t => categories.Any(c => t.Categories.Contains(c)))
             //     .ToList();
             var reportSummary = new List<TransactionsSummaryReport_dto>();
-            foreach (var groupCustomer in transactionsReport.Transactions.GroupBy(x=>x.Name))
+            foreach (var groupCustomer in transactionsReport.Transactions.GroupBy(x=>
+                         new {x.Name, x.СardNumbers}))
             {
                 var customer = groupCustomer.First();
                 reportSummary.Add(new TransactionsSummaryReport_dto()
                 {
-                    Name = groupCustomer.Key,
+                    Name = groupCustomer.Key.Name,
                     Categories = customer.Categories,
                     Division = customer.Division,
                     CountDay = groupCustomer.GroupBy(x=>x.Date).Count()

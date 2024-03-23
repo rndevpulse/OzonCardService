@@ -1,14 +1,14 @@
 {
-  
   "profiles": {
-    
     "OzonCardService": {
       "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:5200",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sqlDebugging": true,
-      "applicationUrl": "https://*:5205"
+      "applicationUrl": "https://*:5200"
     }
   }
 }

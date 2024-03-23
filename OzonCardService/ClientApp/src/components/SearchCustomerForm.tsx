@@ -122,7 +122,7 @@ const SearchCustomerForm: FC = () => {
                 new_arr.find(x => x.id === id)!.categories = customer_categories
             console.log(new_arr)
             setCustomersInfo(new_arr)
-            confirm(`У пользователя "${name}" удалена указанная категория`)
+            window.confirm(`У пользователя "${name}" удалена указанная категория`)
         }
         else {
             const new_arr = customersInfo
@@ -130,7 +130,7 @@ const SearchCustomerForm: FC = () => {
             
             console.log(new_arr)
             setCustomersInfo(new_arr)
-            confirm(`Пользователю "${name}" добавлена указанная категория`)
+            window.confirm(`Пользователю "${name}" добавлена указанная категория`)
         }
         setIsLoadCustomers(false)
 
@@ -146,9 +146,9 @@ const SearchCustomerForm: FC = () => {
         })
         setIsLoadCustomers(true)
         if (isIncrement)
-            confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
+            window.confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
         else
-            confirm(`У пользователя "${name}" списано ${balance} рублей`)
+            window.confirm(`У пользователя "${name}" списано ${balance} рублей`)
         const old_summ = customersInfo.find(x => x.id === id)!.balance
        
         customersInfo.find(x => x.id === id)!.balance = isIncrement

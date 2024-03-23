@@ -27,10 +27,7 @@ namespace OzonCardService.Controllers
         [AuthorizeRoles(EnumRules.Basic)]
         public async Task<IEnumerable<Organization_dto>> GetMyOrganizations()
         {
-            Guid userId = new Guid();
-            await Task.Run(() => Guid.TryParse(
-                    User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
-            );
+            Guid.TryParse(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value, out var userId);
             log.Verbose("GetMyOrganizations {@userId}", userId);
             return await _service.GetMyOrganizations(userId);
         }
@@ -40,10 +37,7 @@ namespace OzonCardService.Controllers
         [AuthorizeRoles(EnumRules.Basic)]
         public async Task<ActionResult<Organization_dto>> UpdateOrganization(Guid organizationId)
         {
-            Guid userId = new Guid();
-            await Task.Run(() => Guid.TryParse(
-                    User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
-            );
+            Guid.TryParse(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value, out var userId);
             log.Verbose("UpdateOrganization = {@organizationId}, user = {@userId}", organizationId, userId);
             try
             {
@@ -66,10 +60,7 @@ namespace OzonCardService.Controllers
         [Consumes("application/json")]
         public async Task<ActionResult<IEnumerable<Organization_dto>>> CreateOrganization(Identity_vm identity)
         {
-            Guid userId = new Guid();
-            await Task.Run(() => Guid.TryParse(
-                    User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
-            );
+            Guid.TryParse(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value, out var userId);
             log.Verbose("CreateOrganization {@identity}", identity);
             try
             {

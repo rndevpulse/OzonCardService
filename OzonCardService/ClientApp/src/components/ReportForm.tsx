@@ -4,13 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Context } from '..';
 import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
 import { observer } from 'mobx-react-lite';
-
-
 import DatePicker, { registerLocale, setDefaultLocale }  from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ru from "date-fns/locale/ru";
-registerLocale("ru", ru);
 import { IReportOptionResponse } from '../models/IReportOptionResponse';
 import { ICategoryResponse } from '../models/ICategoryResponse';
 import * as moment from 'moment';
@@ -18,6 +15,7 @@ import BizService from '../services/BizServise';
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import '../css/ReportForm.css'
 import Select from "react-select";
+registerLocale("ru", ru);
 
 const ReportForm: FC = () => {
     const navigate = useNavigate()

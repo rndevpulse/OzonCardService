@@ -41,11 +41,8 @@ namespace OzonCardService.Controllers
         {
             try
             {
-                log.Information("UploadCustomersReport {@infoUpload}", infoUpload);
-                Guid userId = new Guid();
-                await Task.Run(() => Guid.TryParse(
-                        User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
-                );
+                Guid.TryParse(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value, out var userId);
+                log.Information("UploadCustomersReport user '{userId}' {@infoUpload}", userId, infoUpload);
                
                 var customers = new List<ShortCustomerInfo_excel>();
                 if (infoUpload.Customer != null)

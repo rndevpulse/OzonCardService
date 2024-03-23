@@ -105,7 +105,7 @@ const UploadForm: FC = () => {
 
     async function  uploadToBiz() {
         if (file === '')
-            confirm('Не выбран вайл выгрузки')
+            window.confirm('Не выбран вайл выгрузки')
         const option: ICustomerOptionResponse = {
             organizationId: organizationId,
             corporateNutritionId: corporateNutritionId,

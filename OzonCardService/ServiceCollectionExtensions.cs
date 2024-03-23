@@ -78,12 +78,12 @@ namespace OzonCardService
 
 
 
-        public static IServiceCollection AddBizClient(this IServiceCollection services)
+        public static IServiceCollection AddBizClient(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpClient<IClient, Client>(c =>
             {
                 c.BaseAddress = new Uri(HttpClientService.URL);
-                c.Timeout = TimeSpan.FromMinutes(10);
+                c.Timeout = TimeSpan.FromMinutes(configuration.GetValue<int>("HttpTimeout"));
             });
             services.AddScoped<IHttpClientService, HttpClientService>();
 
