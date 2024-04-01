@@ -529,9 +529,10 @@ namespace OzonCardService.Services.Implementation
             }
             
 
+            
             transactionsReport.Transactions = 
                 (from t in transactions
-                join r in report on t.CardNumbers.Split(',').First() equals r.guestCardTrack
+                join r in report on t.CardNumbers.Split(',').MaxBy(number=>number.Length) equals r.guestCardTrack
                 join c in customers on r.guestId equals c.iikoBizId
                 select new TransactionsReport_dto()
                 {

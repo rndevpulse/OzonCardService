@@ -25,7 +25,7 @@ namespace OzonCardService.Controllers
     {
         IRepositoryService _service;
         ITasksManagerProgress _tasksManager;
-        private readonly ILogger log = Log.ForContext(typeof(OrganizationController));
+        private readonly ILogger log = Log.ForContext(typeof(CustomerController));
 
         public CustomerController(IRepositoryService repositoryService, ITasksManagerProgress tasksManager)
         {
