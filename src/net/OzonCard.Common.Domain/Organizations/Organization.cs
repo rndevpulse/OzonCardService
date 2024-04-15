@@ -1,4 +1,5 @@
-﻿using OzonCard.Common.Domain.Abstractions;
+﻿using OzonCard.Biz.Client;
+using OzonCard.Common.Domain.Abstractions;
 
 namespace OzonCard.Common.Domain.Organizations;
 
@@ -14,12 +15,14 @@ public class Organization : AggregateRoot
     public IEnumerable<Program> Programs => _programs;
     public IEnumerable<Category> Categories => _categories;
 
+    public IBizClient Biz { get; } 
 
     public Organization(Guid id, string name, string login, string password) : base(id)
     {
         Name = name;
         Login = login;
         Password = password;
+        Biz = new BizClient(login, password);
     }
 
     public Member AddOrUpdateMember(string name)

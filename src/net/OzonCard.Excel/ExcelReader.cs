@@ -8,15 +8,12 @@ using OzonCard.Excel.Models;
 
 namespace OzonCard.Excel;
 
-public interface IExcelReader
-{
-    IEnumerable<Customer> GetCustomers(string file);
-}
+
 
 public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
 {
 
-    Customer? ReadRow(IXLRow row, int nameCol, int? tabNumberCol, int? positionCol, int cardCol)
+    private Customer? ReadRow(IXLRow row, int nameCol, int? tabNumberCol, int? positionCol, int cardCol)
     {
         var card = ReadCardCellValue(row.Cell(cardCol).Value.ToString());
         if (card == "")
@@ -31,7 +28,7 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
         };
     }
 
-    Customer? ReadRow(DataRow row, int nameCol, int? tabNumberCol, int? positionCol, int cardCol)
+    private  Customer? ReadRow(DataRow row, int nameCol, int? tabNumberCol, int? positionCol, int cardCol)
     {
         var card = ReadCardCellValue(row[cardCol].ToString());
         if (card == "")
@@ -117,8 +114,6 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
                 }
             };
             var dataSet = reader.AsDataSet(conf).Tables[0];
-            if (dataSet == null)
-                return clientList;
             //нумерация колонок от 0 (A = 0)
             //установка зависимостей используемых столбцов
             SelDataColumns(dataSet.Columns.Count, 0,
@@ -171,6 +166,7 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Fail read document '{file}'", file);
             throw new Exception(ex.Message);
         }
     }
@@ -181,14 +177,12 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
         CreateWorkbook(filePath, dataset, title, totalsRow);
     }
 
-    public void CreateWorkbook(string filePath, DataSet dataset, string? title = null, bool totalsRow = true)
+    private void CreateWorkbook(string filePath, DataSet dataset, string? title = null, bool totalsRow = true)
     {
         try
         {
-
             if (dataset.Tables.Count == 0)
                 throw new ArgumentException("DataSet needs to have at least one DataTable", nameof(dataset));
-
             var workbook = new XLWorkbook();
             foreach (DataTable dt in dataset.Tables)
             {
@@ -238,7 +232,7 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
         }
     }
 
-    static DataSet ToDataSet<T>(ICollection<T> list)
+    private static DataSet ToDataSet<T>(ICollection<T> list)
     {
         var elementType = typeof(T).GetProperties().Select(x => new KeyValuePair<PropertyInfo, string?>(
             x,

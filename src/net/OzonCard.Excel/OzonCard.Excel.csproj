@@ -8,13 +8,9 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Customers\" />
-      <Folder Include="Files\" />
-      <Folder Include="Organizations\" />
-      <Folder Include="Reports\" />
+        <PackageReference Include="ClosedXML" Version="0.96.0" />
+        <PackageReference Include="CsvHelper" Version="27.2.1" />
+        <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
     </ItemGroup>
     
 </Project>
