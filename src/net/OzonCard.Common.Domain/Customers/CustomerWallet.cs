@@ -3,7 +3,7 @@
 namespace OzonCard.Common.Domain.Customers;
 
 public record CustomerWallet(
-    Guid Id,
+    Guid WalletId,
     double Balance,
     string Name,
     string ProgramType,

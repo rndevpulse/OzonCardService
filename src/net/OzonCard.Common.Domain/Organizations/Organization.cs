@@ -22,16 +22,13 @@ public class Organization : AggregateRoot
         Password = password;
     }
 
-    public Member AddOrUpdateMember(string name, string rules)
+    public Member AddOrUpdateMember(string name)
     {
         var member = _members.FirstOrDefault(x => x.Name == Name);
-        if (member == null)
-        {
-            member = new Member { Name = name, Rules = rules };
-            _members.Add(member);
+        if (member != null) 
             return member;
-        }
-        member.Rules = rules;
+        member = new Member(name);
+        _members.Add(member);
         return member;
     }
 

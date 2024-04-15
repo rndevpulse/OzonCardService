@@ -6,4 +6,26 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Database\Migrations\Operational\" />
+      <Folder Include="Database\Migrations\Security\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
+      <ProjectReference Include="..\OzonCard.Common.Application\OzonCard.Common.Application.csproj" />
+      <ProjectReference Include="..\OzonCard.Common.Domain\OzonCard.Common.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
 </Project>

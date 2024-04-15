@@ -36,6 +36,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Common.Logging", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Common.Application", "src\net\OzonCard.Common.Application\OzonCard.Common.Application.csproj", "{946A42A6-9946-4D9A-9B31-957A5ABABF7D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{77E4F909-887A-4988-A266-60B28B0E5056}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Csv", "Csv", "{F11BED19-4C0F-4E49-9EB8-DCA44B4C28C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Excel", "src\net\OzonCard.Excel\OzonCard.Excel.csproj", "{D5DA6451-018A-4555-AE66-7F12BC1464B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +100,10 @@ Global
 		{946A42A6-9946-4D9A-9B31-957A5ABABF7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{946A42A6-9946-4D9A-9B31-957A5ABABF7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{946A42A6-9946-4D9A-9B31-957A5ABABF7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5DA6451-018A-4555-AE66-7F12BC1464B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5DA6451-018A-4555-AE66-7F12BC1464B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5DA6451-018A-4555-AE66-7F12BC1464B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5DA6451-018A-4555-AE66-7F12BC1464B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,5 +124,6 @@ Global
 		{4C5E9E80-F06A-4577-96C1-8D83F9E3275E} = {DF6C596F-ED44-4C31-849E-130B8DC6D0E2}
 		{1967CA8D-8EA1-4865-8CA0-701653F6E201} = {DF6C596F-ED44-4C31-849E-130B8DC6D0E2}
 		{946A42A6-9946-4D9A-9B31-957A5ABABF7D} = {DF6C596F-ED44-4C31-849E-130B8DC6D0E2}
+		{D5DA6451-018A-4555-AE66-7F12BC1464B4} = {F11BED19-4C0F-4E49-9EB8-DCA44B4C28C7}
 	EndGlobalSection
 EndGlobal
