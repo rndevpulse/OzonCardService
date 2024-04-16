@@ -6,7 +6,7 @@ namespace OzonCard.Customer.Api.Mappings;
 
 public class FileMappings : Profile
 {
-    protected FileMappings()
+    public FileMappings()
     {
         CreateMap<SaveFile, FileModel>()
             .ForCtorParam(nameof(FileModel.Id), e => e.MapFrom(x => x.Id))

@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OzonCard.Common.Application.Files.Commands;
 using OzonCard.Common.Application.Files.Queries;
-using OzonCard.Common.Infrastructure.Security;
 using OzonCard.Customer.Api.Models.Files;
 using OzonCard.Customer.Api.Services.FileManager;
+using OzonCard.Identity.Domain;
 
 namespace OzonCard.Customer.Api.Controllers;
 
@@ -21,7 +21,7 @@ public class FileController(IFileManager fileManager) : ApiController
         var document = await Commands.Send(new SaveFileCommand(
             id,
             file.FileName,
-            User.FindFirstValue(ClaimTypes.Email)
+            UserClaimEmail
         ), ct);
         return Mapper.Map<FileModel>(document);
     }

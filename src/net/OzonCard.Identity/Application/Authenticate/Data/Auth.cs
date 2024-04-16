@@ -1,4 +1,4 @@
-﻿namespace OzonCard.Identity.Authenticate.Data;
+﻿namespace OzonCard.Identity.Application.Authenticate.Data;
 
 public record Auth(
     string Access,

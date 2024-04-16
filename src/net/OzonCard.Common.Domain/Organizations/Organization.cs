@@ -1,5 +1,4 @@
-﻿using OzonCard.Biz.Client;
-using OzonCard.Common.Domain.Abstractions;
+﻿using OzonCard.Common.Domain.Abstractions;
 
 namespace OzonCard.Common.Domain.Organizations;
 
@@ -8,30 +7,31 @@ public class Organization : AggregateRoot
     private readonly ICollection<Member> _members = new List<Member>();
     private readonly ICollection<Program> _programs = new List<Program>();
     private readonly ICollection<Category> _categories = new List<Category>();
-    public string Name { get; private set; }
+    public string Name { get; set; }
     public string Login { get; private set; }
     public string Password { get; private set; }
     public IEnumerable<Member> Members => _members;
     public IEnumerable<Program> Programs => _programs;
     public IEnumerable<Category> Categories => _categories;
 
-    public IBizClient Biz { get; } 
+    
 
     public Organization(Guid id, string name, string login, string password) : base(id)
     {
         Name = name;
         Login = login;
         Password = password;
-        Biz = new BizClient(login, password);
     }
 
-    public Member AddOrUpdateMember(string name)
+    public Member AddOrUpdateMember(Guid id, string name)
     {
-        var member = _members.FirstOrDefault(x => x.Name == Name);
-        if (member != null) 
-            return member;
-        member = new Member(name);
-        _members.Add(member);
+        var member = _members.FirstOrDefault(x => x.UserId == id);
+        if (member == null)
+        {
+            member = new Member(id);
+            _members.Add(member);
+        }
+        member.Update(name);
         return member;
     }
 

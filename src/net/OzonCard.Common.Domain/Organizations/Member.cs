@@ -2,4 +2,11 @@
 
 namespace OzonCard.Common.Domain.Organizations;
 
-public record Member(string Name) : ValueObject;
+public record Member(Guid UserId) : ValueObject
+{
+    public string Name { get; private set; } = "";
+    public void Update(string name)
+    {
+        Name = name;
+    }
+};

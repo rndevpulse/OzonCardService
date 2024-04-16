@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Infrastructure;
@@ -21,8 +22,9 @@ using OzonCard.Common.Infrastructure.Buses;
 using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Materialization;
 using OzonCard.Common.Infrastructure.Piplines;
-using OzonCard.Common.Infrastructure.Security;
+using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Customer.Api.Services.Bootstrap;
+using OzonCard.Identity.Domain;
 
 var assemblies = new[]
 {
@@ -99,6 +101,11 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPi
 
 #endregion
 
+#region Repositories
+
+builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+
+#endregion
 
 #region Problem details
 

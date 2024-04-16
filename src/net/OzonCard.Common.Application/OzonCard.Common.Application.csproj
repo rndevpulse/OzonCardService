@@ -13,13 +13,28 @@
     <ItemGroup>
       <Folder Include="Customers\" />
       <Folder Include="Files\Handlers\" />
-      <Folder Include="Organizations\" />
       <Folder Include="Reports\" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\OzonCard.Biz.Client\OzonCard.Biz.Client.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Domain\OzonCard.Common.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Messages.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\Messages.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Messages.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
     
 </Project>

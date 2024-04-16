@@ -27,6 +27,7 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
         {
             members.ToTable("organizations_members");
             members.Property(x => x.Name);
+            members.Property(x => x.UserId);
         });
         
         builder.OwnsMany(x => x.Programs, programs =>

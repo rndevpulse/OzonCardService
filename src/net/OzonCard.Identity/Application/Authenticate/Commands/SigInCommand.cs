@@ -1,7 +1,7 @@
 ﻿using OzonCard.Common.Core;
-using OzonCard.Identity.Authenticate.Data;
+using OzonCard.Identity.Application.Authenticate.Data;
 
-namespace OzonCard.Identity.Authenticate.Commands;
+namespace OzonCard.Identity.Application.Authenticate.Commands;
 
 public record SigInCommand(
     string Email,

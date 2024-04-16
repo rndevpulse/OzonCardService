@@ -259,6 +259,9 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uniqueidentifier");
+
                             b1.HasKey("OrganizationId", "Id");
 
                             b1.ToTable("organizations_members", (string)null);

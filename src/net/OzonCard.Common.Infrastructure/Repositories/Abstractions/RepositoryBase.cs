@@ -5,15 +5,15 @@ using OzonCard.Common.Infrastructure.Database;
 
 namespace OzonCard.Common.Infrastructure.Repositories.Abstractions;
 
-public abstract class EntityFrameworkRepositoryBase<TEntity>(InfrastructureContext context) : IRepository<TEntity>
+public abstract class RepositoryBase<TEntity>(InfrastructureContext context) : IRepository<TEntity>
     where TEntity : class, IWithId<Guid>
 {
     public IQueryable<TEntity> GetQuery() =>
         context.Set<TEntity>();
 
-    private TEntity? TryGetItem(Guid key) => 
+    public TEntity? TryGetItem(Guid key) => 
         context.Set<TEntity>().Find(key);
-    private async Task<TEntity?> TryGetItemAsync(Guid key, CancellationToken ct = default) =>
+    public async Task<TEntity?> TryGetItemAsync(Guid key, CancellationToken ct = default) =>
         await context.Set<TEntity>().FindAsync(new object?[] { key }, ct);
 
     public TEntity GetItem(Guid key)

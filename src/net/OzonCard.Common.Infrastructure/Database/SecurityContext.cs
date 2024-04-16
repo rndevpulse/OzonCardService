@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using OzonCard.Common.Infrastructure.Security;
+using OzonCard.Identity.Domain;
 
 namespace OzonCard.Common.Infrastructure.Database;
 
