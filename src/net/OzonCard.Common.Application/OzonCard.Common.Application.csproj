@@ -12,9 +12,14 @@
 
     <ItemGroup>
       <Folder Include="Customers\" />
-      <Folder Include="Files\" />
+      <Folder Include="Files\Handlers\" />
       <Folder Include="Organizations\" />
       <Folder Include="Reports\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
+      <ProjectReference Include="..\OzonCard.Common.Domain\OzonCard.Common.Domain.csproj" />
     </ItemGroup>
     
 </Project>

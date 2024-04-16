@@ -6,4 +6,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Authenticate\Handlers\" />
+      <Folder Include="Users\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
+    </ItemGroup>
+
 </Project>

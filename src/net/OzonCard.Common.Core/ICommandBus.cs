@@ -10,4 +10,5 @@ public interface ICommandBus
     /// <typeparam name="TResult"></typeparam>
     /// <returns></returns>
     Task<TResult> Send<TResult>(ICommand<TResult> command, CancellationToken ct = default);
+    Task Send(ICommand command, CancellationToken ct = default);
 }
