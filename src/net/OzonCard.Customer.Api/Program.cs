@@ -30,6 +30,7 @@ var assemblies = new[]
     Assembly.Load("OzonCard.Common.Infrastructure"), 
     Assembly.Load("OzonCard.Common.Domain"), 
     Assembly.Load("OzonCard.Common.Application"), 
+    // Assembly.Load("OzonCard.Identity"), 
 };
 var cultures = new[]
 {
@@ -43,8 +44,10 @@ var builder = WebApplication.CreateBuilder(args);
 #region Identity
 
 builder.Services.AddIdentityCore<User>()
+    .AddRoles<UserRole>()
     .AddEntityFrameworkStores<SecurityContext>()
     .AddDefaultTokenProviders();
+    // .AddRefreshTokenProvider<User>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Excel", "src\net\O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Biz.Client", "src\net\OzonCard.Biz.Client\OzonCard.Biz.Client.csproj", "{47C8D963-11B9-42F7-BB27-3B652BEFDB01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Identity", "src\net\OzonCard.Identity\OzonCard.Identity.csproj", "{FE27FEE3-45C9-4D26-B607-907E94D1C92C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,10 @@ Global
 		{47C8D963-11B9-42F7-BB27-3B652BEFDB01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47C8D963-11B9-42F7-BB27-3B652BEFDB01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47C8D963-11B9-42F7-BB27-3B652BEFDB01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE27FEE3-45C9-4D26-B607-907E94D1C92C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE27FEE3-45C9-4D26-B607-907E94D1C92C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE27FEE3-45C9-4D26-B607-907E94D1C92C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE27FEE3-45C9-4D26-B607-907E94D1C92C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
