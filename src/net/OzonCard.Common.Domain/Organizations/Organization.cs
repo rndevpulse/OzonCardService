@@ -35,9 +35,9 @@ public class Organization : AggregateRoot
         return member;
     }
 
-    public void RemoveMember(string name)
+    public void RemoveMember(Guid id)
     {
-        var member = _members.FirstOrDefault(x => x.Name == Name);
+        var member = _members.FirstOrDefault(x => x.UserId == id);
         if (member != null)
             _members.Remove(member);
     }

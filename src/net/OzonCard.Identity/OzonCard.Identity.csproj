@@ -14,4 +14,8 @@
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Application\Users\Handlers\" />
+    </ItemGroup>
+
 </Project>

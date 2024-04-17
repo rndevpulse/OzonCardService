@@ -21,7 +21,7 @@ public class FileController(IFileManager fileManager) : ApiController
         var document = await Commands.Send(new SaveFileCommand(
             id,
             file.FileName,
-            UserClaimEmail
+            UserClaimSid
         ), ct);
         return Mapper.Map<FileModel>(document);
     }
@@ -38,7 +38,7 @@ public class FileController(IFileManager fileManager) : ApiController
     public async Task<IEnumerable<FileModel>> Index(CancellationToken ct = default)
     {
         var documents = await Queries.Send(
-            new GetFilesQuery(User.FindFirstValue(ClaimTypes.Email)),
+            new GetFilesQuery(UserClaimSid),
             ct);
         return Mapper.Map<IEnumerable<FileModel>>(documents);
     }

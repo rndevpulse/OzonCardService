@@ -5,6 +5,7 @@ using OzonCard.Common.Application.Organizations.Commands;
 using OzonCard.Common.Application.Organizations.Queries;
 using OzonCard.Customer.Api.Models.Organizations;
 using OzonCard.Customer.Api.Models.Users;
+using OzonCard.Identity.Application.Users.Queries;
 using OzonCard.Identity.Domain;
 
 namespace OzonCard.Customer.Api.Controllers;
@@ -54,19 +55,48 @@ public class OrganizationController : ApiController
     public async Task<IEnumerable<UserModel>> Members(CancellationToken ct = default)
     {
         var organizations = await Queries.Send(new GetOrganizationsQuery(null), ct);
+        var result = organizations
+            .SelectMany(x => x.Members)
+            .DistinctBy(x => x.UserId)
+            .ToArray()
+            .Select(x => new UserModel(
+                x.UserId,
+                x.Name,
+                organizations
+                    .Where(o => o.Members.Any(m => m.UserId == x.UserId))
+                    .Select(o => new UserOrganizationModel(o.Id, o.Name))
+                    .ToArray())
+            );
+        return result;
     }
     
-    [HttpPost("{organizationId:guid}"), Authorize(UserRole.Admin)]
+    [HttpPost("{organizationId:guid}/members"), Authorize(UserRole.Admin)]
     public async Task<UserModel> AddOrganization(Guid organizationId, Guid userId, CancellationToken ct = default)
     {
-        
+        var user = await Queries.Send(new GetUserQuery(userId), ct);
+        var organization = await Commands.Send(
+            new AddOrganizationMemberCommand(organizationId, userId, user.Email ?? "Unknown"),
+            ct);
+        return new UserModel(
+            userId,
+            user.Email ?? "Unknown",
+            new[] { new UserOrganizationModel(organization.Id, organization.Name) }
+        );
     }
     
     
-    [HttpDelete("{organizationId:guid}"), Authorize(UserRole.Admin)]
+    [HttpDelete("{organizationId:guid}/members"), Authorize(UserRole.Admin)]
     public async Task<UserModel> RemoveOrganization(Guid organizationId, Guid userId, CancellationToken ct = default)
     {
-        
+        var user = await Queries.Send(new GetUserQuery(userId), ct);
+        var organization = await Commands.Send(
+            new RemoveOrganizationMemberCommand(organizationId,  userId),
+            ct);
+        return new UserModel(
+            userId,
+            user.Email ?? "Unknown",
+            new[] { new UserOrganizationModel(organization.Id, organization.Name) }
+        );
     }
 
 }
