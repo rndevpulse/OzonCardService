@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
@@ -23,7 +24,9 @@ using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Materialization;
 using OzonCard.Common.Infrastructure.Piplines;
 using OzonCard.Common.Infrastructure.Repositories;
+using OzonCard.Customer.Api.Services.BackgroundTasks;
 using OzonCard.Customer.Api.Services.Bootstrap;
+using OzonCard.Customer.Api.Services.FileManager;
 using OzonCard.Identity.Domain;
 
 var assemblies = new[]
@@ -85,6 +88,7 @@ builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromA
 builder.Services.AddScoped<ICommandBus, MediatrCommandBus>();
 builder.Services.AddScoped<IQueryBus, MediatrQueryBus>();
 
+
 #region Context
 
 builder.Services.AddDbContext<InfrastructureContext>(b =>
@@ -99,11 +103,14 @@ builder.Services.AddDbContext<SecurityContext>(b =>
 builder.Services.AddScoped<ITransactionManager>(sp => sp.GetRequiredService<InfrastructureContext>());
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
 
+builder.Services.AddHostedService<DatabaseBootstrapService>();
+
 #endregion
 
 #region Repositories
 
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+builder.Services.AddScoped<IFileRepository, FileRepository>();
 
 #endregion
 
@@ -166,8 +173,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 #endregion
 
+#region OtherStaff
 
-builder.Services.AddHostedService<DatabaseBootstrapService>();
+builder.Services.AddScoped<IFileManager, FileManager>();
+
+
+#endregion
+
+#region BackgroundWorker
+
+builder.Services.AddSingleton<IBackgroundQueue, BackgroundQueue>();
+builder.Services.AddHostedService<TaskRunningService>();
+
+#endregion
+
 
 
 var app = builder.Build();

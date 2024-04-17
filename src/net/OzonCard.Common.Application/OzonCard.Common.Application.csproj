@@ -11,8 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Customers\" />
-      <Folder Include="Files\Handlers\" />
       <Folder Include="Reports\" />
     </ItemGroup>
 

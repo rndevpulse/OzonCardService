@@ -6,5 +6,5 @@ namespace OzonCard.Common.Application.Files.Commands;
 public record SaveFileCommand(
     Guid Id,
     string FileName,
-    Guid User
+    Guid UserId
 ) : ICommand<SaveFile>;

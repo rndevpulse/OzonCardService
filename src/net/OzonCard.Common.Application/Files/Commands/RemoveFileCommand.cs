@@ -2,4 +2,4 @@
 
 namespace OzonCard.Common.Application.Files.Commands;
 
-public record RemoveFileCommand(string Url):ICommand;
+public record RemoveFileCommand(string Url) : ICommand;

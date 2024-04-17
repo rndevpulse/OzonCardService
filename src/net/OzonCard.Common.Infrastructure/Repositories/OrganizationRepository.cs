@@ -6,8 +6,9 @@ using OzonCard.Common.Infrastructure.Repositories.Abstractions;
 
 namespace OzonCard.Common.Infrastructure.Repositories;
 
-public class OrganizationRepository(InfrastructureContext context) 
-    : RepositoryBase<Organization>(context), IOrganizationRepository
+public class OrganizationRepository(
+    InfrastructureContext context
+) : RepositoryBase<Organization>(context), IOrganizationRepository
 {
     
     
