@@ -1,16 +1,12 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OzonCard.Common.Application.Files.Commands;
 using OzonCard.Common.Application.Files.Queries;
 using OzonCard.Customer.Api.Models.Files;
 using OzonCard.Customer.Api.Services.FileManager;
-using OzonCard.Identity.Domain;
 
 namespace OzonCard.Customer.Api.Controllers;
 
-[Authorize(UserRole.Basic)]
 public class FileController(IFileManager fileManager) : ApiController
 {
 

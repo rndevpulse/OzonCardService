@@ -14,11 +14,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using OzonCard.Common.Application.BackgroundTasks;
+using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Infrastructure;
+using OzonCard.Common.Infrastructure.BackgroundTasks;
 using OzonCard.Common.Infrastructure.Buses;
 using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Materialization;
@@ -111,6 +114,7 @@ builder.Services.AddHostedService<DatabaseBootstrapService>();
 
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 builder.Services.AddScoped<IFileRepository, FileRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 #endregion
 

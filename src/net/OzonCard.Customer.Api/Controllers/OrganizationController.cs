@@ -11,7 +11,6 @@ using OzonCard.Identity.Domain;
 namespace OzonCard.Customer.Api.Controllers;
 
 
-[Authorize(UserRole.Basic)]
 public class OrganizationController : ApiController
 {
 

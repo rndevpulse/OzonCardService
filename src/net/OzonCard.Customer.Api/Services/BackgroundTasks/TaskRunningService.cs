@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OzonCard.Common.Application.BackgroundTasks;
+using BackgroundTask = OzonCard.Common.Application.BackgroundTasks.BackgroundTask;
 
 namespace OzonCard.Customer.Api.Services.BackgroundTasks;
 

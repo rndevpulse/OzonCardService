@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Memory;
+using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Core;
 
-namespace OzonCard.Customer.Api.Services.BackgroundTasks;
+namespace OzonCard.Common.Infrastructure.BackgroundTasks;
 
 public class BackgroundQueue(IMemoryCache cache) : IBackgroundQueue
 {
@@ -44,12 +45,12 @@ public class BackgroundQueue(IMemoryCache cache) : IBackgroundQueue
             task.Report(status);
     }
 
-    public TStatus? GetProgress<TStatus>(Guid id)
-    {
-        if (cache.Get<BackgroundTask>(GetKey(id)) is IProgress<TStatus> task)
-            return task.GetProgress();
-        return default;
-    }
+    // public TStatus? GetProgress<TStatus>(Guid id)
+    // {
+    //     if (cache.Get<BackgroundTask>(GetKey(id)) is IProgress<TStatus> task)
+    //         return task.GetProgress();
+    //     return default;
+    // }
 
     async Task<BackgroundTask?> IBackgroundQueue.DequeueAsync()
     {

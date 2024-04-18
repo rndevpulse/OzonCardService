@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Reports\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\OzonCard.Biz.Client\OzonCard.Biz.Client.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Domain\OzonCard.Common.Domain.csproj" />

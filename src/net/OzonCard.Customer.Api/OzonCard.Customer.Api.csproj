@@ -30,5 +30,9 @@
       <ProjectReference Include="..\OzonCard.Identity\OzonCard.Identity.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\FileManager\" />
+    </ItemGroup>
+
 
 </Project>

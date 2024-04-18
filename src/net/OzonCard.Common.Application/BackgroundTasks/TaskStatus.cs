@@ -1,4 +1,4 @@
-﻿namespace OzonCard.Customer.Api.Services.BackgroundTasks;
+﻿namespace OzonCard.Common.Application.BackgroundTasks;
 
 public enum TaskStatus
 {
