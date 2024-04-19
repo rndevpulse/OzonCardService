@@ -41,17 +41,17 @@ public class CustomerController(
     }
 
     [HttpPost("[action]")]
-    public async Task<CustomerModel> Category(CustomerUpdateCategoryCommand cmd, CancellationToken ct = default)
+    public async Task<string> Category(CustomerUpdateCategoryCommand cmd, CancellationToken ct = default)
     {
         var result = await Commands.Send(cmd, ct);
-        return Mapper.Map<CustomerModel>(result);
+        return result;
     }
 
     [HttpPost("[action]")]
-    public async Task<CustomerModel> Balance(CustomerUpdateBalanceCommand cmd, CancellationToken ct = default)
+    public async Task<decimal> Balance(CustomerUpdateBalanceCommand cmd, CancellationToken ct = default)
     {
         var result = await Commands.Send(cmd, ct);
-        return Mapper.Map<CustomerModel>(result);
+        return result;
     }
     
 }

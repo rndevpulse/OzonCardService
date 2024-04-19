@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using OzonCard.Biz.Client;
 using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Application.Customers.Commands;
-using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
@@ -20,8 +18,7 @@ public class CustomersUploadCommandHandler(
     ICustomerRepository customerRepository,
     IBackgroundQueue queue, 
     IExcelReader excelReader,
-    IFileManager fileManager,
-    IMapper mapper
+    IFileManager fileManager
 ) : CustomerBaseHandler, ICommandHandler<CustomersUploadCommand, IEnumerable<Customer>>
 {
 
