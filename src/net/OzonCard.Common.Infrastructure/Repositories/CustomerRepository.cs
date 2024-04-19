@@ -10,18 +10,25 @@ public class CustomerRepository(
     InfrastructureContext context
 ) : RepositoryBase<Customer>(context), ICustomerRepository
 {
-    public async Task<IEnumerable<Customer>> GetCustomersByCards(Guid organizationId, IEnumerable<string> tracks, CancellationToken ct = default)
+    public async Task<IEnumerable<Customer>> GetCustomersByCardsAsync(Guid organizationId, IEnumerable<string> tracks, CancellationToken ct = default)
     {
         return await GetQuery()
             .Where(x => x.OrgId == organizationId && x.Cards.Any(c => tracks.Contains(c.Track)))
             .ToListAsync(ct);
     }
 
-    public async Task<IEnumerable<Customer>> SearchCustomers(Guid organizationId, string name, string card, CancellationToken ct = default)
+    public async Task<IEnumerable<Customer>> SearchCustomersAsync(Guid organizationId, string name, string card, CancellationToken ct = default)
     {
         return await GetQuery()
             .Where(x => x.OrgId == organizationId)
             .Where(x => x.Name == name || x.Cards.Any(c => c.Number == card))
+            .ToListAsync(ct);
+    }
+
+    public async Task<IEnumerable<Customer>> GetItemsAsync(Guid organizationId, CancellationToken ct = default)
+    {
+        return await GetQuery()
+            .Where(x => x.OrgId == organizationId)
             .ToListAsync(ct);
     }
 }

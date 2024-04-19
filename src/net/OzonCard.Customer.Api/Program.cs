@@ -29,6 +29,7 @@ using OzonCard.Common.Infrastructure.Piplines;
 using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Customer.Api.Services.BackgroundTasks;
 using OzonCard.Customer.Api.Services.Bootstrap;
+using OzonCard.Excel;
 using OzonCard.Files;
 using OzonCard.Identity.Domain;
 
@@ -180,6 +181,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 #region OtherStaff
 
 builder.Services.AddScoped<IFileManager, FileManager>();
+builder.Services.AddScoped<IExcelManager, ExcelManager>();
 
 
 #endregion

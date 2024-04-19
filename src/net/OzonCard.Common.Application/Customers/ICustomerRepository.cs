@@ -5,6 +5,7 @@ namespace OzonCard.Common.Application.Customers;
 
 public interface ICustomerRepository : IRepository<Customer>
 {
-    Task<IEnumerable<Customer>> GetCustomersByCards(Guid organizationId, IEnumerable<string> tracks, CancellationToken ct = default);
-    Task<IEnumerable<Customer>> SearchCustomers(Guid organizationId, string name, string card, CancellationToken ct = default);
+    Task<IEnumerable<Customer>> GetCustomersByCardsAsync(Guid organizationId, IEnumerable<string> tracks, CancellationToken ct = default);
+    Task<IEnumerable<Customer>> SearchCustomersAsync(Guid organizationId, string name, string card, CancellationToken ct = default);
+    Task<IEnumerable<Customer>> GetItemsAsync(Guid organizationId, CancellationToken ct = default);
 }

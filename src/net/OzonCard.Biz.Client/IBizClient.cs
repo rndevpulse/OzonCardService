@@ -25,10 +25,10 @@ public interface IBizClient
     Task<bool> DecBalanceForCustomer(Guid bizId, Guid orgId, Guid walletId, decimal balance,
         CancellationToken ct = default);
 
-    Task<IEnumerable<ProgramReportDto>> GetProgramReports(Guid orgId, Guid programId, 
+    Task<IEnumerable<ProgramReportDto>> GetProgramReport(Guid orgId, Guid programId, 
         DateTime dateFrom, DateTime dateTo, CancellationToken ct = default);
 
-    Task<IEnumerable<TransactionsReportDto>> GetTransactionReports(Guid orgId, DateTime dateFrom,
+    Task<IEnumerable<TransactionsReportDto>> GetTransactionReport(Guid orgId, DateTime dateFrom,
         DateTime dateTo, TransactionType type = TransactionType.PayFromWallet, CancellationToken ct = default);
 
     Task<IEnumerable<ShortGuestInfoDto>> GetShortCustomersReport(Guid orgId, CancellationToken ct = default);

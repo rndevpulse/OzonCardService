@@ -17,7 +17,7 @@ public class CustomersUploadCommandHandler(
     IOrganizationRepository orgRepository,
     ICustomerRepository customerRepository,
     IBackgroundQueue queue, 
-    IExcelReader excelReader,
+    IExcelManager excelManager,
     IFileManager fileManager
 ) : CustomerBaseHandler, ICommandHandler<CustomersUploadCommand, IEnumerable<Customer>>
 {
@@ -30,7 +30,7 @@ public class CustomersUploadCommandHandler(
                     Card = request.Customer.Card,
                     Name = request.Customer.Name,
                 }]
-            : excelReader.GetCustomers(fileManager.GetFile(request.FileReport)).ToList();
+            : excelManager.GetCustomers(fileManager.GetFile(request.FileReport)).ToList();
 
         var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
         if (org.Members.All(x => x.Name != request.User))
@@ -44,7 +44,7 @@ public class CustomersUploadCommandHandler(
         logger.LogInformation($"Try upload by {request.User} '{fileCustomers.Count}' customers");
         queue.UpdateProgress(request.TaskId, Progress);
 
-        var customers = (await customerRepository.GetCustomersByCards(
+        var customers = (await customerRepository.GetCustomersByCardsAsync(
             org.Id,
             fileCustomers.Select(x => x.Card),
             cancellationToken)).ToList();

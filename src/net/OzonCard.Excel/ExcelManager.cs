@@ -10,7 +10,7 @@ namespace OzonCard.Excel;
 
 
 
-public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
+public class ExcelManager(ILogger<ExcelManager> logger) : IExcelManager
 {
 
     private Customer? ReadRow(IXLRow row, int nameCol, int? tabNumberCol, int? positionCol, int cardCol)
@@ -173,13 +173,13 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
         }
     }
 
-    public void CreateWorkbook<T>(string filePath, IList<T> list, string? title = null, bool totalsRow = true)
-    {
-        var dataset = ToDataSet<T>(list);
-        CreateWorkbook(filePath, dataset, title, totalsRow);
-    }
+    // public void CreateWorkbook<T>(string filePath, IList<T> list, string? title = null, bool totalsRow = true)
+    // {
+    //     var dataset = ToDataSet<T>(list);
+    //     CreateWorkbook(filePath, dataset, title, totalsRow);
+    // }
 
-    private void CreateWorkbook(string filePath, DataSet dataset, string? title = null, bool totalsRow = true)
+    public void CreateWorkbook(string filePath, DataSet dataset, string? title = null, bool totalsRow = true)
     {
         try
         {
@@ -234,44 +234,44 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
         }
     }
 
-    private static DataSet ToDataSet<T>(ICollection<T> list)
-    {
-        var elementType = typeof(T).GetProperties().Select(x => new KeyValuePair<PropertyInfo, string?>(
-            x,
-            (x.GetCustomAttributes(true)?.FirstOrDefault() as CsvHelper.Configuration.Attributes.NameAttribute)?.Names
-            ?.First()
-        )).ToList();
-        elementType.RemoveAll(x => x.Value == null);
-        var ds = new DataSet();
-        var t = new DataTable("Отчет");
-        ds.Tables.Add(t);
-
-        var row = t.NewRow();
-        //add a column to table for each public property on T
-        foreach (var propInfo in elementType)
-        {
-            //Type ColType = Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType;
-            t.Columns.Add(propInfo.Key.Name, typeof(object)); //ColType);
-            row[propInfo.Key.Name] = propInfo.Value;
-        }
-
-        t.Rows.Add(row);
-
-        //go through each property on T and add each value to the table
-        foreach (T item in list)
-        {
-            row = t.NewRow();
-            foreach (var propInfo in elementType)
-                row[propInfo.Key.Name] = propInfo.Key.GetValue(item, null) ?? DBNull.Value;
-
-            t.Rows.Add(row);
-        }
-
-        var n = 13;
-        if (list.Count < n)
-            for (var i = 0; i < n; i++)
-                t.Rows.Add(t.NewRow());
-        return ds;
-    }
+    // private static DataSet ToDataSet<T>(ICollection<T> list)
+    // {
+    //     var elementType = typeof(T).GetProperties().Select(x => new KeyValuePair<PropertyInfo, string?>(
+    //         x,
+    //         (x.GetCustomAttributes(true)?.FirstOrDefault() as CsvHelper.Configuration.Attributes.NameAttribute)?.Names
+    //         ?.First()
+    //     )).ToList();
+    //     elementType.RemoveAll(x => x.Value == null);
+    //     var ds = new DataSet();
+    //     var t = new DataTable("Отчет");
+    //     ds.Tables.Add(t);
+    //
+    //     var row = t.NewRow();
+    //     //add a column to table for each public property on T
+    //     foreach (var propInfo in elementType)
+    //     {
+    //         //Type ColType = Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType;
+    //         t.Columns.Add(propInfo.Key.Name, typeof(object)); //ColType);
+    //         row[propInfo.Key.Name] = propInfo.Value;
+    //     }
+    //
+    //     t.Rows.Add(row);
+    //
+    //     //go through each property on T and add each value to the table
+    //     foreach (T item in list)
+    //     {
+    //         row = t.NewRow();
+    //         foreach (var propInfo in elementType)
+    //             row[propInfo.Key.Name] = propInfo.Key.GetValue(item, null) ?? DBNull.Value;
+    //
+    //         t.Rows.Add(row);
+    //     }
+    //
+    //     var n = 13;
+    //     if (list.Count < n)
+    //         for (var i = 0; i < n; i++)
+    //             t.Rows.Add(t.NewRow());
+    //     return ds;
+    // }
 }
 

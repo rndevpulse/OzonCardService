@@ -144,7 +144,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
     }
 
 
-    public async Task<IEnumerable<ProgramReportDto>> GetProgramReports(Guid orgId, Guid programId, 
+    public async Task<IEnumerable<ProgramReportDto>> GetProgramReport(Guid orgId, Guid programId, 
         DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
     {
         return await _client.GetFromJsonAsync<IEnumerable<ProgramReportDto>>(
@@ -153,7 +153,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
            ?? throw new Exception($"Cannot load program report");
     }
 
-    public async Task<IEnumerable<TransactionsReportDto>> GetTransactionReports(Guid orgId, DateTime dateFrom,
+    public async Task<IEnumerable<TransactionsReportDto>> GetTransactionReport(Guid orgId, DateTime dateFrom,
         DateTime dateTo, TransactionType type = TransactionType.PayFromWallet, CancellationToken ct = default)
     {
         var result = await _client.GetFromJsonAsync<IEnumerable<TransactionsReportDto>>(

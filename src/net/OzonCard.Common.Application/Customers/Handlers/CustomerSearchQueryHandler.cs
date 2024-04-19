@@ -18,19 +18,19 @@ public class CustomerSearchQueryHandler(
         var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
         var program = org.Programs.FirstOrDefault(x => x.Id == request.ProgramId)
                       ?? throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
-        var customers = await customerRepository.SearchCustomers(
+        var customers = await customerRepository.SearchCustomersAsync(
             org.Id, request.Name, request.Card, cancellationToken);
         if (!customers.Any())
             return ArraySegment<CustomerSearch>.Empty;
         
         var client = new BizClient(org.Login, org.Password);
 
-        var report = await client.GetProgramReports(
+        var report = await client.GetProgramReport(
             org.Id, request.ProgramId, 
             request.DateFrom, request.DateTo,
             cancellationToken); 
         var transactions =
-            await client.GetTransactionReports(org.Id, request.DateFrom, request.DateTo, ct: cancellationToken);
+            await client.GetTransactionReport(org.Id, request.DateFrom, request.DateTo, ct: cancellationToken);
         var repTransactions = transactions
             .GroupBy(x => x.CardNumbers)
             .Select(x=>new

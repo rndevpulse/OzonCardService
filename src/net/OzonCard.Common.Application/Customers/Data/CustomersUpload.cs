@@ -1,8 +1,10 @@
 ﻿
 
+using OzonCard.Common.Application.Common;
+
 namespace OzonCard.Common.Application.Customers.Data;
 
-public class CustomersUpload
+public class CustomersUpload : MemberInfo
 {
     public Guid OrganizationId { get; set; }
     public IEnumerable<Guid> CategoriesId { get; set; } = new List<Guid>();
@@ -11,14 +13,7 @@ public class CustomersUpload
     public decimal Balance { get; set; }
     public CustomersUploadOptions OptionsModel { get; set; } = new ();
     public SingleCustomerUpload? Customer { get; set; }
-    
-    public Guid UserId { get; private set; }
-    public void SetUserId(Guid userId) => UserId = userId;
-    public string User { get; private set; } = "";
-    public void SetUser(string user) => User = user;
-    
-    public Guid TaskId { get; private set; }
-    public void SetTaskId(Guid taskId) => TaskId = taskId;
+   
 }
 
 public class CustomersUploadOptions
