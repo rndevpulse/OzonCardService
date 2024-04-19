@@ -2,5 +2,5 @@
 
 public record WalletDto(
     decimal Balance,
-    IEnumerable<WalletInfoDto> Wallet
+    WalletInfoDto Wallet
 );

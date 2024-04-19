@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
 
-namespace OzonCard.Customer.Api.Services.FileManager;
+namespace OzonCard.Files;
 
 public interface IFileManager
 {
-    Task<Guid> Save(IFormFile file);
+    Task<Guid> Save(Stream stream, string name);
     Task<bool> RemoveFile(Guid id, string format);
     Task<bool> RemoveFile(string file);
     string GetFile(string name);

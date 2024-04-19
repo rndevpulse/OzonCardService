@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
@@ -14,6 +15,8 @@
       <ProjectReference Include="..\OzonCard.Biz.Client\OzonCard.Biz.Client.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Domain\OzonCard.Common.Domain.csproj" />
+      <ProjectReference Include="..\OzonCard.Excel\OzonCard.Excel.csproj" />
+      <ProjectReference Include="..\OzonCard.Files\OzonCard.Files.csproj" />
     </ItemGroup>
 
     <ItemGroup>

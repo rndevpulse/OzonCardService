@@ -29,7 +29,7 @@ using OzonCard.Common.Infrastructure.Piplines;
 using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Customer.Api.Services.BackgroundTasks;
 using OzonCard.Customer.Api.Services.Bootstrap;
-using OzonCard.Customer.Api.Services.FileManager;
+using OzonCard.Files;
 using OzonCard.Identity.Domain;
 
 var assemblies = new[]

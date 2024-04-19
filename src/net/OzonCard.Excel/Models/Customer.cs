@@ -2,9 +2,9 @@
 
 public class Customer
 {
-    public string? TabNumber { get; set; }  
-    public string? Name { get; set; }
-    public string? Card { get; set; }
-    public string? Position { get; set; }
-    public string? Division { get; set; }
+    public string Name { get; init; } = "";
+    public string Card { get; init; } = "";
+    public string? TabNumber { get; init; }
+    public string? Position { get; init; }
+    public string? Division { get; init; }
 }

@@ -13,6 +13,7 @@ public class CustomerDomainObjectConfiguration : DomainObjectConfiguration<Custo
         builder.ToTable("customers");
         builder.Property(x => x.Name);
         builder.Property(x => x.BizId);
+        builder.Property(x => x.OrgId);
         builder.Property(x => x.IsActive);
         
         builder.Property(x => x.TabNumber);

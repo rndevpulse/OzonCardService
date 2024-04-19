@@ -118,7 +118,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
     public async Task<CustomerInfoDto> GetCustomerAsync(string card, Guid orgId, CancellationToken ct = default)
     {
         return await _client.GetFromJsonAsync<CustomerInfoDto>(
-                   $"customers/get_customer_by_id?organization={orgId}&card={card}",
+                   $"customers/get_customer_by_card?organization={orgId}&card={card}",
                    ct)
                ?? throw new Exception($"Cannot load customer for card '{card}'");
     }
@@ -164,6 +164,13 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
 
     }
 
+    public async Task<IEnumerable<ShortGuestInfoDto>> GetShortCustomersReport(Guid orgId, CancellationToken ct = default)
+    {
+        var result = await _client.GetFromJsonAsync<IEnumerable<ShortGuestInfoDto>>(
+            $"customers/get_customers_by_organization_and_by_period?organizationId={orgId}&date_from={DateTime.Now:yyyy-MM-dd}&date_to={DateTime.Now.AddDays(-95):yyyy-MM-dd}",
+            ct);
+        return result ?? throw new Exception($"Cannot load short customers report");
+    }
 
     #endregion
     private async Task LoginAsync()
@@ -193,8 +200,13 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
             request.RequestUri = uriBuilder.Uri;
         }
 
+        
         var response = await base.SendAsync(request, cancellationToken);
-
+        if ((int)response.StatusCode == 429)
+        {
+            Thread.Sleep(500);
+            await SendAsync(request, cancellationToken);
+        }
         _status = (int)response.StatusCode;
         _reason = _status >= 400
             ? await response.Content.ReadAsStringAsync(cancellationToken)

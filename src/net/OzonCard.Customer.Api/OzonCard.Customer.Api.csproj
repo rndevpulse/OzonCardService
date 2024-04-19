@@ -11,7 +11,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
             <PrivateAssets>all</PrivateAssets>
@@ -28,10 +27,6 @@
       <ProjectReference Include="..\OzonCard.Common.Application\OzonCard.Common.Application.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
       <ProjectReference Include="..\OzonCard.Identity\OzonCard.Identity.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Services\FileManager\" />
     </ItemGroup>
 
 

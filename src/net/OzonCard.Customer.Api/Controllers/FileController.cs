@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OzonCard.Common.Application.Files.Commands;
 using OzonCard.Common.Application.Files.Queries;
 using OzonCard.Customer.Api.Models.Files;
-using OzonCard.Customer.Api.Services.FileManager;
+using OzonCard.Files;
 
 namespace OzonCard.Customer.Api.Controllers;
 
@@ -13,7 +13,8 @@ public class FileController(IFileManager fileManager) : ApiController
     [HttpPost]
     public async Task<object> Create(IFormFile file, CancellationToken ct = default)
     {
-        var id = await fileManager.Save(file);
+        await using var rs = file.OpenReadStream();
+        var id = await fileManager.Save(rs, file.FileName);
         var document = await Commands.Send(new SaveFileCommand(
             id,
             file.FileName,

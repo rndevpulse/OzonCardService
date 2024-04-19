@@ -24,7 +24,8 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
             Name = (row.Cell(nameCol).Value.ToString() ?? "").Replace("  ", " ").Trim(),
             Card = card,
             TabNumber = tabNumberCol == null ? "" : row.Cell((int)tabNumberCol).Value.ToString() ?? "",
-            Position = positionCol == null ? "" : row.Cell((int)positionCol).Value.ToString() ?? ""
+            Position = positionCol == null ? "" : row.Cell((int)positionCol).Value.ToString() ?? "",
+            Division = ""
         };
     }
 
@@ -39,7 +40,8 @@ public class ExcelReader(ILogger<ExcelReader> logger) : IExcelReader
             Name = (row[nameCol].ToString() ?? "").Replace("  ", " ").Trim(),
             Card = card,
             TabNumber = tabNumberCol == null ? "" : row[(int)tabNumberCol].ToString() ?? "",
-            Position = positionCol == null ? "" : row[(int)positionCol].ToString() ?? ""
+            Position = positionCol == null ? "" : row[(int)positionCol].ToString() ?? "",
+            Division = ""
         };
     }
 

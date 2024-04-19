@@ -4,10 +4,8 @@ using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Application.Customers.Queries;
-using OzonCard.Common.Infrastructure.BackgroundTasks;
 using OzonCard.Customer.Api.Models.BackgroundTask;
 using OzonCard.Customer.Api.Models.Customers;
-using OzonCard.Customer.Api.Services.BackgroundTasks;
 
 namespace OzonCard.Customer.Api.Controllers;
 
@@ -22,17 +20,20 @@ public class CustomerController(
     public BackgroundTaskModel Upload(CustomersUploadCommand cmd, CancellationToken ct = default)
     {
         logger.LogInformation("Upload customers by '{user}': {@cmd}", UserClaimEmail, cmd);
+        var reference = Guid.NewGuid();
         cmd.SetUserId(UserClaimSid);
+        cmd.SetUser(UserClaimEmail ?? "Unknown");
+        cmd.SetTaskId(reference);
         var task = queue.Enqueue<object,CustomersTaskProgress>(
             cmd,
-            null);
+            reference);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
 
 
 
     [HttpPost("[action]")]
-    public async Task<IEnumerable<CustomerModel>> Search(CustomerSearchQuery cmd, CancellationToken ct = default)
+    public async Task<IEnumerable<CustomerModel>> Search(CustomersSearchQuery cmd, CancellationToken ct = default)
     {
         logger.LogInformation("Search customers by '{user}': {@cmd}", UserClaimEmail, cmd);
         var result = await Queries.Send(cmd, ct);

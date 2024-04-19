@@ -1,28 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace OzonCard.Customer.Api.Services.FileManager;
+﻿namespace OzonCard.Files;
 
 public class FileManager : IFileManager
 {
-    static string path = Path.Combine(Directory.GetCurrentDirectory(), "FileReports");
+    private static readonly string Path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "FileReports");
 
     public FileManager()
     {
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
+        if (!Directory.Exists(Path))
+            Directory.CreateDirectory(Path);
     }
-    public string GetDirectory() { return path; }
-    public async Task<Guid> Save(IFormFile file)
+    public string GetDirectory() { return Path; }
+    public async Task<Guid> Save(Stream stream, string name)
     {
-        var name = Guid.NewGuid();
-        var format = file.FileName.Split(".").Last().Trim().ToLower();
-        using (var fileStream = new FileStream(
-                   Path.Combine(path, string.Concat(name.ToString(), ".", format).TrimEnd()),
-                   FileMode.Create))
-        {
-            await file.CopyToAsync(fileStream);
-        }
-        return name;
+        var id = Guid.NewGuid();
+        var format = name.Split(".").Last().Trim().ToLower();
+        await using var fs = new FileStream(
+            System.IO.Path.Combine(Path, string.Concat(id, ".", format).TrimEnd()),
+            FileMode.Create);
+        await stream.CopyToAsync(fs);
+        return id;
     }
 
     public async Task<bool> RemoveFile(Guid id, string format)
@@ -30,7 +26,7 @@ public class FileManager : IFileManager
         try
         {
             await Task.Run(() => File.Delete(
-                Path.Combine(path, string.Concat(id.ToString(), ".", format).TrimEnd())));
+                System.IO.Path.Combine(Path, string.Concat(id.ToString(), ".", format).TrimEnd())));
 
             return true;
         }
@@ -42,7 +38,7 @@ public class FileManager : IFileManager
         try
         {
             await Task.Run(() => File.Delete(
-                Path.Combine(path, file).TrimEnd()));
+                System.IO.Path.Combine(Path, file).TrimEnd()));
             return true;
         }
         catch (Exception)
@@ -52,9 +48,9 @@ public class FileManager : IFileManager
 
     public string GetFile(string name)
     {
-        var file = Path.Combine(path, name);
+        var file = System.IO.Path.Combine(Path, name);
         if (File.Exists(file))
             return file;
-        else throw new FileNotFoundException();
+        throw new FileNotFoundException();
     }
 }
