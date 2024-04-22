@@ -3,7 +3,6 @@ using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Application.Reports.Commands;
-using OzonCard.Common.Application.Reports.Data;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Domain.Files;
