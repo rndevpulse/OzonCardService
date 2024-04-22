@@ -1,7 +1,7 @@
 ﻿
 namespace OzonCard.Customer.Api.Models.Auth;
 
-public record AuthLoginModel(
+public record LoginModel(
     string Email,
     string Password
 );

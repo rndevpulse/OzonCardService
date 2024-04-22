@@ -3,5 +3,5 @@
 public record Auth(
     string Access,
     string Refresh,
-    IEnumerable<string> Rules
+    IEnumerable<string> Roles
 );

@@ -17,7 +17,6 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
         <PackageReference Include="System.Management" Version="8.0.0" />
@@ -27,7 +26,14 @@
       <ProjectReference Include="..\OzonCard.Common.Infrastructure\OzonCard.Common.Infrastructure.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Application\OzonCard.Common.Application.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
+      <ProjectReference Include="..\OzonCard.Common.Logging\OzonCard.Common.Logging.csproj" />
       <ProjectReference Include="..\OzonCard.Identity\OzonCard.Identity.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 

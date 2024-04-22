@@ -6,5 +6,5 @@ namespace OzonCard.Identity.Application.Users.Commands;
 public record CreateUserCommand(
     string Email,
     string Password,
-    IEnumerable<string> Rules
+    IEnumerable<string> Roles
 ):ICommand<User>;

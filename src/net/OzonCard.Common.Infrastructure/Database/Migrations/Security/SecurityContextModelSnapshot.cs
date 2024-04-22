@@ -22,25 +22,6 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("role", "security");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -126,23 +107,6 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                     b.HasIndex("RoleId");
 
                     b.ToTable("user_roles", "security");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "855aa5c1-f3e2-480f-8fee-2f7ae4592789",
-                            RoleId = "21d938a6-66e3-4aad-abbc-9a176e1ae506"
-                        },
-                        new
-                        {
-                            UserId = "855aa5c1-f3e2-480f-8fee-2f7ae4592789",
-                            RoleId = "e88fbc30-1985-4379-ae4c-e24657835212"
-                        },
-                        new
-                        {
-                            UserId = "855aa5c1-f3e2-480f-8fee-2f7ae4592789",
-                            RoleId = "44064c53-4cd3-472c-9895-eabf9464dc2d"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -164,7 +128,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                     b.ToTable("user_tokens", "security");
                 });
 
-            modelBuilder.Entity("OzonCard.Common.Infrastructure.Security.User", b =>
+            modelBuilder.Entity("OzonCard.Identity.Domain.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -227,25 +191,9 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("user", "security");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "855aa5c1-f3e2-480f-8fee-2f7ae4592789",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "08d633f9d27c44ed9d6e3960cc8fc213",
-                            Email = "",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            PasswordHash = "",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "33424cf0-816b-4b25-8134-4d28dc553939",
-                            TwoFactorEnabled = false,
-                            UserName = "Administrator"
-                        });
                 });
 
-            modelBuilder.Entity("OzonCard.Common.Infrastructure.Security.UserRole", b =>
+            modelBuilder.Entity("OzonCard.Identity.Domain.UserRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -269,27 +217,27 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("role", "security");
 
                     b.HasData(
                         new
                         {
                             Id = "21d938a6-66e3-4aad-abbc-9a176e1ae506",
-                            ConcurrencyStamp = "02e2d9d3987142e592917a70393e9168",
+                            ConcurrencyStamp = "83b1a412112c4624b64ddea65b648dd8",
                             Name = "Basic",
                             NormalizedName = "BASIC"
                         },
                         new
                         {
                             Id = "e88fbc30-1985-4379-ae4c-e24657835212",
-                            ConcurrencyStamp = "f7ca6f111971441692004a067c78ef52",
+                            ConcurrencyStamp = "c129723cdf314dc199af03d74cb60ef3",
                             Name = "Report",
                             NormalizedName = "REPORT"
                         },
                         new
                         {
                             Id = "44064c53-4cd3-472c-9895-eabf9464dc2d",
-                            ConcurrencyStamp = "a5c3e8fac72e4c51803f2516a078875c",
+                            ConcurrencyStamp = "b5f3d8a826684ef9805453aedb86f98b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -297,7 +245,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("OzonCard.Common.Infrastructure.Security.UserRole", null)
+                    b.HasOne("OzonCard.Identity.Domain.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -306,7 +254,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("OzonCard.Common.Infrastructure.Security.User", null)
+                    b.HasOne("OzonCard.Identity.Domain.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -315,7 +263,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("OzonCard.Common.Infrastructure.Security.User", null)
+                    b.HasOne("OzonCard.Identity.Domain.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -324,13 +272,13 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("OzonCard.Common.Infrastructure.Security.UserRole", null)
+                    b.HasOne("OzonCard.Identity.Domain.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OzonCard.Common.Infrastructure.Security.User", null)
+                    b.HasOne("OzonCard.Identity.Domain.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -339,7 +287,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("OzonCard.Common.Infrastructure.Security.User", null)
+                    b.HasOne("OzonCard.Identity.Domain.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

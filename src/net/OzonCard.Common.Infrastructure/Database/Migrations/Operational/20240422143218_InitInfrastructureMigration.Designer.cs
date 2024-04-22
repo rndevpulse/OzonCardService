@@ -12,8 +12,8 @@ using OzonCard.Common.Infrastructure.Database;
 namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
 {
     [DbContext(typeof(InfrastructureContext))]
-    [Migration("20240422085145_AddCustomerFieldsMigration")]
-    partial class AddCustomerFieldsMigration
+    [Migration("20240422143218_InitInfrastructureMigration")]
+    partial class InitInfrastructureMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

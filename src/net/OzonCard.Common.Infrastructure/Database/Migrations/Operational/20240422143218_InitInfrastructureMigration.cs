@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
 {
     /// <inheritdoc />
-    public partial class InitMigration : Migration
+    public partial class InitInfrastructureMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BizId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrgId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsRemoved = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -143,6 +144,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                     OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

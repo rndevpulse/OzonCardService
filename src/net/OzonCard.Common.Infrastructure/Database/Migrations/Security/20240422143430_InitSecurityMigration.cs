@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
 {
     /// <inheritdoc />
-    public partial class InitMigration : Migration
+    public partial class InitSecurityMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,27 +17,13 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                 name: "security");
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoles",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "role",
                 schema: "security",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -86,9 +72,10 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                 {
                     table.PrimaryKey("PK_role_claims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_role_claims_AspNetRoles_RoleId",
+                        name: "FK_role_claims_role_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
+                        principalSchema: "security",
+                        principalTable: "role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -150,9 +137,10 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                 {
                     table.PrimaryKey("PK_user_roles", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_user_roles_AspNetRoles_RoleId",
+                        name: "FK_user_roles_role_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
+                        principalSchema: "security",
+                        principalTable: "role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -187,35 +175,20 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                 });
 
             migrationBuilder.InsertData(
-                table: "AspNetRoles",
+                schema: "security",
+                table: "role",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "21d938a6-66e3-4aad-abbc-9a176e1ae506", "02e2d9d3987142e592917a70393e9168", "Basic", "BASIC" },
-                    { "44064c53-4cd3-472c-9895-eabf9464dc2d", "a5c3e8fac72e4c51803f2516a078875c", "Admin", "ADMIN" },
-                    { "e88fbc30-1985-4379-ae4c-e24657835212", "f7ca6f111971441692004a067c78ef52", "Report", "REPORT" }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "security",
-                table: "user",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "855aa5c1-f3e2-480f-8fee-2f7ae4592789", 0, "08d633f9d27c44ed9d6e3960cc8fc213", "", true, false, null, null, null, "", null, false, "33424cf0-816b-4b25-8134-4d28dc553939", false, "Administrator" });
-
-            migrationBuilder.InsertData(
-                schema: "security",
-                table: "user_roles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[,]
-                {
-                    { "21d938a6-66e3-4aad-abbc-9a176e1ae506", "855aa5c1-f3e2-480f-8fee-2f7ae4592789" },
-                    { "44064c53-4cd3-472c-9895-eabf9464dc2d", "855aa5c1-f3e2-480f-8fee-2f7ae4592789" },
-                    { "e88fbc30-1985-4379-ae4c-e24657835212", "855aa5c1-f3e2-480f-8fee-2f7ae4592789" }
+                    { "21d938a6-66e3-4aad-abbc-9a176e1ae506", "83b1a412112c4624b64ddea65b648dd8", "Basic", "BASIC" },
+                    { "44064c53-4cd3-472c-9895-eabf9464dc2d", "b5f3d8a826684ef9805453aedb86f98b", "Admin", "ADMIN" },
+                    { "e88fbc30-1985-4379-ae4c-e24657835212", "c129723cdf314dc199af03d74cb60ef3", "Report", "REPORT" }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                table: "AspNetRoles",
+                schema: "security",
+                table: "role",
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
@@ -263,10 +236,6 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "role",
-                schema: "security");
-
-            migrationBuilder.DropTable(
                 name: "role_claims",
                 schema: "security");
 
@@ -287,7 +256,8 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Security
                 schema: "security");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "role",
+                schema: "security");
 
             migrationBuilder.DropTable(
                 name: "user",

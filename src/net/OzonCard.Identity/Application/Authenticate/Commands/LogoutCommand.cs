@@ -2,4 +2,4 @@
 
 namespace OzonCard.Identity.Application.Authenticate.Commands;
 
-public record LogoutCommand(string? token):ICommand;
+public record LogoutCommand(string Access, string Refresh):ICommand;

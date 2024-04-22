@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ public abstract class ApiController : Controller
     protected ICommandBus Commands => HttpContext.RequestServices.GetRequiredService<ICommandBus>();
     protected IMapper Mapper => HttpContext.RequestServices.GetRequiredService<IMapper>();
 
-    protected Guid UserClaimSid => Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var sid)
+    protected Guid UserClaimSid => Guid.TryParse(User.FindFirstValue(JwtRegisteredClaimNames.Sid), out var sid)
         ? sid
         : Guid.Empty;
 

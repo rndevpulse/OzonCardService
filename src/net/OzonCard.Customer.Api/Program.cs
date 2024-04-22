@@ -27,11 +27,14 @@ using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Materialization;
 using OzonCard.Common.Infrastructure.Piplines;
 using OzonCard.Common.Infrastructure.Repositories;
+using OzonCard.Common.Logging;
 using OzonCard.Customer.Api.Services.BackgroundTasks;
 using OzonCard.Customer.Api.Services.Bootstrap;
 using OzonCard.Excel;
 using OzonCard.Files;
 using OzonCard.Identity.Domain;
+using OzonCard.Identity.Infrastructure.Jwt;
+using OzonCard.Identity.Infrastructure.Security;
 
 var assemblies = new[]
 {
@@ -39,7 +42,7 @@ var assemblies = new[]
     Assembly.Load("OzonCard.Common.Infrastructure"), 
     Assembly.Load("OzonCard.Common.Domain"), 
     Assembly.Load("OzonCard.Common.Application"), 
-    // Assembly.Load("OzonCard.Identity"), 
+    Assembly.Load("OzonCard.Identity"), 
 };
 var cultures = new[]
 {
@@ -49,22 +52,24 @@ var cultures = new[]
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.UseDefaultLogging();
 
 #region Identity
 
 builder.Services.AddIdentityCore<User>()
     .AddRoles<UserRole>()
+    .AddSignInManager()
     .AddEntityFrameworkStores<SecurityContext>()
-    .AddDefaultTokenProviders();
-    // .AddRefreshTokenProvider<User>();
+    .AddDefaultTokenProviders()
+    .AddRefreshTokenProvider<User>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Password settings.
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = false; //set false 20.12.23
-    options.Password.RequireUppercase = true;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false; 
+    options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 6;
     options.Password.RequiredUniqueChars = 1;
 
@@ -81,6 +86,43 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.SignIn.RequireConfirmedEmail = false;
 });
 
+
+#endregion
+
+#region Auth
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(jwt =>
+    {
+        jwt.Audience = builder.Configuration.GetValue<string>("jwt:issuer");
+        jwt.TokenValidationParameters = new TokenValidationParameters()
+        {
+            // укзывает, будет ли валидироваться издатель при валидации токена
+            ValidateIssuer = true,
+            // строка, представляющая издателя
+            ValidIssuer = builder.Configuration.GetValue<string>("jwt:issuer"),
+            // будет ли валидироваться потребитель токена
+            ValidateAudience = true,
+            // установка потребителя токена
+            ValidAudience = builder.Configuration.GetValue<string>("jwt:audience"),
+            // будет ли валидироваться время существования
+            ValidateLifetime = true,
+
+            // установка ключа безопасности
+            IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("jwt:key"))),
+            // валидация ключа безопасности
+            ValidateIssuerSigningKey = true,
+        };
+    });
+builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
+
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy(UserRole.Admin, policy => policy.RequireRole(UserRole.Admin));
+    opt.AddPolicy(UserRole.Report, policy => policy.RequireRole(UserRole.Report));
+    opt.AddPolicy(UserRole.Basic, policy => policy.RequireRole(UserRole.Basic));
+});
 #endregion
 
 builder.Services.AddLocalization();
@@ -129,6 +171,12 @@ builder.Services.AddProblemDetails(options =>
         Title = "Bad Request",
         Detail = exception.Message,
     });
+    options.Map<EntityNotFoundException>(exception => new ProblemDetails
+    {
+        Status = StatusCodes.Status404NotFound,
+        Title = "Not found",
+        Detail = exception.Message,
+    });
 });
 
 #endregion
@@ -149,34 +197,7 @@ builder.Services.AddVersionedApiExplorer(o =>
 
 #endregion
 
-#region Auth
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(jwt =>
-    {
-        jwt.Audience = builder.Configuration.GetValue<string>("jwt:issuer");
-        jwt.TokenValidationParameters = new TokenValidationParameters()
-        {
-            // укзывает, будет ли валидироваться издатель при валидации токена
-            ValidateIssuer = true,
-            // строка, представляющая издателя
-            ValidIssuer = builder.Configuration.GetValue<string>("jwt:issuer"),
-            // будет ли валидироваться потребитель токена
-            ValidateAudience = true,
-            // установка потребителя токена
-            ValidAudience = builder.Configuration.GetValue<string>("jwt:audience"),
-            // будет ли валидироваться время существования
-            ValidateLifetime = true,
-
-            // установка ключа безопасности
-            IssuerSigningKey =
-                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("jwt:key"))),
-            // валидация ключа безопасности
-            ValidateIssuerSigningKey = true,
-        };
-    });
-
-#endregion
 
 #region OtherStaff
 
@@ -209,9 +230,9 @@ app.UseRequestLocalization(options =>
     options.SupportedCultures = cultures;
 });
 
-app.UseStaticFiles();
+// app.UseStaticFiles();
 
-app.MapFallbackToFile("/index.html");
+// app.MapFallbackToFile("/index.html");
 
 app.UseProblemDetails();
 
