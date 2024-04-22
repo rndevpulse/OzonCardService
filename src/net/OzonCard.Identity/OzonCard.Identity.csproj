@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Application\Authenticate\Handlers\" />
       <Folder Include="Application\Users\Handlers\" />
     </ItemGroup>
 
