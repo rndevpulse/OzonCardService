@@ -23,7 +23,7 @@ public class UpdateRefreshTokenCommandHandler(
             ?? throw new BusinessException("Access token is corrupted");
         if (!await _userManager.VerifyRefreshTokenAsync(user, request.Refresh, ""))
             throw new BusinessException("Refresh token is corrupted");
-        await _userManager.RemoveRefreshTokenAsync(user, "refresh");
+        await _userManager.RemoveRefreshTokenAsync(user, request.Refresh);
 
         return await Authorization(user);
     }

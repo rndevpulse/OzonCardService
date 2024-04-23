@@ -21,10 +21,13 @@ public static class RefreshTokenProviderExtensions
     public static Task<IdentityResult> SetRefreshTokenAsync<TUser>(this UserManager<TUser> userManager,
         TUser user, string tokenValue) where TUser : class =>
         userManager.SetAuthenticationTokenAsync(user, RefreshTokenProviderOptions.ProviderName,
-            Guid.NewGuid().ToString("N"), tokenValue);
+            // Guid.NewGuid().ToString("N"),
+            string.Join("",tokenValue.Take(80)),
+            tokenValue);
 
 
     public static Task<IdentityResult> RemoveRefreshTokenAsync<TUser>(this UserManager<TUser> userManager,
-        TUser user, string tokenName) where TUser : class =>
-        userManager.RemoveAuthenticationTokenAsync(user, RefreshTokenProviderOptions.ProviderName, tokenName);
+        TUser user, string tokenValue) where TUser : class =>
+        userManager.RemoveAuthenticationTokenAsync(user, RefreshTokenProviderOptions.ProviderName, 
+            string.Join("",tokenValue.Take(80)));
 }
