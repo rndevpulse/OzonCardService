@@ -8,12 +8,13 @@ using OzonCard.Identity.Application.Authenticate.Commands;
 
 namespace OzonCard.Customer.Api.Controllers;
 
+[AllowAnonymous]
 public class AuthController : ApiController
 {
 
     
     
-    [HttpPost("[action]"), AllowAnonymous]
+    [HttpPost("[action]")]
     public async Task<AuthTokenModel> Login(LoginModel model, CancellationToken ct = default)
     {
         var auth = await Commands.Send(new SigInCommand(model.Email, model.Password), ct);
@@ -24,8 +25,9 @@ public class AuthController : ApiController
     [HttpGet("[action]")]
     public async Task<AuthTokenModel> Refresh(CancellationToken ct = default)
     {
-        var token = await Response.HttpContext.GetTokenAsync("access_token")
-            ?? throw new BusinessException("Token is corrupted");
+        var header = Request.Headers.Authorization;
+        var token = header.ToString().Split(" ").LastOrDefault()
+                    ?? throw new BusinessException("Token is corrupted");
         var auth = await Commands.Send(
             new UpdateRefreshTokenCommand(
                 token,
@@ -36,7 +38,7 @@ public class AuthController : ApiController
     }
     
 
-    [HttpGet("[action]"), AllowAnonymous]
+    [HttpGet("[action]")]
     public async Task Logout(CancellationToken ct = default)
     {
         var token = await Response.HttpContext.GetTokenAsync("access_token");

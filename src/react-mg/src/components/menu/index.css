@@ -1,4 +1,4 @@
-a.navbar-brand {
+﻿a.navbar-brand {
     white-space: normal;
     text-align: center;
     word-break: break-all;
@@ -21,24 +21,12 @@ a.navbar-brand {
     }
 
 }
-/*.text-dark{*/
-/*    background-color: black;*/
-/*}*/
-/*.nav-link{*/
-/*}*/
-/*.nav-item{*/
-/*    height: 2rem;*/
-
-/*}*/
 
 .box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
 
 
 .navbar-nav__button {
     display: none;
-}
-.logout {
-    font-weight: bolder;
 }
 
 @media screen and (max-width: 1000px) {
@@ -112,6 +100,3 @@ a.navbar-brand {
     overflow: hidden;
     margin-right: 1rem;
 }
-
-
-

@@ -6,7 +6,7 @@ namespace OzonCard.Customer.Api.Mappings;
 
 public class CustomerMappings : Profile
 {
-    protected CustomerMappings()
+    public CustomerMappings()
     {
         CreateMap<CustomerSearch, CustomerModel>();
     }

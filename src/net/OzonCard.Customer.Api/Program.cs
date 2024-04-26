@@ -224,6 +224,13 @@ if (app.Environment.IsDevelopment())
     app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 }
 
+app.UseCors(policy =>
+{
+    policy.WithOrigins("http://localhost:3000");
+    policy.AllowAnyMethod();
+    policy.AllowCredentials();
+    policy.AllowAnyHeader();
+});
 app.UseRequestLocalization(options =>
 {
     options.DefaultRequestCulture = new RequestCulture(cultures[0]);
