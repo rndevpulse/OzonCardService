@@ -1,0 +1,25 @@
+
+.autorization {
+    display: grid;
+    grid-template-columns: auto min-content;
+    grid-column-gap: 0.4rem;
+}
+
+.autorization i {
+    margin: auto 0 0 0;
+}
+
+.autorization label {
+    grid-column: span 2;
+    font-size: 120%;
+}
+
+.autorization__email {
+    grid-column: span 2;
+}
+
+.button_login {
+    margin-top: 3rem;
+    width: 20rem;
+    border-radius: 10px;
+}

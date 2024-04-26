@@ -2,18 +2,32 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import LoginStore from "./stores/LoginStore";
+import OrganizationStore from "./stores/OrganizationStore";
+import TaskStore from "./stores/TaskStore";
+
+
+interface IStoreState {
+    loginStore: LoginStore
+    organizationStore: OrganizationStore
+    taskStore: TaskStore
+}
+const loginStore = new LoginStore();
+const organizationStore = new OrganizationStore();
+const taskStore = new TaskStore();
+
+
+export const Context = React.createContext<IStoreState>({
+    loginStore, organizationStore , taskStore
+})
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+    <Context.Provider value={{ loginStore, organizationStore , taskStore}} >
+       <App />
+    </Context.Provider>
+)
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+

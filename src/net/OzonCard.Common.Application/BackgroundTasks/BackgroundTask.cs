@@ -20,7 +20,11 @@ public abstract class BackgroundTask
     internal readonly CancellationTokenSource CancellationTokenSource = new();
     
     
-    public void Cancel() => CancellationTokenSource.Cancel();
+    public void Cancel()
+    {
+        Status = TaskStatus.Canceled;
+        CancellationTokenSource.Cancel();
+    }
 }
 
 public class BackgroundTask<TResult> : BackgroundTask

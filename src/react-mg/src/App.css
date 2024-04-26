@@ -36,3 +36,139 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+a {
+  color: #0366d6;
+}
+
+.container {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+code {
+  color: #E01A76;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+.button {
+  margin-right: 1rem;
+  margin-left: 1rem;
+  background-color: #638b6c;
+  border-color: #4f855b;
+  color: #fff;
+}
+.button:hover {
+  background-color: #3d5442;
+}
+
+.file {
+  margin-bottom: 1rem;
+}
+.file label {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+  padding: 1rem;
+  background: #f3f3f3;
+  font-size: 110%;
+}
+.label-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 110%;
+}
+.label-checkbox-category {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 110%;
+  padding-top: 1rem;
+  margin:auto;
+}
+.check_box
+{
+  margin:initial;
+}
+.file i {
+  z-index: 1;
+  margin-left: 2rem;
+}
+i {
+  z-index: 1;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  align-items: end;
+  cursor: pointer;
+}
+
+.button {
+  margin: 16px;
+  align-content: center;
+
+  border-radius: 10px;
+  padding: 7px 25px 6px 25px;
+  border: 2px solid #4f855b;
+  border-radius: 1000px;
+  display: inline-block;
+  vertical-align: middle;
+  background-color: #638b6c;
+  font-size: 12px;
+  font-family: 'Raleway', sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.task {
+  margin-bottom: 1rem;
+}
+.task dt {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor:default;
+  padding: 1rem;
+  background: #f3f3f3;
+  font-size: 110%;
+}
+.task.completed dt {
+  background-color: #7abd89;
+}
+.task.canceled dt {
+  background-color: #df777b;
+}
+.task dd {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+  padding: 0.4rem;
+  background: #f3f3f3;
+  font-size: 90%;
+}
+.link {
+  align-items: center;
+  cursor: pointer;
+  text-decoration-line:underline;
+  color: deepskyblue;
+}
+
+@media screen {
+  html {
+    background-image: url("../public/background.jpg");
+  }
+
+}

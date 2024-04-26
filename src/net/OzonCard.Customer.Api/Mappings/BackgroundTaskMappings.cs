@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using OzonCard.Common.Application.BackgroundTasks;
-using OzonCard.Common.Infrastructure.BackgroundTasks;
 using OzonCard.Customer.Api.Models.BackgroundTask;
 
 namespace OzonCard.Customer.Api.Mappings;
 
 public class BackgroundTaskMappings : Profile
 {
-    protected internal BackgroundTaskMappings()
+    
+    public  BackgroundTaskMappings()
     {
         CreateMap<BackgroundTask,BackgroundTaskModel>()
             .ForCtorParam(nameof(BackgroundTaskModel.Id), e=>e.MapFrom(x=>x.Id))
