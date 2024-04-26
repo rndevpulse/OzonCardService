@@ -116,8 +116,8 @@ const NavMenu: FC = () => {
 
     return (
         <header>
-            <Navbar className="navbar-expand navbar-toggleable-sm border-bottom box-shadow grey mb-3  lighten-3 col s12 m2" dark>
-                <Container>
+            <Navbar className="navbar-expand navbar-toggleable-sm border-bottom box-shadow grey mb-3  lighten-3 col s12 m2" light>
+                <Container className="container-nav">
 
                     <div >
                         <img src="../logo.png" alt="logo" className="logo_image"/>

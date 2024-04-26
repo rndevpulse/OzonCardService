@@ -43,10 +43,7 @@ a {
   color: #0366d6;
 }
 
-.container {
-  padding-right: 0;
-  padding-left: 0;
-}
+
 
 code {
   color: #E01A76;
@@ -164,6 +161,10 @@ i {
   cursor: pointer;
   text-decoration-line:underline;
   color: deepskyblue;
+}
+.container {
+  padding-right: 0;
+  padding-left: 0;
 }
 
 @media screen {

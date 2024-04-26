@@ -8,6 +8,7 @@ import NavMenu from './components/menu';
 
 import LoginPage  from './pages/login';
 import UploadPage from './pages/upload';
+import {Container} from "reactstrap";
 
 
 
@@ -35,7 +36,7 @@ function App() {
   return (
       <BrowserRouter>
         <NavMenu />
-        <div className="container">
+        <Container>
           <Routes>
             <Route path='/' element={<UploadPage/>} />
             {/*<Route path='/file' element={<FilesForm/>} />*/}
@@ -46,7 +47,7 @@ function App() {
 
 
           </Routes>
-        </div>
+        </Container>
       </BrowserRouter>
   );
 }
