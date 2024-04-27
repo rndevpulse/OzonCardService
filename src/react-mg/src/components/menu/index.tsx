@@ -129,10 +129,10 @@ const NavMenu: FC = () => {
                         {linkBasic()}
                         {linkReport()}
                         <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/file">Файлы</NavLink>
+                            <NavLink tag={Link} className="text-dark" to="/files">Файлы</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/task">Задачи</NavLink>
+                            <NavLink tag={Link} className="text-dark" to="/tasks">Задачи</NavLink>
                         </NavItem>
                         {linkAdmin()}
                         <NavItem>

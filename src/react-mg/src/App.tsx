@@ -9,6 +9,8 @@ import NavMenu from './components/menu';
 import LoginPage  from './pages/login';
 import UploadPage from './pages/upload';
 import {Container} from "reactstrap";
+import FilesPage from "./pages/files";
+import TasksPage from "./pages/tasks";
 
 
 
@@ -39,9 +41,9 @@ function App() {
         <Container>
           <Routes>
             <Route path='/' element={<UploadPage/>} />
-            {/*<Route path='/file' element={<FilesForm/>} />*/}
+            <Route path='/files' element={<FilesPage/>} />
             {/*<Route path='/report' element={<ReportForm />} />*/}
-            {/*<Route path='/task' element={<TasksForm />} />*/}
+            <Route path='/tasks' element={<TasksPage/>} />
             {/*<Route path='/service' element={<ServiceForm />} />*/}
             {/*<Route path='/search_customer' element={<SearchCustomerForm />} />*/}
 
