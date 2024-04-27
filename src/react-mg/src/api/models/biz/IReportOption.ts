@@ -1,6 +1,6 @@
 export interface IReportOption{
     organizationId :string
-    corporateNutritionId: string
+    programId: string
     categoriesId: string[]
     dateFrom: string
     dateTo: string

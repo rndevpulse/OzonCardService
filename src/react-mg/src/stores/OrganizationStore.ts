@@ -46,12 +46,12 @@ export default class OrganizationStore {
             this.setLoading(false)
         }
     }
-    async createOrganization(email: string, password:string) {
+    async createOrganization(login: string, password:string) {
         this.setLoading(true)
         try {
-            const response = await OrganizationService.createOrganization(email, password)
+            const response = await OrganizationService.createOrganization(login, password)
             this.organizations.push(response.data)
-            //console.log(response)
+            console.log(response)
         }
         catch (e) {
             //console.log(e);

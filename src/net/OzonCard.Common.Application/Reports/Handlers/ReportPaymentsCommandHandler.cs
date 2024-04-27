@@ -49,7 +49,7 @@ public class ReportPaymentsCommandHandler(
         {
             //include filter category
             if (usedCategoryFilter.Length != 0
-                && usedCategoryFilter.Any(c=>rowReport.GuestCategoryNames.Contains(c)))
+                && usedCategoryFilter.Any(c=>!rowReport.GuestCategoryNames.Contains(c)))
                 continue;
             
             var customer = customers.FirstOrDefault(x => x.Id == rowReport.GuestId);

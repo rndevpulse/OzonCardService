@@ -9,15 +9,15 @@ export default class OrganizationService {
     }
 
     static async updateOrganization(organizationId: string): Promise<AxiosResponse<IOrganization>> {
-        return api.get<IOrganization>(`/organization/${organizationId}/update`)
+        return api.put<IOrganization>(`/organization/${organizationId}`)
     }
 
-    static async createOrganization(email: string, password: string): Promise<AxiosResponse<IOrganization>> {
-        return api.post<IOrganization>('/organization', { email, password})
+    static async createOrganization(login: string, password: string): Promise<AxiosResponse<IOrganization>> {
+        return api.post<IOrganization>(`/organization?login=${login}&password=${password}`)
     }
 
-    static async getUsers(organizationId: string): Promise<AxiosResponse<IUser[]>> {
-        return await api.get<IUser[]>(`/organization/${organizationId}/members`)
+    static async getUsers(): Promise<AxiosResponse<IUser[]>> {
+        return await api.get<IUser[]>(`/organization/members`)
     }
 
     static async addUserForOrganization(organizationId: string, userId: string): Promise<AxiosResponse<IUser>> {

@@ -11,6 +11,8 @@ import UploadPage from './pages/upload';
 import {Container} from "reactstrap";
 import FilesPage from "./pages/files";
 import TasksPage from "./pages/tasks";
+import ServicePage from "./pages/service";
+import ReportPage from "./pages/report";
 
 
 
@@ -42,9 +44,9 @@ function App() {
           <Routes>
             <Route path='/' element={<UploadPage/>} />
             <Route path='/files' element={<FilesPage/>} />
-            {/*<Route path='/report' element={<ReportForm />} />*/}
+            <Route path='/report' element={<ReportPage/>} />
             <Route path='/tasks' element={<TasksPage/>} />
-            {/*<Route path='/service' element={<ServiceForm />} />*/}
+            <Route path='/service' element={<ServicePage />} />
             {/*<Route path='/search_customer' element={<SearchCustomerForm />} />*/}
 
 

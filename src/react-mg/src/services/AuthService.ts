@@ -15,7 +15,7 @@ export default class AuthService {
         return api.get('/auth/refresh')
     }
 
-    static async create(email: string, password: string, roles:number[]): Promise<AxiosResponse<IUser>>{
+    static async create(email: string, password: string, roles:string[]): Promise<AxiosResponse<IUser>>{
         return await api.post<IUser>('/account', { email, password, roles})
     }
 }

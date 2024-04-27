@@ -2,6 +2,6 @@ import {IUserOrganization} from "./IUserOrganization";
 
 export interface IUser {
     id: string
-    mail: string
+    email: string
     organizations: IUserOrganization[]
 }

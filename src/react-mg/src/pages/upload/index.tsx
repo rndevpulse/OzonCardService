@@ -74,10 +74,12 @@ const UploadPage: FC = () => {
 
     }
     function setSetters() {
-        setOrganization(organizationStore.organizations[0]);
-        setCategories(organizationStore.organizations[0]?.categories ?? []);
-        setPrograms(organizationStore.organizations[0]?.programs ?? [])
-        setProgram(organizationStore.organizations[0]?.programs[0])
+        const org = organizationStore.organizations[0]
+        console.log(org.id)
+        setOrganization(org);
+        setCategories(org?.categories ?? [])
+        setPrograms(org?.programs ?? [])
+        setProgram(org?.programs[0])
         setCurrentCategories([]);
     }
 

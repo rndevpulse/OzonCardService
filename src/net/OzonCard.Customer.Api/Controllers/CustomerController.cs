@@ -6,7 +6,6 @@ using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Application.Customers.Queries;
 using OzonCard.Customer.Api.Models.BackgroundTask;
 using OzonCard.Customer.Api.Models.Customers;
-using Task = DocumentFormat.OpenXml.Office2021.DocumentTasks.Task;
 
 namespace OzonCard.Customer.Api.Controllers;
 
