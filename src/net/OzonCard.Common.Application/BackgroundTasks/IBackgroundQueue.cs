@@ -9,7 +9,7 @@ public interface IBackgroundQueue
     IEnumerable<BackgroundTasks.BackgroundTask> GetTasks(params Guid[] tasks);
     Task<BackgroundTasks.BackgroundTask?> DequeueAsync();
     void Complete(BackgroundTasks.BackgroundTask task);
-    void Cancel(Guid task);
+    BackgroundTask? Cancel(Guid task);
     void UpdateProgress<TStatus>(Guid task, TStatus status);
     // TStatus? GetProgress<TStatus>(Guid task);
 }

@@ -21,9 +21,10 @@ public class TasksController(
     }
 
     [HttpGet("[action]")]
-    public void Cancel(Guid id, CancellationToken ct = default)
+    public BackgroundTaskModel Cancel(Guid id, CancellationToken ct = default)
     {
         logger.LogDebug($"CancelTask {id}");
-        queue.Cancel(id);
+        var result = queue.Cancel(id);
+        return Mapper.Map<BackgroundTaskModel>(result);
     }
 }

@@ -33,10 +33,12 @@ public class BackgroundQueue(IMemoryCache cache) : IBackgroundQueue
         return task;
     }
 
-    public void Cancel(Guid id)
+    public BackgroundTask? Cancel(Guid id)
     {
-        if (cache.Get<BackgroundTask>(GetKey(id)) is {} task)
-            task.Cancel();
+        if (cache.Get<BackgroundTask>(GetKey(id)) is not { } task) 
+            return null;
+        task.Cancel();
+        return task;
     }
 
     public void UpdateProgress<TStatus>(Guid id, TStatus status)
