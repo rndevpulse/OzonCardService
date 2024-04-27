@@ -6,6 +6,7 @@ using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Application.Customers.Queries;
 using OzonCard.Customer.Api.Models.BackgroundTask;
 using OzonCard.Customer.Api.Models.Customers;
+using Task = DocumentFormat.OpenXml.Office2021.DocumentTasks.Task;
 
 namespace OzonCard.Customer.Api.Controllers;
 
@@ -53,5 +54,13 @@ public class CustomerController(
         var result = await Commands.Send(cmd, ct);
         return result;
     }
+
+    [HttpDelete]
+    public async Task<CustomerModel> Remove(CustomerRemoveCommand cmd, CancellationToken ct = default) =>
+        Mapper.Map<CustomerModel>(await Commands.Send(cmd, ct));
     
+    [HttpPut]
+    public async Task<CustomerModel> Update(CustomerUpdateCommand cmd, CancellationToken ct = default) =>
+        Mapper.Map<CustomerModel>(await Commands.Send(cmd, ct));
+
 }
