@@ -2,12 +2,12 @@
 
 public class ProgramModel
 {
-    public ProgramModel(Guid id, Guid name)
+    public ProgramModel(Guid id, string name)
     {
         Id = id;
         Name = name;
     }
 
     public Guid Id { get; private set; }
-    public Guid Name { get; private set; }
+    public string Name { get; private set; }
 }

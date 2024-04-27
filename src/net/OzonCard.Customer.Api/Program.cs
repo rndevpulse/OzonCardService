@@ -177,6 +177,12 @@ builder.Services.AddProblemDetails(options =>
         Title = "Not found",
         Detail = exception.Message,
     });
+    options.Map<Exception>(exception => new ProblemDetails
+    {
+        Status = StatusCodes.Status500InternalServerError,
+        Title = "Server Error",
+        Detail = exception.Message,
+    });
 });
 
 #endregion

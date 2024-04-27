@@ -6,7 +6,7 @@ public abstract class AggregateRoot : DomainObject, IAggregateRoot
 {
     [NonSerialized] private readonly Queue<object> _uncommittedEvents = new();
 
-    protected AggregateRoot(Guid? id = null) : base(id)
+    protected AggregateRoot(Guid id) : base(id)
     {
     }
 

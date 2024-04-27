@@ -39,7 +39,7 @@ public class OrganizationController : ApiController
         return Mapper.Map<IEnumerable<OrganizationModel>>(organizations);
     }
 
-    [HttpPut]
+    [HttpPut("{organizationId:guid}")]
     public async Task<OrganizationModel> Update(Guid organizationId, CancellationToken ct = default)
     {
         var organization = await Commands.Send(

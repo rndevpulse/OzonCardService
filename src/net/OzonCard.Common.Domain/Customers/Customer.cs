@@ -20,6 +20,7 @@ public class Customer : AggregateRoot
     public IEnumerable<CustomerWallet> Wallets => _wallets;
 
     public Customer(
+        Guid id,
         string name, 
         Guid bizId,
         Guid orgId,
@@ -28,7 +29,7 @@ public class Customer : AggregateRoot
         string? tabNumber  = null, 
         string? position = null,
         string? division = null, 
-        string? comment = null)
+        string? comment = null) : base(id)
     {
         Name = name;
         Phone = phone;

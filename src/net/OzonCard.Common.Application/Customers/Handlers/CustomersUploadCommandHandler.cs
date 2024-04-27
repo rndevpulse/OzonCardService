@@ -148,7 +148,7 @@ public class CustomersUploadCommandHandler(
             logger.LogError($"Customer {fileCustomer.Name} {fileCustomer.Card} not create in biz");
             return null;
         }
-        return new Customer(
+        return new Customer(Guid.NewGuid(), 
             fileCustomer.Name, bizCustomer, orgId, true,
             string.Empty, fileCustomer.TabNumber, fileCustomer.Position, fileCustomer.Division
         );

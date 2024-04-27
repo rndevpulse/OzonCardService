@@ -15,9 +15,9 @@ public class DomainObject : IWithId
 
     public uint Version { get; private set; }
 
-    protected DomainObject(Guid? id = null)
+    protected DomainObject(Guid id)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         CreatedAt = DateTimeOffset.UtcNow;
         UpdatedAt = DateTimeOffset.UtcNow;
     }

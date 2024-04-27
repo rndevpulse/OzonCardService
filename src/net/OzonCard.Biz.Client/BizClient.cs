@@ -19,11 +19,11 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
 
 
     private readonly HttpClient _client;
-    private readonly string _endpoint = "https://iiko.biz:9900/api/0";
+    private readonly string _endpoint = "https://iiko.biz:9900/api/0/";
 
     public string? Reason => _reason;
     public int Status => _status;
-    public BizClient(string login, string password)
+    public BizClient(string login, string password) : base(new HttpClientHandler())
     {
         _login = login;
         _password = password;
@@ -42,7 +42,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
         values["user_id"] = _login;
         // values["user_secret"] = GetPasswordShaHash(_password);
         values["user_secret"] = _password;
-        return await _client.GetStringAsync($"auth/access_token?"+ values) 
+        return await _client.GetFromJsonAsync<string>($"auth/access_token?"+ values) 
                ?? throw new HttpRequestException();
     }
 

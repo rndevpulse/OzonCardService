@@ -8,6 +8,10 @@ public class OrganizationMappings : Profile
 {
     public OrganizationMappings()
     {
-        CreateMap<Organization, OrganizationModel>();
+        CreateMap<Organization, OrganizationModel>()
+            .ForMember(x=>x.Categories, opt=>opt.MapFrom(x=>x.Categories))
+            .ForMember(x=>x.Programs, opt=>opt.MapFrom(x=>x.Programs));
+        CreateMap<Category, CategoryModel>();
+        CreateMap<Common.Domain.Organizations.Program, ProgramModel>();
     }
 }
