@@ -7,15 +7,15 @@ export default class FileService {
 
 
     static async getMyFiles(): Promise<AxiosResponse<IFile[]>> {
-        return api.get<IFile[]>('/file/user')
+        return api.get<IFile[]>('/file')
     }
 
     static async removeFile(url: string): Promise<AxiosResponse<void>> {
-        return api.get(`/file/remove/${url}`)
+        return api.delete(`/file/${url}`)
     }
     
     static async downloadFile(url: string){
-        return api.get(`/file/get/${url}`, {responseType: 'blob'})
+        return api.get(`/file/${url}`, {responseType: 'blob'})
     }
 
     static async createFile(formData: FormData) : Promise<AxiosResponse<IFile>>{
@@ -25,7 +25,7 @@ export default class FileService {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         }
-        return api.post<IFile>('/api/file', formData, config)
+        return api.post<IFile>('/file', formData, config)
     }
     
 }

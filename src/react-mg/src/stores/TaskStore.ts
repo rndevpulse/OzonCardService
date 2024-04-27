@@ -15,13 +15,15 @@ export default class TaskStore {
     
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
-        setInterval(this.increaseTimer, 1000);
+        setInterval(this.increaseTimer, 2000);
     }
     async increaseTimer() {
         this.timer++;
         const currents = this.tasks
-            .filter(task => task.task.status === "Running")
+            .filter(task => task.task.status == "Running")
             .map(task=>task.id);
+        if (currents.length === 0)
+            return
         const response = await TaskService.getTasks(currents)
 
         if (response.status === 200 && response.data)
@@ -39,7 +41,7 @@ export default class TaskStore {
         if (task)
         {
             this.tasks[index].task = task
-            this.tasks[index].time++
+            this.tasks[index].time += 2
         }
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }

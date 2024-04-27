@@ -3,6 +3,7 @@
     display: grid;
     grid-template-columns: auto min-content;
     grid-column-gap: 0.4rem;
+    padding-left: 15%;
 }
 
 .autorization i {
