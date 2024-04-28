@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import {ru} from "date-fns/locale/ru";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import './index.css'
 import DatePicker, {registerLocale} from "react-datepicker";
 import Select from "react-select";
 import {Context} from "../../index";
@@ -15,7 +14,7 @@ import {IReportOption} from "../../api/models/biz/IReportOption";
 import BizService from "../../services/BizServise";
 import moment, {locale} from "moment";
 import "react-datepicker/dist/react-datepicker.css";
-
+import './index.css'
 registerLocale("ru", ru)
 
 const ReportPage: FC = () => {

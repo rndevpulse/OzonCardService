@@ -36,14 +36,14 @@
     grid-column-gap: 0.4rem;
 }
 
-    .email__pass i {
-        margin: auto 0 0 0;
-    }
+.email__pass i {
+    margin: auto 0 0 0;
+}
 
-    .email__pass label {
-        grid-column: span 2;
-        font-size: 110%;
-    }
+.email__pass label {
+    grid-column: span 2;
+    font-size: 110%;
+}
 
 .email {
     grid-column: span 2;
