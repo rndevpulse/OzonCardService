@@ -18,6 +18,10 @@ const TasksPage: FC = () => {
         date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
         return `${padTo2Digits(date.getHours())}:${padTo2Digits(date.getMinutes())}:${padTo2Digits(date.getSeconds())}`;
     }
+    function getLocalTime(time:string):string{
+        const date = new Date(time)
+        return date.toLocaleTimeString();
+    }
 
     const { taskStore } = useContext(Context)
     const taskDescription = (savedTask: ISavedTask) => {
@@ -35,7 +39,7 @@ const TasksPage: FC = () => {
                         <li>Изменен баланс у: {progress.countBalance}</li>
                         <li>Присвоена категория: {progress.countCategory}</li>
                         <li>Добавлено в кор.пит: {progress.countProgram}</li>
-                        <li>Время создания: {savedTask.task.queuedAt.substring(11, 19)}</li>
+                        <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
                     </ul>
                 </dd>
             )
@@ -47,7 +51,7 @@ const TasksPage: FC = () => {
                         <li>Время выполнения: {getTime(savedTask.time)}</li>
                     </ul>
                     <ul>
-                        <li>Время создания: {savedTask.task.queuedAt.substring(11, 19)}</li>
+                        <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
                     </ul>
                 </dd>
             )
@@ -77,10 +81,11 @@ const TasksPage: FC = () => {
             </dt>
         )
     }
+
     if (taskStore.tasks.length === 0) {
         return <h4 className="center">Задач нет</h4>
     }
-    
+
     return (
         <div className="center form-group col-md-12">
             <h1>Мои задачи</h1>

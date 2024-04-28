@@ -3,5 +3,6 @@
 public record FileModel(
     Guid Id,
     string Url,
-    string Name
+    string Name,
+    DateTimeOffset Created
 );

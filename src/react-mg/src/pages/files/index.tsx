@@ -59,7 +59,7 @@ const FilesPage: FC = () => {
                             <li className="file" key={file.url}>
                                 <label>
                                     <span onClick={(e) => downloadHandler(e, file.url, `${file.name}`)}>
-                                        {file.name} | {new Date(file.created).toDateString()}
+                                        {file.name} | {new Date(file.created).toLocaleString()}
                                     </span>
                                     <span>
                                         <i className="material-icons blue-text"

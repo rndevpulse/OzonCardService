@@ -10,10 +10,11 @@ public class SaveFileCommandHandler(
 {
     public async Task<SaveFile> Handle(SaveFileCommand request, CancellationToken cancellationToken)
     {
+        var named = request.FileName.Split(".");
         var file = new SaveFile(
             request.Id,
-            request.FileName.Split(".").Last().Trim().ToLower(),
-            request.FileName,
+            named.Last().Trim().ToLower(),
+            string.Join(".", named.Take(named.Length - 1)),
             request.UserId);
         await repository.AddAsync(file);
         return file;

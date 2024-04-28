@@ -24,7 +24,7 @@ public class CustomerController(
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
         cmd.SetTaskId(reference);
-        var task = queue.Enqueue<object,CustomersTaskProgress>(
+        var task = queue.Enqueue<IEnumerable<Common.Domain.Customers.Customer>,CustomersTaskProgress>(
             cmd,
             reference);
         return Mapper.Map<BackgroundTaskModel>(task);

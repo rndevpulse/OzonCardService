@@ -12,9 +12,12 @@ public class CustomerRepository(
 {
     public async Task<IEnumerable<Customer>> GetCustomersByCardsAsync(Guid organizationId, IEnumerable<string> tracks, CancellationToken ct = default)
     {
-        return await GetQuery()
-            .Where(x => x.OrgId == organizationId && x.Cards.Any(c => tracks.Contains(c.Track)))
+        var customers = await GetQuery()
+            .Where(x => x.OrgId == organizationId)
             .ToListAsync(ct);
+        return customers
+            .Where(x => x.Cards.Any(c => tracks.Contains(c.Track)))
+            .ToList();
     }
 
     public async Task<IEnumerable<Customer>> SearchCustomersAsync(Guid organizationId, string name, string card, CancellationToken ct = default)
