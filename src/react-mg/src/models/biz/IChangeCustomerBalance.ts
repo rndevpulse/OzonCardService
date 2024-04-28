@@ -1,7 +1,6 @@
 export interface IChangeCustomerBalance {
     id: string
     organizationId: string
-    corporateNutritionId: string
-    isIncrement: boolean
+    programId: string
     balance:number
 }

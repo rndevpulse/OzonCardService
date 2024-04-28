@@ -1,6 +1,6 @@
 ﻿import { AxiosResponse } from "axios";
 import api from "../api";
-import {ITask} from "../api/models/task/ITask";
+import {ITask} from "../models/task/ITask";
 
 export default class TaskService {
 

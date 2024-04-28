@@ -5,6 +5,6 @@ namespace OzonCard.Common.Application.Customers.Commands;
 public record CustomerUpdateCategoryCommand(
     Guid Id,
     Guid OrganizationId,
-    Guid CategoryId,
-    bool isRemove
-) : ICommand<string>;
+    IEnumerable<Guid> Categories,
+    bool IsRemove
+) : ICommand<IEnumerable<string>>;

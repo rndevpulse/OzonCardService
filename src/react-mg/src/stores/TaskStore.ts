@@ -2,7 +2,7 @@
 import { makeAutoObservable, observable, configure } from 'mobx';
 import TaskService from '../services/TaskService';
 import {ISavedTask} from "./models/ISavedTask";
-import {ITask} from "../api/models/task/ITask";
+import {ITask} from "../models/task/ITask";
 
 configure({
     enforceActions: "never",
@@ -25,17 +25,25 @@ export default class TaskStore {
         if (currents.length === 0)
             return
         const response = await TaskService.getTasks(currents)
-
+        if (response.status === 200 && response.data.length === 0)
+        {
+        }
         if (response.status === 200 && response.data)
+        {
+            console.log("running tasks info", response.data)
+
             this.tasks = this.tasks.map((t,index) => {
                 if (t.task.status !== 'Running') { return t }
                 this.setTaskInfo(t.id, index, response.data)
                 return t
             })
+        }
+
 
     }
 
     async setTaskInfo(taskId: string, index: number, updatedTasks: ITask[]){
+        console.log("setTaskInfo", taskId)
 
         const task = updatedTasks.find(t=>t.id === taskId);
         if (task)
@@ -43,6 +51,8 @@ export default class TaskStore {
             this.tasks[index].task = task
             this.tasks[index].time += 2
         }
+        else
+            this.tasks[index].task.status = "Failed"
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
 
@@ -61,6 +71,7 @@ export default class TaskStore {
     }
 
     onRemoveTask(taskId :string) {
+        console.log("onRemoveTask", taskId)
         this.tasks = this.tasks.filter(t => t.id !== taskId)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
@@ -68,11 +79,12 @@ export default class TaskStore {
         const savedTask:ISavedTask = {
             id: task.id,
             description: description,
-            time:0,
+            time:1,
             task:task
         }
         this.tasks.unshift(savedTask)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
+        console.log(this.tasks)
     }
     
 }

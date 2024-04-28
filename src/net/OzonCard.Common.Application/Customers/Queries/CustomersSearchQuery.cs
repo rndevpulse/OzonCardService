@@ -11,5 +11,4 @@ public class CustomersSearchQuery : IQuery<IEnumerable<CustomerSearch>>
     public Guid ProgramId { get; set; }
     public DateTime DateFrom { get; set; }
     public DateTime DateTo { get; set; }
-    public bool isOffline { get; set; }
 }

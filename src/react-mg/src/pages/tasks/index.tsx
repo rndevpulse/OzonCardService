@@ -2,12 +2,22 @@
 import { FC, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import {Context} from "../../index";
-import {ICustomersTasksProgress, ITask} from "../../api/models/task/ITask";
+import {ICustomersTasksProgress, ITask} from "../../models/task/ITask";
 import './index.css'
 import {ISavedTask} from "../../stores/models/ISavedTask";
 
 
 const TasksPage: FC = () => {
+
+    function padTo2Digits(num: number) {
+        return num.toString().padStart(2, '0');
+
+    }
+    function getTime(time: number) : string{
+        const date = new Date(time * 1000)
+        date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
+        return `${padTo2Digits(date.getHours())}:${padTo2Digits(date.getMinutes())}:${padTo2Digits(date.getSeconds())}`;
+    }
 
     const { taskStore } = useContext(Context)
     const taskDescription = (savedTask: ISavedTask) => {
@@ -19,13 +29,13 @@ const TasksPage: FC = () => {
                         <li>Гостей всего: {progress.countAll}</li>
                         <li>Новых: {progress.countNew}</li>
                         <li>Обработано с ошибкой: {progress.countFail}</li>
-                        <li>Время выполнения: {new Date(savedTask.time * 1000).toTimeString()}</li>
+                        <li>Время выполнения: {getTime(savedTask.time)}</li>
                     </ul>
                     <ul>
                         <li>Изменен баланс у: {progress.countBalance}</li>
                         <li>Присвоена категория: {progress.countCategory}</li>
                         <li>Добавлено в кор.пит: {progress.countProgram}</li>
-                        <li>Время создания: {savedTask.task.queuedAt}</li>
+                        <li>Время создания: {savedTask.task.queuedAt.substring(11, 19)}</li>
                     </ul>
                 </dd>
             )
@@ -34,28 +44,17 @@ const TasksPage: FC = () => {
             return (
                 <dd>
                     <ul>
-                        <li>Время выполнения: {new Date(savedTask.time * 1000).toTimeString()}</li>
+                        <li>Время выполнения: {getTime(savedTask.time)}</li>
                     </ul>
                     <ul>
-                        <li>Время создания: {savedTask.task.queuedAt}</li>
+                        <li>Время создания: {savedTask.task.queuedAt.substring(11, 19)}</li>
                     </ul>
                 </dd>
             )
         }
     }
     const taskTitle = (savedTask: ISavedTask) => {
-        if (savedTask.task.status === "Completed") {
-            return (
-                <dt>
-                    {savedTask.description}
-                    {savedTask.task.error}
-                    <i className="material-icons red-text"
-                       onClick={() => taskStore.onRemoveTask(savedTask.id)}>
-                        delete
-                    </i>
-                </dt>
-            )
-        } else {
+        if (savedTask.task.status !== "Running") {
             return (
                 <dt>
                     {savedTask.description}
@@ -65,9 +64,18 @@ const TasksPage: FC = () => {
                         cancel
                     </i>
                 </dt>
-
             )
         }
+        return (
+            <dt>
+                {savedTask.description}
+                {savedTask.task.error}
+                <i className="material-icons red-text"
+                   onClick={() => taskStore.onRemoveTask(savedTask.id)}>
+                    delete
+                </i>
+            </dt>
+        )
     }
     if (taskStore.tasks.length === 0) {
         return <h4 className="center">Задач нет</h4>

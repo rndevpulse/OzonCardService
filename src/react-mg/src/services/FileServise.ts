@@ -1,6 +1,6 @@
 ﻿import axios, { AxiosResponse } from "axios";
 import api from "../api";
-import {IFile} from "../api/models/file/IFile";
+import {IFile} from "../models/file/IFile";
 
 
 export default class FileService {

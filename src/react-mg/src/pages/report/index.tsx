@@ -7,12 +7,12 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import DatePicker, {registerLocale} from "react-datepicker";
 import Select from "react-select";
 import {Context} from "../../index";
-import {IOrganization} from "../../api/models/org/IOrganization";
-import {IProgram} from "../../api/models/org/IProgram";
-import {ICategory} from "../../api/models/org/ICategory";
-import {IReportOption} from "../../api/models/biz/IReportOption";
+import {IOrganization} from "../../models/org/IOrganization";
+import {IProgram} from "../../models/org/IProgram";
+import {ICategory} from "../../models/org/ICategory";
+import {IReportOption} from "../../models/biz/IReportOption";
 import BizService from "../../services/BizServise";
-import moment, {locale} from "moment";
+import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import './index.css'
 registerLocale("ru", ru)
@@ -67,14 +67,14 @@ const ReportPage: FC = () => {
         const option = getOptions()
         const response = await BizService.ReportFromBiz(option)
         taskStore.onAddTask(response.data, 'Отчет: ' + option.title)
-        navigate(`/task`)
+        navigate(`/tasks`)
     }
 
     async function transactionsFromBiz() {
         const option = getOptions()
         const response = await BizService.TransactionsFromBiz(option)
         taskStore.onAddTask(response.data, 'Отчет: ' + option.title)
-        navigate(`/task`)
+        navigate(`/tasks`)
     }
 
 

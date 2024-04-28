@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {IAuth} from "./models/auth/IAuth";
+import {IAuth} from "../models/auth/IAuth";
 import {Bounce, Slide, toast} from "react-toastify";
 
 export const API_URL = 'https://localhost:5180/api/v1'

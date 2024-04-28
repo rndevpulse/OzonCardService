@@ -3,6 +3,6 @@
 export interface IChangeCustomerCategory {
     id: string
     organizationId: string
-    categoryId: string
+    categories: string[]
     isRemove: boolean
 }

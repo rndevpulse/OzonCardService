@@ -1,7 +1,7 @@
 ﻿import { FC, useState } from 'react';
 import * as React from 'react'
 import { useEffect } from 'react';
-import {IFile} from "../../api/models/file/IFile";
+import {IFile} from "../../models/file/IFile";
 import FileService from "../../services/FileServise";
 import './index.css'
 

@@ -13,6 +13,7 @@ import FilesPage from "./pages/files";
 import TasksPage from "./pages/tasks";
 import ServicePage from "./pages/service";
 import ReportPage from "./pages/report";
+import SearchPage from "./pages/search";
 
 
 
@@ -47,7 +48,7 @@ function App() {
             <Route path='/report' element={<ReportPage/>} />
             <Route path='/tasks' element={<TasksPage/>} />
             <Route path='/service' element={<ServicePage />} />
-            {/*<Route path='/search_customer' element={<SearchCustomerForm />} />*/}
+            <Route path='/search_customer' element={<SearchPage />} />
 
 
           </Routes>

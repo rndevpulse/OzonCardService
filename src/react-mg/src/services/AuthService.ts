@@ -1,7 +1,7 @@
 ﻿import { AxiosResponse } from "axios";
 import api from "../api"
-import {IAuth} from "../api/models/auth/IAuth";
-import {IUser} from "../api/models/user/IUser";
+import {IAuth} from "../models/auth/IAuth";
+import {IUser} from "../models/user/IUser";
 
 export default class AuthService {
     

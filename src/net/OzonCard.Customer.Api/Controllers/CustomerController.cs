@@ -41,7 +41,7 @@ public class CustomerController(
     }
 
     [HttpPost("[action]")]
-    public async Task<string> Category(CustomerUpdateCategoryCommand cmd, CancellationToken ct = default)
+    public async Task<IEnumerable<string>> Category(CustomerUpdateCategoryCommand cmd, CancellationToken ct = default)
     {
         var result = await Commands.Send(cmd, ct);
         return result;

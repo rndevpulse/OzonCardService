@@ -6,6 +6,5 @@ public record CustomerUpdateBalanceCommand(
     Guid Id,
     Guid OrganizationId,
     Guid ProgramId,
-    bool isIncrement,
     decimal Balance
 ) : ICommand<decimal>;

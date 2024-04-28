@@ -4,12 +4,12 @@ import { observer } from 'mobx-react-lite';
 import Select, {MultiValue, SingleValue} from 'react-select'
 import { useNavigate } from 'react-router-dom';
 import {Context} from "../../index";
-import {ICategory} from "../../api/models/org/ICategory";
-import {IProgram} from "../../api/models/org/IProgram";
-import {ICustomerOption} from "../../api/models/biz/ICustomerOption";
+import {ICategory} from "../../models/org/ICategory";
+import {IProgram} from "../../models/org/IProgram";
+import {ICustomerOption} from "../../models/biz/ICustomerOption";
 import BizService from "../../services/BizServise";
 import FileService from "../../services/FileServise";
-import {IOrganization} from "../../api/models/org/IOrganization";
+import {IOrganization} from "../../models/org/IOrganization";
 import "./index.css"
 
 
@@ -89,14 +89,14 @@ const UploadPage: FC = () => {
         const option = createCustomerOption(false)
         const response = await BizService.uploadCustomersToBiz(option)
         taskStore.onAddTask(response.data, 'Выгрузка: ' + fileName)
-        navigate(`/task`)
+        navigate(`/tasks`)
     }
 
     async function singleUploadToBiz() {
         const option = createCustomerOption(true)
         const response = await BizService.uploadCustomersToBiz(option)
         taskStore.onAddTask(response.data, 'Выгрузка: ' + fileName)
-        navigate(`/task`)
+        navigate(`/tasks`)
     }
 
     async function updateOrganization() {

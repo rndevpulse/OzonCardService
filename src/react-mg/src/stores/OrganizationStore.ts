@@ -1,6 +1,6 @@
 ﻿import { makeAutoObservable } from 'mobx';
 import OrganizationService from '../services/OrganizationServise';
-import {IOrganization} from "../api/models/org/IOrganization";
+import {IOrganization} from "../models/org/IOrganization";
 
 
 

@@ -1,7 +1,7 @@
 ﻿import { AxiosResponse } from "axios";
 import api from "../api";
-import {IOrganization} from "../api/models/org/IOrganization";
-import {IUser} from "../api/models/user/IUser";
+import {IOrganization} from "../models/org/IOrganization";
+import {IUser} from "../models/user/IUser";
 
 export default class OrganizationService {
     static async getMyOrganizations(): Promise<AxiosResponse<IOrganization[]>> {

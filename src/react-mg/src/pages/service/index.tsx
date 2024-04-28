@@ -3,11 +3,11 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite';
 import './index.css'
 import {Context} from "../../index";
-import {IUser} from "../../api/models/user/IUser";
+import {IUser} from "../../models/user/IUser";
 import AuthService from "../../services/AuthService";
 import OrganizationService from "../../services/OrganizationServise";
 import Select from "react-select";
-import {IOrganization} from "../../api/models/org/IOrganization";
+import {IOrganization} from "../../models/org/IOrganization";
 
 
 

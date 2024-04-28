@@ -9,18 +9,22 @@ namespace OzonCard.Common.Application.Customers.Handlers;
 
 public class CustomerUpdateCategoryCommandHandler(
     IOrganizationRepository orgRepository
-) : ICommandHandler<CustomerUpdateCategoryCommand, string>
+) : ICommandHandler<CustomerUpdateCategoryCommand, IEnumerable<string>>
 {
-    public async Task<string> Handle(CustomerUpdateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> Handle(CustomerUpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
-        if (org.Categories.All(x=>x.Id != request.CategoryId))
-            throw EntityNotFoundException.For<Category>(request.CategoryId, $"in org '{org.Name}'");
+        var selected = org.Categories
+            .Where(x => request.Categories.Contains(x.Id))
+            .ToArray();
+        // if (org.Categories.All(x=>x.Id != request.CategoryId))
+        //     throw EntityNotFoundException.For<Category>(request.CategoryId, $"in org '{org.Name}'");
         var client = new BizClient(org.Login, org.Password);
-        Func<Guid,Guid,Guid,CancellationToken,Task<bool>> action = request.isRemove
+        Func<Guid,Guid,Guid,CancellationToken,Task<bool>> action = request.IsRemove
             ? client.RemoveCategoryToCustomerAsync
             : client.AppendCategoryToCustomerAsync;
-        await action.Invoke(request.Id, request.OrganizationId, request.CategoryId, cancellationToken);
-        return org.Categories.First(x => x.Id == request.CategoryId).Name;
+        foreach (var category in selected)
+            await action.Invoke(request.Id, request.OrganizationId, category.Id, cancellationToken);
+        return selected.Select(x=>x.Name);
     }
 }
