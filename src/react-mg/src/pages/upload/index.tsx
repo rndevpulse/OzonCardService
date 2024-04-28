@@ -181,14 +181,14 @@ const UploadPage: FC = () => {
             </div>
 
 
-            <div>
-                <label htmlFor="file">Выбирите файл</label>
-                <input className="button"
-                       id='file'
-                       type='file'
-                       onChange={onChangeFile}
-                />
-
+            <div className="container-row-customer">
+                <label htmlFor="file">Выбирите файл
+                    <input className="button"
+                           id='file'
+                           type='file'
+                           onChange={onChangeFile}
+                    />
+                </label>
                 <button className="button"
                         onClick={uploadToBiz}>
                     Выгрузить
