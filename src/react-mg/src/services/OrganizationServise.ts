@@ -16,9 +16,6 @@ export default class OrganizationService {
         return api.post<IOrganization>(`/organization?login=${login}&password=${password}`)
     }
 
-    static async getUsers(): Promise<AxiosResponse<IUser[]>> {
-        return await api.get<IUser[]>(`/organization/members`)
-    }
 
     static async addUserForOrganization(organizationId: string, userId: string): Promise<AxiosResponse<IUser>> {
         return api.post<IUser>(`/organization/${organizationId}/members?userId=${userId}`)

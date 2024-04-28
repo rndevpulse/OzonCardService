@@ -48,27 +48,6 @@ public class OrganizationController : ApiController
         return Mapper.Map<OrganizationModel>(organization);
     }
     
-    
-    
-    [HttpGet("[action]"), Authorize(UserRole.Admin)]
-    public async Task<IEnumerable<UserModel>> Members(CancellationToken ct = default)
-    {
-        var organizations = await Queries.Send(new GetOrganizationsQuery(null), ct);
-        var result = organizations
-            .SelectMany(x => x.Members)
-            .DistinctBy(x => x.UserId)
-            .ToArray()
-            .Select(x => new UserModel(
-                x.UserId,
-                x.Name,
-                organizations
-                    .Where(o => o.Members.Any(m => m.UserId == x.UserId))
-                    .Select(o => new UserOrganizationModel(o.Id, o.Name))
-                    .ToArray())
-            );
-        return result;
-    }
-    
     [HttpPost("{organizationId:guid}/members"), Authorize(UserRole.Admin)]
     public async Task<UserModel> AddOrganization(Guid organizationId, Guid userId, CancellationToken ct = default)
     {

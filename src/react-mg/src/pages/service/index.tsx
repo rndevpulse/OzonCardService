@@ -58,10 +58,10 @@ const ServicePage: FC = () => {
     }
 
     async function getUsers() {
-        const response = await OrganizationService.getUsers()
+        const response = await AuthService.getUsers()
         console.log('users: ', response.data)
         setUsers(response.data)
-        //console.log('organizationStore.organizations.length = ', organizationStore.organizations.length)
+        console.log('organizationStore.organizations.length = ', organizationStore.organizations.length)
         if (organizationStore.organizations.length === 0) {
             await organizationStore.requestOrganizations()
         }
@@ -194,6 +194,8 @@ const ServicePage: FC = () => {
                         id="user_organization"
                         value={organization}
                         options={organizationStore.organizations}
+                        getOptionLabel={option => option.name}
+                        getOptionValue={option => option.id}
                         onChange={value=>setOrganization(value as IOrganization)}
                     />
                 </span>
@@ -251,9 +253,9 @@ const ServicePage: FC = () => {
     }
 
     return (
-        <div className="">
-            <h1 className="center form-group col-md-12">Сервис</h1>
-            <div className="center form-group col-md-12">
+        <div className="center form-group col-md-12">
+            <h1 >Сервис</h1>
+            <div>
                 <ul className="service">
                     {formNewUser()}
                     {formNewOrganization()}

@@ -39,7 +39,7 @@
 
 .react-tabs__tab:hover {
     /* background: rgba(50, 224, 196, 0.15);*/
-    border: 1px solid #4f855b;
+    /*border: 1px solid #4f855b;*/
 }
 
 .react-tabs__tab:first-child {
