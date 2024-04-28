@@ -99,8 +99,8 @@ const NavMenu: FC = () => {
             navigate(l.link)
     }
     const getLinks = () => {
-        links.push({ link: '/file', name: 'Файлы' })
-        links.push({ link: '/task', name: 'Задачи' })
+        links.push({ link: '/files', name: 'Файлы' })
+        links.push({ link: '/tasks', name: 'Задачи' })
         links.push({ link: '/logout', name: 'Выход' })
         return (
             <div className={StyledMenu.join(' ')} ref={node}>
