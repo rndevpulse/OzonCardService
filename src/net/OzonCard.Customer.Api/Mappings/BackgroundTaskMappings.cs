@@ -10,7 +10,7 @@ public class BackgroundTaskMappings : Profile
     public  BackgroundTaskMappings()
     {
         CreateMap<BackgroundTask,BackgroundTaskModel>()
-            .ForCtorParam(nameof(BackgroundTaskModel.Id), e=>e.MapFrom(x=>x.Id))
+            .ForCtorParam(nameof(BackgroundTaskModel.Id), e=>e.MapFrom(x=>x.Reference ?? x.Id))
             .ForCtorParam(nameof(BackgroundTaskModel.QueuedAt), e=>e.MapFrom(x=>x.QueuedAt))
             .ForCtorParam(nameof(BackgroundTaskModel.CompletedAt), e=>e.MapFrom(x=>x.CompletedAt))
             .ForCtorParam(nameof(BackgroundTaskModel.Status), e=>e.MapFrom(x=>x.Status.ToString()))

@@ -54,7 +54,7 @@ const TasksPage: FC = () => {
         }
     }
     const taskTitle = (savedTask: ISavedTask) => {
-        if (savedTask.task.status !== "Running") {
+        if (savedTask.task.status === "Running") {
             return (
                 <dt>
                     {savedTask.description}
@@ -82,9 +82,9 @@ const TasksPage: FC = () => {
     }
     
     return (
-        <div>
-            <h1 className="center form-group col-md-12">Мои задачи</h1>
-            <div className="center form-group col-md-12">
+        <div className="center form-group col-md-12">
+            <h1>Мои задачи</h1>
+            <div>
                 <ul>
                     {taskStore.tasks && taskStore.tasks.map(task => {
                         const classes = ['task']

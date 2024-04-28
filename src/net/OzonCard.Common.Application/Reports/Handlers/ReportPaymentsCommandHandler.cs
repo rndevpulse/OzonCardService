@@ -73,7 +73,7 @@ public class ReportPaymentsCommandHandler(
             );
         
         var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);
-        await fileRepository.AddAsync();
+        await fileRepository.AddAsync(saveFile);
         return saveFile;
     }
 }
