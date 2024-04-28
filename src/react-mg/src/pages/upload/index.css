@@ -3,17 +3,16 @@ input {
     text-align: center;
 }
 
-.container-row {
+.container-row-customer {
     display: flex;
     flex-wrap: inherit;
     justify-content: space-between;
-
+    padding-top: 1rem;
 }
-.container-row button{
+.container-row-customer button{
     max-height: 4rem;
 
 }
-.container-row label{
-    margin-left: 1rem;
-
+label{
+    margin-right: 1.5rem;
 }

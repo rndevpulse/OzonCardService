@@ -87,13 +87,6 @@ code {
   margin:initial;
 }
 
-i {
-  z-index: 0;
-  margin-left: 2rem;
-  margin-right: 2rem;
-  align-items: end;
-  cursor: pointer;
-}
 
 .button {
   margin: 16px;
@@ -129,4 +122,12 @@ i {
     background-image: url("../public/background.jpg");
   }
 
+}
+
+i {
+  z-index: 0;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  align-items: end;
+  cursor: pointer;
 }

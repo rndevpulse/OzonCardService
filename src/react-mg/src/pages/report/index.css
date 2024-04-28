@@ -1,22 +1,16 @@
 ﻿
 
-.Tabs {
-    width: auto;
-    height: auto;
-    min-height: 400px;
-    background: #ffffff;
-    margin: 1.5rem auto 1.5rem;
-    padding: 2rem 1rem;
-    color: black;
-    border-radius: 2rem;
-}
+
 
 .react-tabs {
     -webkit-tap-highlight-color: transparent;
+    margin: 1.5rem auto 1.5rem;
+    padding: 1rem 1rem;
 }
 
 .react-tabs__tab-list {
     width: auto;
+    max-height: 50px;
     margin: 0 auto 2rem;
     display: flex;
     align-items: center;
@@ -66,3 +60,12 @@
     display: block;
     text-align: center;
 }
+
+
+.react-datepicker-wrapper{
+    display: block;
+    padding: 0;
+    border: 0;
+
+}
+

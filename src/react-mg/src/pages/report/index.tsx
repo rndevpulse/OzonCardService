@@ -80,23 +80,22 @@ const ReportPage: FC = () => {
 
     function div_datePickers() {
         return (
-            <div className="div-datePicker">
-                <label htmlFor="dateFrom" >Период с </label>
+            <div >
+                <label htmlFor="formDateFrom" className="form-label">Период с</label>
                 <DatePicker
+                    id="formDateFrom"
                     dateFormat='dd MMMM yyyy'
                     selected={dateFrom}
                     selectsStart
                     startDate={dateFrom}
                     endDate={dateTo}
                     onChange={date => setDateFrom(date as Date)}
-                    id="dateFrom"
                     locale='ru'
                     placeholderText="Период с"
-                    
                 />
-                
-                <label htmlFor="dateTo" > по </label>
+                <label htmlFor="formDateTo" className="form-label">по</label>
                 <DatePicker
+                    id='formDateTo'
                     dateFormat='dd MMMM yyyy'
                     selected={dateTo}
                     selectsEnd
@@ -104,10 +103,11 @@ const ReportPage: FC = () => {
                     endDate={dateTo}
                     minDate={dateFrom}
                     onChange={date => setDateTo(date as Date)}
-                    name="dateTo"
                     locale='ru'
                     placeholderText="Период по"
                 />
+
+
             </div>
         )
     }
@@ -115,112 +115,89 @@ const ReportPage: FC = () => {
 
     function div_nameFileReport() {
         return (
-            <label htmlFor="name" >
-                Изменить наименование отчета (файла) для сохранения
+            <div>
+                <label htmlFor="reportName">Изменить наименование отчета (файла) для сохранения</label>
                 <input
-                    id='name'
-                    type='text'
+                    id="reportName"
+                    type="text"
                     value={fileName}
                     onChange={event => setFileName(event.target.value)}
                     placeholder={`Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`}
                 />
-            </label>
+
+            </div>
         )
     }
 
 
-    function div_SelectorCategories(){
+    function div_TabItem() {
         return (
             <div>
+                <label htmlFor="organizations">Организации</label>
+                <Select
+                    id='organizations'
+                    value={organization}
+                    options={organizationStore.organizations}
+                    getOptionLabel={option => option.name}
+                    getOptionValue={option => option.id}
+                    onChange={organization => onOrganizationSelectChange(organization as IOrganization)}
+                />
                 <label htmlFor="categories">Фильтр категорий</label>
                 <Select
-                    id= 'categories'
-                    onChange={values=> setCategories(values as ICategory[])}
+                    id='categories'
+                    onChange={values => setCategories(values as ICategory[])}
                     value={categories}
                     options={organization?.categories}
                     getOptionLabel={option => option.name}
                     getOptionValue={option => option.id}
                     placeholder='Категории'
-                    isMulti />
+                    isMulti
+                />
+
+                <label htmlFor="programs">Программы питания</label>
+                <Select
+                    id='programs'
+                    value={program}
+                    options={organization?.programs}
+                    getOptionLabel={option => option.name}
+                    getOptionValue={option => option.id}
+                    onChange={program => setProgram(program as IProgram)}
+                />
+                {div_datePickers()}
+                {div_nameFileReport()}
             </div>
         )
     }
-    
+
     useEffect(() => {
         firstInit();
     }, []);
 
 
-
-
     if (organizationStore.isLoading) {
         return <h1>Loading...</h1>
     }
-    
+
     return (
-        <div>
-            <h1 className="center form-group col-md-12">Отчеты</h1>
-            <div className="center form-group col-md-12">
-                <Tabs className="Tabs">
+        <div className="center form-group col-md-12">
+        <h1>Отчеты</h1>
+            <div>
+                <Tabs>
                     <TabList>
                         <Tab>Отчет за период</Tab>
                         <Tab>Отчет по операциям</Tab>
                     </TabList>
                     <TabPanel>
-                        <label htmlFor="organizations">Организации</label>
-                        <Select
-                            id= 'organizations'
-                            value={organization}
-                            options={organizationStore.organizations}
-                            getOptionLabel={option => option.name}
-                            getOptionValue={option => option.id}
-                            onChange={organization => onOrganizationSelectChange(organization as IOrganization)}
-                        />
-
-                        {div_SelectorCategories()}
-                        
-                        <label htmlFor="programs">Программы питания</label>
-                        <Select
-                            id= 'programs'
-                            value={program}
-                            options={organization?.programs}
-                            getOptionLabel={option => option.name}
-                            getOptionValue={option => option.id}
-                            onChange={program => setProgram(program as IProgram)}
-                        />
-                        {div_datePickers()}
-                        {div_nameFileReport()}
+                        {div_TabItem()}
                         <button className="button"
-                            onClick={reportFromBiz}>
+                                onClick={reportFromBiz}>
                             Выгрузить
                         </button>
                     </TabPanel>
                     <TabPanel>
-                        <label htmlFor="organizations">Организации</label>
-                        <Select
-                            id= 'organizations'
-                            value={organization}
-                            options={organizationStore.organizations}
-                            getOptionLabel={option => option.name}
-                            getOptionValue={option => option.id}
-                            onChange={organization => onOrganizationSelectChange(organization as IOrganization)}
-                        />
-
-                        {div_SelectorCategories()}
-                        
-                        <label htmlFor="programs">Программы питания</label>
-                        <Select
-                            id= 'programs'
-                            value={program}
-                            options={organization?.programs}
-                            getOptionLabel={option => option.name}
-                            getOptionValue={option => option.id}
-                            onChange={program => setProgram(program as IProgram)}
-                            />
-                        {div_datePickers()}
-                        {div_nameFileReport()}
+                        {div_TabItem()}
                         <button className="button"
-                            onClick={transactionsFromBiz}>
+                                onClick={transactionsFromBiz}>
                             Выгрузить
                         </button>
                     </TabPanel>

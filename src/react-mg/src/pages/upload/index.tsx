@@ -195,11 +195,11 @@ const UploadPage: FC = () => {
                 </button>
             </div>
 
-            <div className="container-row">
+            <div className="container-row-customer">
                 <div>
                     <label htmlFor="customerName">Сотрудник
                         <input
-                            id='customerName'
+                            id="customerName"
                             onChange={e => setCustomerName(e.target.value)}
                             value={customerName}
                             type='text'
@@ -208,7 +208,7 @@ const UploadPage: FC = () => {
                     </label>
                     <label htmlFor="customerCard">Карта сотрудника
                         <input
-                            id='customerCard'
+                            id="customerCard"
                             onChange={e => setCustomerCard(e.target.value)}
                             value={customerCard}
                             type='text'
