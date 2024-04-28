@@ -31,7 +31,8 @@ public class Organization : AggregateRoot
             member = new Member(id);
             _members.Add(member);
         }
-        member.Update(name);
+
+        member.Name = name;
         return member;
     }
 
