@@ -232,10 +232,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors(policy =>
 {
-    policy.WithOrigins("http://localhost:3000");
-    policy.AllowAnyMethod();
-    policy.AllowCredentials();
-    policy.AllowAnyHeader();
+    policy.WithOrigins(
+       builder.Configuration.GetValue<string>("origin", "http://localhost:3000")!
+    ).AllowAnyMethod()
+        .AllowCredentials()
+        .AllowAnyHeader();
 });
 app.UseRequestLocalization(options =>
 {
@@ -243,9 +244,9 @@ app.UseRequestLocalization(options =>
     options.SupportedCultures = cultures;
 });
 
-// app.UseStaticFiles();
+app.UseStaticFiles();
 
-// app.MapFallbackToFile("/index.html");
+app.MapFallbackToFile("/index.html");
 
 app.UseProblemDetails();
 
