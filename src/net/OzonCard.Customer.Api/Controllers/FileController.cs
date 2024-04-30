@@ -11,7 +11,7 @@ public class FileController(IFileManager fileManager) : ApiController
 {
 
     [HttpPost]
-    public async Task<object> Create(IFormFile file, CancellationToken ct = default)
+    public async Task<FileModel> Create(IFormFile file, CancellationToken ct = default)
     {
         await using var rs = file.OpenReadStream();
         var id = await fileManager.Save(rs, file.FileName);
@@ -24,7 +24,7 @@ public class FileController(IFileManager fileManager) : ApiController
     }
 
 
-    [HttpDelete]
+    [HttpPost("[action]/{url}")]
     public async Task Remove(string url, CancellationToken ct = default)
     {
         await Commands.Send(new RemoveFileCommand(url), ct);

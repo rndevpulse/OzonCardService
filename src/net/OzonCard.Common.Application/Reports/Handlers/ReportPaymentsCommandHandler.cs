@@ -33,8 +33,8 @@ public class ReportPaymentsCommandHandler(
         var report = await client.GetProgramReport(
             org.Id,
             request.ProgramId,
-            request.DateFrom,
-            request.DateTo.AddDays(-1),
+            request.DateFrom.LocalDateTime,
+            request.DateTo.LocalDateTime.AddDays(-1),
             cancellationToken
         );
         
@@ -52,7 +52,7 @@ public class ReportPaymentsCommandHandler(
                 && usedCategoryFilter.Any(c=>!rowReport.GuestCategoryNames.Contains(c)))
                 continue;
             
-            var customer = customers.FirstOrDefault(x => x.Id == rowReport.GuestId);
+            var customer = customers.FirstOrDefault(x => x.BizId == rowReport.GuestId);
             resultReport.Add(new ItemProgramReportTable()
             {
                 Name = rowReport.GuestName,
@@ -61,6 +61,7 @@ public class ReportPaymentsCommandHandler(
                 TabNumber = customer?.TabNumber ?? "",
                 Division = customer?.Division ?? "",
                 Position = customer?.Position ?? "",
+                PaidOrders = rowReport.PaidOrdersCount,
             });
         }
         

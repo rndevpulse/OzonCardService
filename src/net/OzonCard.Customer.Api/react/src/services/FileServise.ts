@@ -1,4 +1,4 @@
-﻿import axios, { AxiosResponse } from "axios";
+﻿import { AxiosResponse } from "axios";
 import api from "../api";
 import {IFile} from "../models/file/IFile";
 
@@ -11,7 +11,7 @@ export default class FileService {
     }
 
     static async removeFile(url: string): Promise<AxiosResponse<void>> {
-        return api.delete(`/file/${url}`)
+        return api.post(`/file/remove/${url}`)
     }
     
     static async downloadFile(url: string){

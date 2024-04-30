@@ -36,6 +36,7 @@ public class ReportController(
         var reference = Guid.NewGuid();
         cmd.SetTaskId(reference);
         cmd.SetUserId(UserClaimSid);
+        cmd.SetUser(UserClaimEmail ?? "Unknown");
         var task = queue.Enqueue(
             cmd,
             null);

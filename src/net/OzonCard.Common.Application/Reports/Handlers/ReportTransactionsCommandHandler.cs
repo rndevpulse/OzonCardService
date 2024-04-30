@@ -33,7 +33,10 @@ public class ReportTransactionsCommandHandler(
 
         var client = new BizClient(org.Login, org.Password);
         var transactions = await client.GetTransactionReport(
-            org.Id, request.DateFrom, request.DateTo, ct:cancellationToken);
+            org.Id, 
+            request.DateFrom.LocalDateTime, 
+            request.DateTo.LocalDateTime, 
+            ct:cancellationToken);
 
         var report = await GetProgramReportAsync(
             client, org, request, cancellationToken);
@@ -111,8 +114,8 @@ public class ReportTransactionsCommandHandler(
         var report = await client.GetProgramReport(
             org.Id,
             request.ProgramId,
-            request.DateFrom,
-            request.DateTo.AddDays(-1),
+            request.DateFrom.LocalDateTime,
+            request.DateTo.LocalDateTime.AddDays(-1),
             ct
         );
         var usedCategoryFilter = org.Categories

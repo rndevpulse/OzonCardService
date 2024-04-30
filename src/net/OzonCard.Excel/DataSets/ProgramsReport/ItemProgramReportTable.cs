@@ -10,4 +10,6 @@ public record ItemProgramReportTable
     [Name("Табельный номер гостя")] public string TabNumber { get; init; } = "";
     [Name("Подразделение")] public string Division { get; init; } = "";
     [Name("Должность")] public string Position { get; init; } = "";
+    
+    [Name("Оплачено заказов")] public decimal PaidOrders { get; set; }
 }

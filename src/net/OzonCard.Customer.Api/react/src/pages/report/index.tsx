@@ -53,8 +53,8 @@ const ReportPage: FC = () => {
              organizationId: organization!.id,
              categoriesId: categories.map(c=>c.id),
              programId: program!.id,
-             dateFrom: moment(dateFrom).toISOString(),
-             dateTo: moment(dateTo).add(1, 'days').toISOString(),
+             dateFrom: dateFrom,
+             dateTo: dateTo,
              title: fileName === ''
                  ? `Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`
                  : `${fileName} ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`,
