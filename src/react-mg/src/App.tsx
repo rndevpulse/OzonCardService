@@ -48,7 +48,7 @@ function App() {
             <Route path='/report' element={<ReportPage/>} />
             <Route path='/tasks' element={<TasksPage/>} />
             <Route path='/service' element={<ServicePage />} />
-            <Route path='/search_customer' element={<SearchPage />} />
+            <Route path='/search' element={<SearchPage />} />
 
 
           </Routes>

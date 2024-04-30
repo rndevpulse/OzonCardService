@@ -57,7 +57,7 @@ const NavMenu: FC = () => {
     function linkBasic() {
         if (loginStore.Roles.includes('Basic')) {
             links.push({ link: '/', name: 'Выгрузка' })
-            links.push({ link: '/search_customer', name: 'Поиск' })
+            links.push({ link: '/search', name: 'Поиск' })
             return (
                 <div>
                     <NavItem>

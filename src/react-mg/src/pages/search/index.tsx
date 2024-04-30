@@ -85,19 +85,19 @@ const SearchPage: FC = () => {
 
         if (isRemove) {
             const customerNewCategories = customers
-                .find(x => x.id === id)?.categories
+                .find(x => x.bizId === id)?.categories
                 .filter(x => !catNames.data.includes(x))
             const temp = customers
             console.log(customerNewCategories)
             if (customerNewCategories)
-                temp.find(x => x.id === id)!.categories = customerNewCategories
+                temp.find(x => x.bizId === id)!.categories = customerNewCategories
             console.log(temp)
             setCustomers(temp)
             window.confirm(`У пользователя "${name}" удалены указанные категории`)
         }
         else {
             const temp = customers
-            temp.find(x => x.id === id)?.categories.push(catNames.data)
+            temp.find(x => x.bizId === id)?.categories.push(catNames.data)
             console.log(temp)
             setCustomers(temp)
             window.confirm(`Пользователю "${name}" добавлены указанные категории`)
@@ -115,7 +115,7 @@ const SearchPage: FC = () => {
         })
         setIsLoadCustomers(true)
         window.confirm(`Пользователю "${name}" установлен баланс в размере ${balance} рублей`)
-        customers.find(x => x.id === id)!.balance = balance
+        customers.find(x => x.bizId === id)!.balance = balance
         // console.log(customers)
         setCustomers(customers)
         setIsLoadCustomers(false)
@@ -167,11 +167,11 @@ const SearchPage: FC = () => {
                 <label>Добавить или удалить выбранные категории</label>
                 <span>
                     <button className="button"
-                        onClick={() => ChangeCustomerCategory(customer.id, customer.name, false)}>
+                        onClick={() => ChangeCustomerCategory(customer.bizId, customer.name, false)}>
                         Добавить
                     </button>
                     <button className="button red"
-                        onClick={() => ChangeCustomerCategory(customer.id, customer.name, true)}>
+                        onClick={() => ChangeCustomerCategory(customer.bizId, customer.name, true)}>
                         Удалить
                     </button>
                 </span>
@@ -181,7 +181,7 @@ const SearchPage: FC = () => {
             return (<div>
                 <label>Изменение баланса</label>
                     <button className="button"
-                        onClick={() => ChangeCustomerBalance(customer.id, customer.name)}>
+                        onClick={() => ChangeCustomerBalance(customer.bizId, customer.name)}>
                         Установить
                     </button>
             </div>)
@@ -205,12 +205,11 @@ const SearchPage: FC = () => {
                                         <li>Количество заказов: {customer.orders}</li>
                                     </ul>
                                     <ul>
-                                        <li>Обновлено: {convertUTCDateToLocalDate(customer.timeUpdateBalance)}</li>
                                         <li>Категории:</li>
                                         {customer.categories && customer.categories.map(category => {
                                             return (<li>{category}</li>)
                                         })}
-                                        <li>Последний визит: {customer.lastVisit}</li>
+                                        <li>Последний визит: {getLastVisit(customer.lastVisit)}</li>
                                     </ul>
                                 </dd>
                                 
@@ -222,17 +221,13 @@ const SearchPage: FC = () => {
             </div>
         )
     }
-    function convertUTCDateToLocalDate(date_string: string): string {
-        date_string = date_string.replace('Z', '');
-        console.log("string",date_string);
-        const date = new Date(date_string);
-        console.log("date", date);
-
-        const newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
-        console.log("newDate", newDate);
-
-        return newDate.toLocaleDateString() + ' ' + newDate.toLocaleTimeString();
+    function getLastVisit(value:Date):string{
+        const dt = new Date(value)
+        if (dt.getFullYear() < 2000)
+            return "";
+        return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString()}`;
     }
+
     function div_OnlineParams() {
 
         return (
