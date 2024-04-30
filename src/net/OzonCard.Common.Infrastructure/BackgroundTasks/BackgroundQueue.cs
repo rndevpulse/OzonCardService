@@ -43,8 +43,11 @@ public class BackgroundQueue(IMemoryCache cache) : IBackgroundQueue
 
     public void UpdateProgress<TStatus>(Guid id, TStatus status)
     {
-        if (cache.Get<BackgroundTask>(GetKey(id)) is IProgress<TStatus> task)
-            task.Report(status);
+        if (cache.Get<BackgroundTask>(GetKey(id)) is not IProgress<TStatus> task) 
+            return;
+        task.Report(status);
+        cache.Set(GetKey(id), task, _cacheOptions);
+
     }
 
     // public TStatus? GetProgress<TStatus>(Guid id)

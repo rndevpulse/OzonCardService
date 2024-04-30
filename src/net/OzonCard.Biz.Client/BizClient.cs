@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using System.Web;
 using OzonCard.Biz.Client.Models.Customers;
 using OzonCard.Biz.Client.Models.Organizations;
@@ -156,9 +157,16 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
     public async Task<IEnumerable<TransactionsReportDto>> GetTransactionReport(Guid orgId, DateTime dateFrom,
         DateTime dateTo, TransactionType type = TransactionType.PayFromWallet, CancellationToken ct = default)
     {
-        var result = await _client.GetFromJsonAsync<IEnumerable<TransactionsReportDto>>(
-            $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
-            ct);
+        // var result = await _client.GetFromJsonAsync<IEnumerable<TransactionsReportDto>>(
+        //     $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
+        //     ct);
+        var response =
+            await _client.GetAsync(
+                $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
+                ct);
+        var content = await response.Content.ReadAsStreamAsync(ct);
+        var result =
+            await JsonSerializer.DeserializeAsync<IEnumerable<TransactionsReportDto>>(content, cancellationToken:ct);
         return result?.Where(x => x.TransactionType == type.ToString())
             ?? throw new Exception($"Cannot load transactions report");
 

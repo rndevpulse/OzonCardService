@@ -12,7 +12,7 @@ public class Organization : AggregateRoot
     public string Password { get; private set; }
     public IEnumerable<Member> Members => _members;
     public IEnumerable<Program> Programs => _programs;
-    public IEnumerable<Category> Categories => _categories;
+    public IEnumerable<Category> Categories => _categories.Where(x=>x.IsActive);
 
     
 
@@ -45,7 +45,6 @@ public class Organization : AggregateRoot
 
     public void UpdateCategories(IEnumerable<Category> categories)
     {
-        var updated = new List<Guid>();
         foreach (var category in categories)
         {
             var item = _categories.FirstOrDefault(x => x.Id == category.Id);
@@ -56,10 +55,7 @@ public class Organization : AggregateRoot
                 item.Name = category.Name;
                 item.IsActive = category.IsActive;
             }
-            updated.Add(category.Id);
         }
-        foreach (var category in _categories.Where(x => updated.Contains(x.Id)))
-            category.IsActive = false;
     }
     
     

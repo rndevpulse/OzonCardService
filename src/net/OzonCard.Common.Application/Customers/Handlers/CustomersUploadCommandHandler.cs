@@ -60,10 +60,12 @@ public class CustomersUploadCommandHandler(
                 //create if new customer
                 isNewCustomer = true;
                 customer = await TryCreateCustomer(client, org.Id, fileCustomer, cancellationToken);
-                if (customer == null) continue;
+                if (customer == null) 
+                    continue;
+                await customerRepository.AddAsync(customer);
             }
             //rename if enable option and not new customer
-            if (request.OptionsModel.Rename && !isNewCustomer)
+            if (request.Options.Rename && !isNewCustomer)
             {
                 customer.Name = fileCustomer.Name;
                 await client.UpdateCustomerAsync(customer.BizId, customer.Name, org.Id, cancellationToken);
@@ -80,7 +82,7 @@ public class CustomersUploadCommandHandler(
             //try create wallet
             await TryCreateWallet(client, customer, wallet, org.Id, program.Id, cancellationToken);
 
-            if (request.OptionsModel.RefreshBalance)
+            if (request.Options.RefreshBalance)
                 await TryRefreshBalance(client, customer.BizId, org.Id, wallet.Id, request.Balance, cancellationToken);
             
             result.Add(customer);
@@ -148,9 +150,11 @@ public class CustomersUploadCommandHandler(
             logger.LogError($"Customer {fileCustomer.Name} {fileCustomer.Card} not create in biz");
             return null;
         }
-        return new Customer(Guid.NewGuid(), 
+        var customer = new Customer(Guid.NewGuid(), 
             fileCustomer.Name, bizCustomer, orgId, true,
             string.Empty, fileCustomer.TabNumber, fileCustomer.Position, fileCustomer.Division
         );
+        customer.TryAddCard(fileCustomer.Card,fileCustomer.Card);
+        return customer;
     }
 }

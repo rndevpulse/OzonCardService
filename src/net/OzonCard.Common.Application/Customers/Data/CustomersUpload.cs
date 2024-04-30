@@ -11,7 +11,7 @@ public class CustomersUpload : MemberInfo
     public Guid ProgramId { get; set; }
     public string FileReport { get; set; } = "";
     public decimal Balance { get; set; }
-    public CustomersUploadOptions OptionsModel { get; set; } = new ();
+    public CustomersUploadOptions Options { get; set; } = new ();
     public SingleCustomerUpload? Customer { get; set; }
    
 }
