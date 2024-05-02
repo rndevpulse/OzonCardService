@@ -8,5 +8,4 @@ public class ItemTransactionsSummaryTable
     [Name("Количество дней питания")] public int CountDay { get; init; }
     [Name("Категории")] public string Categories { get; init; } = "";
     [Name("Подразделение")] public string Division { get; init; } = "";
-    [Name("Должность")] public string Position { get; init; } = "";
 }

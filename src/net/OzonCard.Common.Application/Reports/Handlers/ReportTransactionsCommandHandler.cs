@@ -54,13 +54,12 @@ public class ReportTransactionsCommandHandler(
                     Time = t.CreateDate.ToString("HH:mm.ss"),
                     Name = c.Name,
                     TabNumber = c.TabNumber ?? "",
-                    Division = c.Division ?? "",
-                    Position = c.Position ?? "",
+                    Division = string.IsNullOrEmpty(c.Position) ? c.Division : c.Position,
                     Categories = r.GuestCategoryNames,
                     Eating = GetNameEating(t.CreateDate),
                     Cards = r.GuestCardTrack,
                 })
-            .OrderBy(x=>x.Created)
+            .OrderByDescending(x=>x.Created)
             .ToList();
         var transactionsSummaryTable = transactionsReportTable
             .GroupBy(x => new { x.Name, x.Cards })
@@ -72,20 +71,18 @@ public class ReportTransactionsCommandHandler(
                     Name = x.Key.Name,
                     Categories = customer.Categories,
                     Division = customer.Division,
-                    Position = customer.Position,
                     CountDay = x.GroupBy(t => t.Date).Count()
                 };
             })
             .OrderBy(x=>x.Name)
             .ToList();
 
-
         excelManager.CreateWorkbook(
             Path.Combine(fileManager.GetDirectory(), $"{request.TaskId}.xlsx"),
             new TransactionReportDataSet(
                 transactionsReportTable, transactionsSummaryTable
             ).GetDataSet(),
-            $"{request.Title} в период с {request.DateFrom} по {request.DateTo.AddSeconds(-1)}"
+            $"{request.Title} в период с {request.DateFrom.Date} по {request.DateTo.Date.AddSeconds(-1)}"
         );
         
         var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);
