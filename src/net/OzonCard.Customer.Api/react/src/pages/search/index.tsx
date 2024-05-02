@@ -66,8 +66,9 @@ const SearchPage: FC = () => {
             card:customerCard,
             organizationId:organization!.id,
             programId: program!.id,
-            dateFrom: moment(dateFrom).toISOString(),
-            dateTo: moment(dateTo).add(1, 'days').toISOString(),
+            dateFrom: dateFrom,
+            dateTo: dateTo,
+            offset: -(new Date().getTimezoneOffset()),
             isOffline:false
         })
         //console.log('customers: ', response.data)
@@ -257,6 +258,7 @@ const SearchPage: FC = () => {
     }
     useEffect(() => {
         firstInit();
+        console.log("time offset", -(new Date().getTimezoneOffset()))
         //console.log('SearchCustomerForm useEffect');
     }, []);
     if (organizationStore.isLoading) {

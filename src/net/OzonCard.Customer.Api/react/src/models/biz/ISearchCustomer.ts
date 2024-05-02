@@ -4,7 +4,8 @@ export interface ISearchCustomer {
     card: string;
     organizationId: string;
     programId: string;
-    dateFrom: string;
-    dateTo: string;
+    dateFrom: Date;
+    dateTo: Date;
+    offset: number
     isOffline: boolean;
 }
