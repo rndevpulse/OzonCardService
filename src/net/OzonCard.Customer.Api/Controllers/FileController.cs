@@ -24,11 +24,11 @@ public class FileController(IFileManager fileManager) : ApiController
     }
 
 
-    [HttpPost("[action]/{url}")]
+    [HttpDelete("{url}")]
     public async Task Remove(string url, CancellationToken ct = default)
     {
         await Commands.Send(new RemoveFileCommand(url), ct);
-        await fileManager.RemoveFile(url);
+        fileManager.RemoveFile(url);
     }
 
     [HttpGet]

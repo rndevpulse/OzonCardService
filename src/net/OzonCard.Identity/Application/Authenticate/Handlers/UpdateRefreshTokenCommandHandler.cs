@@ -19,7 +19,8 @@ public class UpdateRefreshTokenCommandHandler(
 
     public async Task<Auth> Handle(UpdateRefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(_jwtGenerator.GetUserIdByToken(request.Access))
+        var userId = _jwtGenerator.GetUserIdByToken(request.Access);
+        var user = await _userManager.FindByIdAsync(userId)
             ?? throw new BusinessException("Access token is corrupted");
         if (!await _userManager.VerifyRefreshTokenAsync(user, request.Refresh, ""))
             throw new BusinessException("Refresh token is corrupted");

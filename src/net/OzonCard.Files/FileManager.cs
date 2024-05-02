@@ -21,25 +21,22 @@ public class FileManager : IFileManager
         return id;
     }
 
-    public async Task<bool> RemoveFile(Guid id, string format)
+    public bool RemoveFile(Guid id, string format)
     {
         try
         {
-            await Task.Run(() => File.Delete(
-                System.IO.Path.Combine(Path, string.Concat(id.ToString(), ".", format).TrimEnd())));
-
+            File.Delete(System.IO.Path.Combine(Path, string.Concat(id.ToString(), ".", format).TrimEnd()));
             return true;
         }
         catch (Exception)
         { return false; }
     }
-    public async Task<bool> RemoveFile(string file)
+    public bool RemoveFile(string file)
     {
         try
         {
-            await Task.Run(() => File.Delete(
-                System.IO.Path.Combine(Path, file).TrimEnd()));
-            return true;
+           File.Delete(System.IO.Path.Combine(Path, file).TrimEnd());
+           return true;
         }
         catch (Exception)
         { return false; }

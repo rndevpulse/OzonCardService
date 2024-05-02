@@ -8,8 +8,8 @@ export default class AuthService {
     static async login(email: string, password: string): Promise<AxiosResponse<IAuth>> {
         return api.post<IAuth>('/auth/login', {email, password})
     }
-    static async logout(token: string | undefined): Promise<void> {
-        return api.post('/auth/logout', { token })
+    static async logout(): Promise<void> {
+        return api.get('/auth/logout')
     }
     static async refresh(): Promise<AxiosResponse<IAuth>> {
         return api.get('/auth/refresh')

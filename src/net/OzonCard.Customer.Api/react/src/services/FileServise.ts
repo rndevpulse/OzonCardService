@@ -11,7 +11,7 @@ export default class FileService {
     }
 
     static async removeFile(url: string): Promise<AxiosResponse<void>> {
-        return api.post(`/file/remove/${url}`)
+        return api.delete(`/file/${url}`)
     }
     
     static async downloadFile(url: string){

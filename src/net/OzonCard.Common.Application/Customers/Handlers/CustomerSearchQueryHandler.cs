@@ -36,8 +36,8 @@ public class CustomerSearchQueryHandler(
             .Select(x=>new
             {
                 Card = x.Key,
-                LastVisitDate = x.Max(r=>r.TransactionCreateDate),
-                DaysGrant = x.GroupBy(t => t.TransactionCreateDate).Count()
+                LastVisitDate = x.Max(r=>r.CreateDate),
+                DaysGrant = x.GroupBy(t => t.CreateDate).Count()
             });
         var walletId = program.Wallets.First().Id;
         

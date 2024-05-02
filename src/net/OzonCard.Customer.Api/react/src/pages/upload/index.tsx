@@ -181,7 +181,7 @@ const UploadPage: FC = () => {
             </div>
 
 
-            <div className="container-row-customer">
+            <div className="container-row-customer container-row-wrap">
                 <label htmlFor="file">Выбирите файл
                     <input className="button"
                            id='file'

@@ -49,15 +49,15 @@ public class ReportTransactionsCommandHandler(
                 join c in customers on r.GuestId equals c.BizId
                 select new ItemTransactionsReportTable
                 {
-                    Created = t.TransactionCreateDate,
-                    Date = t.TransactionCreateDate.ToString("yyyy-MM-dd"),
-                    Time = t.TransactionCreateDate.ToString("HH:mm:ss"),
+                    Created = t.CreateDate,
+                    Date = t.CreateDate.ToString("yyyy-MM-dd"),
+                    Time = t.CreateDate.ToString("HH:mm.ss"),
                     Name = c.Name,
                     TabNumber = c.TabNumber ?? "",
                     Division = c.Division ?? "",
                     Position = c.Position ?? "",
                     Categories = r.GuestCategoryNames,
-                    Eating = GetNameEating(t.TransactionCreateDate),
+                    Eating = GetNameEating(t.CreateDate),
                     Cards = r.GuestCardTrack,
                 })
             .OrderBy(x=>x.Created)

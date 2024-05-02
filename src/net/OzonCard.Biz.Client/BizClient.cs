@@ -30,7 +30,8 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
         _password = password;
         _client = new HttpClient(this)
         {
-            BaseAddress = new Uri(_endpoint, UriKind.RelativeOrAbsolute)
+            BaseAddress = new Uri(_endpoint, UriKind.RelativeOrAbsolute),
+            Timeout = TimeSpan.FromMinutes(6),
         };
     }
     
@@ -157,16 +158,9 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
     public async Task<IEnumerable<TransactionsReportDto>> GetTransactionReport(Guid orgId, DateTime dateFrom,
         DateTime dateTo, TransactionType type = TransactionType.PayFromWallet, CancellationToken ct = default)
     {
-        // var result = await _client.GetFromJsonAsync<IEnumerable<TransactionsReportDto>>(
-        //     $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
-        //     ct);
-        var response =
-            await _client.GetAsync(
-                $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
-                ct);
-        var content = await response.Content.ReadAsStreamAsync(ct);
-        var result =
-            await JsonSerializer.DeserializeAsync<IEnumerable<TransactionsReportDto>>(content, cancellationToken:ct);
+        var result = await _client.GetFromJsonAsync<IEnumerable<TransactionsReportDto>>(
+            $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
+            ct);
         return result?.Where(x => x.TransactionType == type.ToString())
             ?? throw new Exception($"Cannot load transactions report");
 

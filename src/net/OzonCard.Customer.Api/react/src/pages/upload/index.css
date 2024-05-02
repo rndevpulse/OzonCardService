@@ -9,6 +9,9 @@ input {
     justify-content: space-between;
     padding-top: 1rem;
 }
+.container-row-wrap {
+    flex-wrap: wrap;
+}
 .container-row-customer button{
     max-height: 4rem;
 

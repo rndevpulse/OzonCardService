@@ -2,8 +2,10 @@
 
 public class TransactionsReportDto
 {
-    public DateTime TransactionCreateDate { get; set; }
-    public DateTime? OrderCreateDate { get; set; }
+    public string TransactionCreateDate { get; set; }  = "";
+
+    public DateTime CreateDate => DateTime.Parse(TransactionCreateDate);
+    // public DateTime OrderCreateDate { get; set; }
     public long? OrderNumber { get; set; }
     public decimal? TransactionSum { get; set; }
     public string TransactionType { get; set; } = "";

@@ -11,13 +11,12 @@ public class RemoveFileCommandHandler(
 {
     public async Task Handle(RemoveFileCommand request, CancellationToken cancellationToken)
     {
-        if (Guid.TryParse(
-                request.Url.Split(".").First().Trim(), 
-                out var id))
-        {
-            var file = await repository.GetItemAsync(id, cancellationToken);
-            repository.Remove(file);
-        }
-        throw EntityNotFoundException.For<SaveFile>(request.Url);
+        if (!Guid.TryParse(
+                request.Url.Split(".").First().Trim(),
+                out var id)
+            ) 
+            throw EntityNotFoundException.For<SaveFile>(request.Url);
+        var file = await repository.GetItemAsync(id, cancellationToken);
+        repository.Remove(file);
     }
 }
