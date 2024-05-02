@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using OzonCard.Excel.DataSets.Abstract;
 
 namespace OzonCard.Excel.DataSets.TransactionsReport;
 

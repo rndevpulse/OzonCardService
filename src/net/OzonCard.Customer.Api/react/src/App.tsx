@@ -2,10 +2,9 @@ import React, {useContext, useEffect} from 'react';
 import './App.css';
 import { observer } from 'mobx-react-lite';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 import {Context} from "./index";
 import NavMenu from './components/menu';
-
 import LoginPage  from './pages/login';
 import UploadPage from './pages/upload';
 import {Container} from "reactstrap";

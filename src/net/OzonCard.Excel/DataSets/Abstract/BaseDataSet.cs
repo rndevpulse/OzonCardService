@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Reflection;
 
-namespace OzonCard.Excel.DataSets;
+namespace OzonCard.Excel.DataSets.Abstract;
 
 public abstract class BaseDataSet
 {
