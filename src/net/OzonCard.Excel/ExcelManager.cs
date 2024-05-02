@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using ExcelDataReader;
 using Microsoft.Extensions.Logging;
+using OzonCard.Excel.DataSets.Abstract;
 using OzonCard.Excel.Models;
 
 namespace OzonCard.Excel;
@@ -173,16 +174,12 @@ public class ExcelManager(ILogger<ExcelManager> logger) : IExcelManager
         }
     }
 
-    // public void CreateWorkbook<T>(string filePath, IList<T> list, string? title = null, bool totalsRow = true)
-    // {
-    //     var dataset = ToDataSet<T>(list);
-    //     CreateWorkbook(filePath, dataset, title, totalsRow);
-    // }
 
-    public void CreateWorkbook(string filePath, DataSet dataset, string? title = null, bool totalsRow = true)
+    public void CreateWorkbook(string filePath, BaseDataSet baseDataSet, string? title = null)
     {
         try
         {
+            var dataset = baseDataSet.GetDataSet();
             if (dataset.Tables.Count == 0)
                 throw new ArgumentException("DataSet needs to have at least one DataTable", nameof(dataset));
             var workbook = new XLWorkbook();
@@ -208,17 +205,17 @@ public class ExcelManager(ILogger<ExcelManager> logger) : IExcelManager
                         worksheet.Cell(j + 2, i + 1).Value = dt.Rows[j][i] == DBNull.Value ? "" : dt.Rows[j][i];
                 }
 
-                if (totalsRow)
-                {
-                    table.ShowTotalsRow = true;
-                    table.Field(0).TotalsRowLabel = "Сотрудников";
-                    table.Field(1).TotalsRowFunction = XLTotalsRowFunction.Count;
-                    table.Column(2).SetDataType(XLDataType.Text);
-                    table.Column(2).Style.NumberFormat.SetFormat("@");
-                    table.Field(dt.Columns.Count - 5).TotalsRowLabel = "Количество обедов";
-                    table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
-                    table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
-                }
+                // if (totalsRow)
+                // {
+                //     table.ShowTotalsRow = true;
+                //     table.Field(0).TotalsRowLabel = "Сотрудников";
+                //     table.Field(1).TotalsRowFunction = XLTotalsRowFunction.Count;
+                //     table.Column(2).SetDataType(XLDataType.Text);
+                //     table.Column(2).Style.NumberFormat.SetFormat("@");
+                //     table.Field(dt.Columns.Count - 5).TotalsRowLabel = "Количество обедов";
+                //     table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
+                //     table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
+                // }
 
                 worksheet.Columns().AdjustToContents();
 

@@ -6,11 +6,12 @@ namespace OzonCard.Excel.DataSets.Abstract;
 public abstract class BaseDataSet
 {
     public abstract DataSet GetDataSet();
+    
     protected DataTable ToDataTable<T>(IList<T> list, string nameTable)
     {
         var elementType = typeof(T).GetProperties().Select(x => new KeyValuePair<PropertyInfo, string?>(
             x,
-            (x.GetCustomAttributes(true)?.FirstOrDefault() as CsvHelper.Configuration.Attributes.NameAttribute)?.Names
+            (x.GetCustomAttributes(true).FirstOrDefault() as CsvHelper.Configuration.Attributes.NameAttribute)?.Names
             ?.First()
         )).ToList();
         elementType.RemoveAll(x => x.Value == null);
@@ -44,4 +45,8 @@ public abstract class BaseDataSet
         
         return t;
     }
+    
+    
+    
+    
 }

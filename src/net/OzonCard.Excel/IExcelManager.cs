@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using OzonCard.Excel.DataSets.Abstract;
 using OzonCard.Excel.Models;
 
 namespace OzonCard.Excel;
@@ -7,5 +7,5 @@ public interface IExcelManager
 {
     IEnumerable<Customer> GetCustomers(string file);
     
-    void CreateWorkbook(string filePath, DataSet dataset, string? title = null, bool totalsRow = true);
+    void CreateWorkbook(string filePath, BaseDataSet baseDataSet, string? title = null);
 }

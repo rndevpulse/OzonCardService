@@ -49,14 +49,14 @@ public class ReportTransactionsCommandHandler(
                 join c in customers on r.GuestId equals c.BizId
                 select new ItemTransactionsReportTable
                 {
-                    Created = t.CreateDate,
-                    Date = t.CreateDate.ToString("yyyy-MM-dd"),
-                    Time = t.CreateDate.ToString("HH:mm.ss"),
+                    Created = t.CreateDate.ToUniversalTime(),
+                    Date = t.CreateDate.ToUniversalTime().ToString("yyyy-MM-dd"),
+                    Time = t.CreateDate.ToUniversalTime().ToString("HH:mm.ss"),
                     Name = c.Name,
                     TabNumber = c.TabNumber ?? "",
                     Division = string.IsNullOrEmpty(c.Position) ? c.Division : c.Position,
                     Categories = r.GuestCategoryNames,
-                    Eating = GetNameEating(t.CreateDate),
+                    Eating = GetNameEating(t.CreateDate.ToUniversalTime()),
                     Cards = r.GuestCardTrack,
                 })
             .OrderByDescending(x=>x.Created)
@@ -81,7 +81,7 @@ public class ReportTransactionsCommandHandler(
             Path.Combine(fileManager.GetDirectory(), $"{request.TaskId}.xlsx"),
             new TransactionReportDataSet(
                 transactionsReportTable, transactionsSummaryTable
-            ).GetDataSet(),
+            ),
             $"{request.Title} в период с {request.DateFrom.Date} по {request.DateTo.Date.AddSeconds(-1)}"
         );
         

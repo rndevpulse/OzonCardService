@@ -69,7 +69,7 @@ public class ReportPaymentsCommandHandler(
         
         excelManager.CreateWorkbook(
             Path.Combine(fileManager.GetDirectory(), $"{request.TaskId}.xlsx"),
-            new ProgramReportDataSet(resultReport.OrderBy(x=>x.Name)).GetDataSet(),
+            new ProgramReportDataSet(resultReport.OrderBy(x=>x.Name)),
             $"{request.Title} в период с {request.DateFrom} по {request.DateTo.AddSeconds(-1)}"
             );
         
