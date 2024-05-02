@@ -36,18 +36,18 @@ public class ReportTransactionsCommandHandler(
         var client = new BizClient(org.Login, org.Password);
         var offset = TimeSpan.FromMinutes(request.Offset);
         var from = request.DateFrom.ToOffset(offset).Date;
-        var to = request.DateTo.ToOffset(offset).Date;
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
         
         logger.LogInformation($"TransactionReport for '{org.Name}' from '{from}' to '{to}' offset '{request.Offset}'");
         
         var transactions = await client.GetTransactionReport(
             org.Id, 
             from, 
-            to, 
+            to.AddDays(-1), 
             ct:cancellationToken);
 
         var report = await GetProgramReportAsync(
-            client, org, request, cancellationToken);
+            client, org, request.CategoriesId, request.ProgramId, from, to, cancellationToken);
         var customers = await customerRepository.GetItemsAsync(
             org.Id, cancellationToken);
 
@@ -90,7 +90,7 @@ public class ReportTransactionsCommandHandler(
             new TransactionReportDataSet(
                 transactionsReportTable, transactionsSummaryTable
             ),
-            $"{request.Title} в период с {request.DateFrom.Date} по {request.DateTo.Date.AddSeconds(-1)}"
+            $"{request.Title} в период с {from} по {to.AddSeconds(-1)}"
         );
         
         var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);
@@ -99,20 +99,19 @@ public class ReportTransactionsCommandHandler(
     }
 
     private async Task<IEnumerable<ProgramReportDto>> GetProgramReportAsync(BizClient client,
-        Organization org,
-        ReportOption request, CancellationToken ct)
+        Organization org, IEnumerable<Guid> categoriesId,
+        Guid programId,
+        DateTime from, DateTime to, CancellationToken ct)
     {
-        var offset = TimeSpan.FromMinutes(request.Offset);
-
         var report = await client.GetProgramReport(
             org.Id,
-            request.ProgramId,
-            request.DateFrom.ToOffset(offset).Date,
-            request.DateTo.ToOffset(offset).Date.AddDays(1),
+            programId,
+            from,
+            to,
             ct
         );
         var usedCategoryFilter = org.Categories
-            .Where(x=>request.CategoriesId.Contains(x.Id))
+            .Where(x=>categoriesId.Contains(x.Id))
             .Select(x=>x.Name)
             .ToArray();
 

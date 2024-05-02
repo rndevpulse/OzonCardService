@@ -1,4 +1,5 @@
-﻿using OzonCard.Biz.Client;
+﻿using Microsoft.Extensions.Logging;
+using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Application.Customers.Queries;
 using OzonCard.Common.Application.Organizations;
@@ -10,7 +11,8 @@ namespace OzonCard.Common.Application.Customers.Handlers;
 
 public class CustomerSearchQueryHandler(
     IOrganizationRepository orgRepository,
-    ICustomerRepository customerRepository
+    ICustomerRepository customerRepository,
+    ILogger<CustomerSearchQueryHandler> logger
 ) : IQueryHandler<CustomersSearchQuery, IEnumerable<CustomerSearch>>
 {
     public async Task<IEnumerable<CustomerSearch>> Handle(CustomersSearchQuery request, CancellationToken cancellationToken)
@@ -24,14 +26,18 @@ public class CustomerSearchQueryHandler(
             return ArraySegment<CustomerSearch>.Empty;
         
         var client = new BizClient(org.Login, org.Password);
+        
+        var offset = TimeSpan.FromMinutes(request.Offset);
+        var from = request.DateFrom.ToOffset(offset).Date;
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
+        logger.LogInformation($"Search customer for '{org.Name}' from '{from}' to '{to}' offset '{request.Offset}'");
 
         var report = await client.GetProgramReport(
             org.Id, request.ProgramId, 
-            request.DateFrom, request.DateTo,
+            from, to,
             cancellationToken); 
         var transactions =
-            await client.GetTransactionReport(org.Id, request.DateFrom, request.DateTo, ct: cancellationToken);
-        var offset = TimeSpan.FromMinutes(180);
+            await client.GetTransactionReport(org.Id, from, to.AddDays(-1), ct: cancellationToken);
         var repTransactions = transactions
             .GroupBy(x => x.CardNumbers)
             .Select(x=>new
