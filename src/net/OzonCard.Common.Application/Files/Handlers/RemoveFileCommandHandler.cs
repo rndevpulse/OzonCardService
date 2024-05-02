@@ -7,9 +7,9 @@ namespace OzonCard.Common.Application.Files.Handlers;
 
 public class RemoveFileCommandHandler(
     IFileRepository repository
-) : ICommandHandler<RemoveFileCommand>
+) : ICommandHandler<RemoveFileCommand, SaveFile>
 {
-    public async Task Handle(RemoveFileCommand request, CancellationToken cancellationToken)
+    public async Task<SaveFile> Handle(RemoveFileCommand request, CancellationToken cancellationToken)
     {
         if (!Guid.TryParse(
                 request.Url.Split(".").First().Trim(),
@@ -18,5 +18,6 @@ public class RemoveFileCommandHandler(
             throw EntityNotFoundException.For<SaveFile>(request.Url);
         var file = await repository.GetItemAsync(id, cancellationToken);
         repository.Remove(file);
+        return file;
     }
 }

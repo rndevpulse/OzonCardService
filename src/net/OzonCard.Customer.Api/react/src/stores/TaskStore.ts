@@ -30,7 +30,7 @@ export default class TaskStore {
         }
         if (response.status === 200 && response.data)
         {
-            console.log("running tasks info", response.data)
+            // console.log("running tasks info", response.data)
 
             this.tasks = this.tasks.map((t,index) => {
                 if (t.task.status !== 'Running') { return t }
@@ -43,7 +43,7 @@ export default class TaskStore {
     }
 
     async setTaskInfo(taskId: string, index: number, updatedTasks: ITask[]){
-        console.log("setTaskInfo", taskId)
+        // console.log("setTaskInfo", taskId)
 
         const task = updatedTasks.find(t=>t.id === taskId);
         if (task)

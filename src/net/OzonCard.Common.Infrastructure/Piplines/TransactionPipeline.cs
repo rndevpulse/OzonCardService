@@ -26,13 +26,10 @@ namespace OzonCard.Common.Infrastructure.Piplines
                 {
                     var trx = _transactions.StartTransaction();
                     var result = await next();
-
                     if (trx)
                         await _transactions.CommitAsync(cancellationToken);
-
                     return result;
                 }
-
                 return await next();
             }
             catch (Exception e)

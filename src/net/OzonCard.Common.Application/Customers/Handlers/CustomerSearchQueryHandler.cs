@@ -31,13 +31,14 @@ public class CustomerSearchQueryHandler(
             cancellationToken); 
         var transactions =
             await client.GetTransactionReport(org.Id, request.DateFrom, request.DateTo, ct: cancellationToken);
+        var offset = TimeSpan.FromMinutes(180);
         var repTransactions = transactions
             .GroupBy(x => x.CardNumbers)
             .Select(x=>new
             {
                 Card = x.Key,
-                LastVisitDate = x.Max(r=>r.CreateDate),
-                DaysGrant = x.GroupBy(t => t.CreateDate).Count()
+                LastVisitDate = x.Max(r=>r.CreateDate(offset)),
+                DaysGrant = x.GroupBy(t => t.CreateDate(offset)).Count()
             });
         var walletId = program.Wallets.First().Id;
         
@@ -55,7 +56,7 @@ public class CustomerSearchQueryHandler(
                 rep?.PayFromWalletSum,
                 rep?.PaidOrdersCount,
                 bizCustomer.Categories.Select(cat => cat.Name),
-                shortRep?.LastVisitDate,
+                shortRep?.LastVisitDate.DateTime,
                 shortRep?.DaysGrant
             );
         })

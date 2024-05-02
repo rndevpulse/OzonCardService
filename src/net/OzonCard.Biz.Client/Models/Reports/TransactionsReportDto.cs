@@ -1,11 +1,10 @@
-﻿namespace OzonCard.Biz.Client.Models.Reports;
+﻿using System.Globalization;
+
+namespace OzonCard.Biz.Client.Models.Reports;
 
 public class TransactionsReportDto
 {
     public string TransactionCreateDate { get; set; }  = "";
-
-    public DateTime CreateDate => DateTime.Parse(TransactionCreateDate);
-    // public DateTime OrderCreateDate { get; set; }
     public long? OrderNumber { get; set; }
     public decimal? TransactionSum { get; set; }
     public string TransactionType { get; set; } = "";
@@ -16,4 +15,9 @@ public class TransactionsReportDto
     public Guid OrganizationId { get; set; }
     public string? ProgramName { get; set; }
     public string? MarketingCampaignName { get; set; }
+
+    public DateTimeOffset? CreateAt;
+
+    public DateTimeOffset CreateDate(TimeSpan offset) =>
+        CreateAt ??= new DateTimeOffset(DateTime.Parse(TransactionCreateDate), offset);
 }

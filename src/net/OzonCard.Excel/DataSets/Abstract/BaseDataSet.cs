@@ -1,19 +1,22 @@
 ﻿using System.Data;
 using System.Reflection;
+using CsvHelper.Configuration.Attributes;
 
 namespace OzonCard.Excel.DataSets.Abstract;
 
 public abstract class BaseDataSet
 {
     public abstract DataSet GetDataSet();
+    public abstract IEnumerable<TableTotalRow> TotalsRowByTable(string table);
     
     protected DataTable ToDataTable<T>(IList<T> list, string nameTable)
     {
-        var elementType = typeof(T).GetProperties().Select(x => new KeyValuePair<PropertyInfo, string?>(
-            x,
-            (x.GetCustomAttributes(true).FirstOrDefault() as CsvHelper.Configuration.Attributes.NameAttribute)?.Names
-            ?.First()
-        )).ToList();
+        var elementType = typeof(T).GetProperties().Select(x => 
+            new KeyValuePair<PropertyInfo, string?>(
+                x,
+                x.GetCustomAttribute<NameAttribute>(true)?.Names.First()
+                ))
+        .ToList();
         elementType.RemoveAll(x => x.Value == null);
         var t = new DataTable(nameTable);
 

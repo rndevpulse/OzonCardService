@@ -31,7 +31,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
         _client = new HttpClient(this)
         {
             BaseAddress = new Uri(_endpoint, UriKind.RelativeOrAbsolute),
-            Timeout = TimeSpan.FromMinutes(6),
+            Timeout = TimeSpan.FromSeconds(360),
         };
     }
     

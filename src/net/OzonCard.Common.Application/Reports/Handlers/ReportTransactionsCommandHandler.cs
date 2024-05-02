@@ -1,4 +1,5 @@
-﻿using OzonCard.Biz.Client;
+﻿using Microsoft.Extensions.Logging;
+using OzonCard.Biz.Client;
 using OzonCard.Biz.Client.Models.Reports;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
@@ -20,7 +21,8 @@ public class ReportTransactionsCommandHandler(
     IFileManager fileManager,
     IExcelManager excelManager,
     IOrganizationRepository orgRepository,
-    ICustomerRepository customerRepository
+    ICustomerRepository customerRepository,
+    ILogger<ReportTransactionsCommandHandler> logger
 ) : ICommandHandler<ReportTransactionsCommand, SaveFile>
 {
     public async Task<SaveFile> Handle(ReportTransactionsCommand request, CancellationToken cancellationToken)
@@ -30,12 +32,18 @@ public class ReportTransactionsCommandHandler(
             throw new BusinessException($"Organization for '{request.User}' not found");
         if (org.Programs.All(x => x.Id != request.ProgramId))
             throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
-
+        
         var client = new BizClient(org.Login, org.Password);
+        var offset = TimeSpan.FromMinutes(request.Offset);
+        var from = request.DateFrom.ToOffset(offset).Date;
+        var to = request.DateTo.ToOffset(offset).Date;
+        
+        logger.LogInformation($"TransactionReport for '{org.Name}' from '{from}' to '{to}' offset '{request.Offset}'");
+        
         var transactions = await client.GetTransactionReport(
             org.Id, 
-            request.DateFrom.LocalDateTime, 
-            request.DateTo.LocalDateTime, 
+            from, 
+            to, 
             ct:cancellationToken);
 
         var report = await GetProgramReportAsync(
@@ -49,14 +57,14 @@ public class ReportTransactionsCommandHandler(
                 join c in customers on r.GuestId equals c.BizId
                 select new ItemTransactionsReportTable
                 {
-                    Created = t.CreateDate.ToUniversalTime(),
-                    Date = t.CreateDate.ToUniversalTime().ToString("yyyy-MM-dd"),
-                    Time = t.CreateDate.ToUniversalTime().ToString("HH:mm.ss"),
+                    Created = t.CreateDate(offset).DateTime,
+                    Date = t.CreateDate(offset).ToString("yyyy-MM-dd"),
+                    Time = t.CreateDate(offset).ToString("HH:mm.ss"),
                     Name = c.Name,
                     TabNumber = c.TabNumber ?? "",
                     Division = string.IsNullOrEmpty(c.Position) ? c.Division : c.Position,
                     Categories = r.GuestCategoryNames,
-                    Eating = GetNameEating(t.CreateDate.ToUniversalTime()),
+                    Eating = TimeOfDay.GetNameEating(t.CreateDate(offset).DateTime),
                     Cards = r.GuestCardTrack,
                 })
             .OrderByDescending(x=>x.Created)
@@ -89,30 +97,18 @@ public class ReportTransactionsCommandHandler(
         await fileRepository.AddAsync(saveFile);
         return saveFile;
     }
-    
-    
-    private string GetNameEating(DateTime date)
-    {
-        var time = date.TimeOfDay;
-        if (time > new TimeSpan(3, 0, 0) && time <= new TimeSpan(11, 0, 0))
-            return "Завтрак";
-        if (time > new TimeSpan(11, 0, 0) && time <= new TimeSpan(16, 0, 0))
-            return "Обед";
-        if (time > new TimeSpan(16, 0, 0) && time <= new TimeSpan(21, 0, 0))
-            return "Ужин";
-        return "Ночной ужин";
-    }
-
 
     private async Task<IEnumerable<ProgramReportDto>> GetProgramReportAsync(BizClient client,
         Organization org,
         ReportOption request, CancellationToken ct)
     {
+        var offset = TimeSpan.FromMinutes(request.Offset);
+
         var report = await client.GetProgramReport(
             org.Id,
             request.ProgramId,
-            request.DateFrom.LocalDateTime,
-            request.DateTo.LocalDateTime.AddDays(-1),
+            request.DateFrom.ToOffset(offset).Date,
+            request.DateTo.ToOffset(offset).Date.AddDays(1),
             ct
         );
         var usedCategoryFilter = org.Categories

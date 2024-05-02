@@ -37,7 +37,7 @@ public class FileController(IFileManager fileManager) : ApiController
         var documents = await Queries.Send(
             new GetFilesQuery(UserClaimSid),
             ct);
-        return Mapper.Map<IEnumerable<FileModel>>(documents);
+        return Mapper.Map<IEnumerable<FileModel>>(documents.OrderByDescending(x=>x.CreatedAt));
     }
 
     [HttpGet("{url}")]

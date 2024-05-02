@@ -205,70 +205,28 @@ public class ExcelManager(ILogger<ExcelManager> logger) : IExcelManager
                         worksheet.Cell(j + 2, i + 1).Value = dt.Rows[j][i] == DBNull.Value ? "" : dt.Rows[j][i];
                 }
 
-                // if (totalsRow)
-                // {
-                //     table.ShowTotalsRow = true;
-                //     table.Field(0).TotalsRowLabel = "Сотрудников";
-                //     table.Field(1).TotalsRowFunction = XLTotalsRowFunction.Count;
-                //     table.Column(2).SetDataType(XLDataType.Text);
-                //     table.Column(2).Style.NumberFormat.SetFormat("@");
-                //     table.Field(dt.Columns.Count - 5).TotalsRowLabel = "Количество обедов";
-                //     table.Field(dt.Columns.Count - 1).TotalsRowFunction = XLTotalsRowFunction.Sum;
-                //     table.Field(dt.Columns.Count - 3).TotalsRowFunction = XLTotalsRowFunction.Sum;
-                // }
-
+                foreach (var totalRow in baseDataSet.TotalsRowByTable(dt.TableName))
+                {
+                    if (!table.ShowTotalsRow)
+                        table.ShowTotalsRow = true;
+                    if (!string.IsNullOrEmpty(totalRow.Label))
+                    {
+                        table.Field(totalRow.Field).TotalsRowLabel = totalRow.Label;
+                        continue;
+                    }
+                    table.Field(totalRow.Field).TotalsRowFunction = totalRow.Function;
+                }
                 worksheet.Columns().AdjustToContents();
-
             }
-
             logger.LogInformation("Save file report to {0}", filePath);
             workbook.SaveAs(filePath);
         }
-
         catch (Exception ex)
         {
             logger.LogError(ex, "Error on save report");
+            throw new Exception(" Ошибка при сохранении файла отчета");
         }
     }
 
-    // private static DataSet ToDataSet<T>(ICollection<T> list)
-    // {
-    //     var elementType = typeof(T).GetProperties().Select(x => new KeyValuePair<PropertyInfo, string?>(
-    //         x,
-    //         (x.GetCustomAttributes(true)?.FirstOrDefault() as CsvHelper.Configuration.Attributes.NameAttribute)?.Names
-    //         ?.First()
-    //     )).ToList();
-    //     elementType.RemoveAll(x => x.Value == null);
-    //     var ds = new DataSet();
-    //     var t = new DataTable("Отчет");
-    //     ds.Tables.Add(t);
-    //
-    //     var row = t.NewRow();
-    //     //add a column to table for each public property on T
-    //     foreach (var propInfo in elementType)
-    //     {
-    //         //Type ColType = Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType;
-    //         t.Columns.Add(propInfo.Key.Name, typeof(object)); //ColType);
-    //         row[propInfo.Key.Name] = propInfo.Value;
-    //     }
-    //
-    //     t.Rows.Add(row);
-    //
-    //     //go through each property on T and add each value to the table
-    //     foreach (T item in list)
-    //     {
-    //         row = t.NewRow();
-    //         foreach (var propInfo in elementType)
-    //             row[propInfo.Key.Name] = propInfo.Key.GetValue(item, null) ?? DBNull.Value;
-    //
-    //         t.Rows.Add(row);
-    //     }
-    //
-    //     var n = 13;
-    //     if (list.Count < n)
-    //         for (var i = 0; i < n; i++)
-    //             t.Rows.Add(t.NewRow());
-    //     return ds;
-    // }
 }
 

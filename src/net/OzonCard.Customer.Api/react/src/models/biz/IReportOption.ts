@@ -4,6 +4,7 @@ export interface IReportOption{
     categoriesId: string[]
     dateFrom: Date
     dateTo: Date
+    offset: number
     title: string
     isOffline:boolean
 }

@@ -1,4 +1,5 @@
-﻿using OzonCard.Biz.Client;
+﻿using Microsoft.Extensions.Logging;
+using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
@@ -18,7 +19,8 @@ public class ReportPaymentsCommandHandler(
     IFileManager fileManager,
     IExcelManager excelManager,
     IOrganizationRepository orgRepository,
-    ICustomerRepository customerRepository
+    ICustomerRepository customerRepository,
+    ILogger<ReportPaymentsCommandHandler> logger
 ) : ICommandHandler<ReportPaymentsCommand, SaveFile>
 {
     public async Task<SaveFile> Handle(ReportPaymentsCommand request, CancellationToken cancellationToken)
@@ -30,14 +32,17 @@ public class ReportPaymentsCommandHandler(
             throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
 
         var client = new BizClient(org.Login, org.Password);
+        var offset = TimeSpan.FromMinutes(request.Offset);
+        var from = request.DateFrom.ToOffset(offset).Date;
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
         var report = await client.GetProgramReport(
             org.Id,
             request.ProgramId,
-            request.DateFrom.LocalDateTime,
-            request.DateTo.LocalDateTime.AddDays(-1),
+            from,
+            to,
             cancellationToken
         );
-        
+        logger.LogInformation($"Payment report for '{org.Name}' from '{from}' to '{to}' returned '{report.Count()}' rows");
         var customers = await customerRepository.GetItemsAsync(org.Id, cancellationToken);
         var usedCategoryFilter = org.Categories
             .Where(x=>request.CategoriesId.Contains(x.Id))
@@ -47,6 +52,8 @@ public class ReportPaymentsCommandHandler(
         
         foreach (var rowReport in report)
         {
+            if (rowReport.PaidOrdersCount == 0)
+                continue;
             //include filter category
             if (usedCategoryFilter.Length != 0
                 && usedCategoryFilter.Any(c=>!rowReport.GuestCategoryNames.Contains(c)))
@@ -59,7 +66,6 @@ public class ReportPaymentsCommandHandler(
                 Card = rowReport.GuestCardTrack,
                 Categories = rowReport.GuestCategoryNames,
                 TabNumber = customer?.TabNumber ?? "",
-                Division = customer?.Division ?? "",
                 Position = customer?.Position ?? "",
                 PaidOrders = rowReport.PaidOrdersCount,
             });
@@ -70,7 +76,7 @@ public class ReportPaymentsCommandHandler(
         excelManager.CreateWorkbook(
             Path.Combine(fileManager.GetDirectory(), $"{request.TaskId}.xlsx"),
             new ProgramReportDataSet(resultReport.OrderBy(x=>x.Name)),
-            $"{request.Title} в период с {request.DateFrom} по {request.DateTo.AddSeconds(-1)}"
+            $"{request.Title} в период с {request.DateFrom.Date} по {request.DateTo.Date.AddSeconds(-1)}"
             );
         
         var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);

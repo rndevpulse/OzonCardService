@@ -34,6 +34,7 @@ const ReportPage: FC = () => {
     
 
     const onOrganizationSelectChange = (organization : IOrganization) => {
+        console.log(dateFrom.getTimezoneOffset())
         setOrganization(organization)
         setProgram(organization.programs[0])
         setCategories([])
@@ -55,6 +56,7 @@ const ReportPage: FC = () => {
              programId: program!.id,
              dateFrom: dateFrom,
              dateTo: dateTo,
+             offset: -(new Date().getTimezoneOffset()),
              title: fileName === ''
                  ? `Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`
                  : `${fileName} ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`,
@@ -170,6 +172,7 @@ const ReportPage: FC = () => {
     }
 
     useEffect(() => {
+        console.log("time offset", -(new Date().getTimezoneOffset()))
         firstInit();
     }, []);
 
