@@ -8,12 +8,12 @@ import Select from "react-select";
 import {Context} from "../../index";
 import {IOrganization} from "../../models/org/IOrganization";
 import {IProgram} from "../../models/org/IProgram";
-import {ICategory} from "../../models/org/ICategory";
 import BizService from "../../services/BizServise";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment";
 import './index.css'
 import {ISearchCustomerModel} from "../../models/biz/ISearchCustomerModel";
+import {Customer} from "../../components/customer";
+import {Loader} from "../../components/loader";
 registerLocale("ru", ru)
 
 
@@ -23,9 +23,7 @@ const SearchPage: FC = () => {
     const { organizationStore } = useContext(Context);
     const [organization, setOrganization] = useState<IOrganization>();
     const [program, setProgram] = useState<IProgram>();
-    const [selectedCategories, setSelectedCategories] = useState<ICategory[]>([]);
 
-    const [balance, setBalance] = useState<number>(0);
     const [customerName, setCustomerName] = useState('');
     const [customerCard, setCustomerCard] = useState('');
 
@@ -37,7 +35,6 @@ const SearchPage: FC = () => {
 
     const onOrganizationSelectChange = (organization: IOrganization) => {
         setOrganization(organization)
-        setSelectedCategories([])
         setProgram(organization?.programs[0])
     }
     async function firstInit() {
@@ -75,54 +72,47 @@ const SearchPage: FC = () => {
         setCustomers(response.data)
         setIsLoadCustomers(false)
     }
-    async function ChangeCustomerCategory(id: string, name: string, isRemove: boolean) {
-        const catNames= await BizService.ChangeCustomerBizCategory({
-            id:id,
-            organizationId: organization!.id,
-            categories: selectedCategories.map(category=> category.id),
-            isRemove
-        })
-        setIsLoadCustomers(true)
 
-        if (isRemove) {
-            const customerNewCategories = customers
-                .find(x => x.bizId === id)?.categories
-                .filter(x => !catNames.data.includes(x))
-            const temp = customers
-            console.log(customerNewCategories)
-            if (customerNewCategories)
-                temp.find(x => x.bizId === id)!.categories = customerNewCategories
-            console.log(temp)
-            setCustomers(temp)
-            window.confirm(`У пользователя "${name}" удалены указанные категории`)
-        }
-        else {
-            const temp = customers
-            temp.find(x => x.bizId === id)?.categories.push(catNames.data)
-            console.log(temp)
-            setCustomers(temp)
-            window.confirm(`Пользователю "${name}" добавлены указанные категории`)
-        }
-        setIsLoadCustomers(false)
-
-
-    }
-    async function ChangeCustomerBalance(id: string, name: string) {
-        await BizService.ChangeCustomerBizBalance({
-            id,
-            organizationId: organization!.id,
-            programId: program!.id,
-            balance
-        })
-        setIsLoadCustomers(true)
-        window.confirm(`Пользователю "${name}" установлен баланс в размере ${balance} рублей`)
-        customers.find(x => x.bizId === id)!.balance = balance
-        // console.log(customers)
-        setCustomers(customers)
-        setIsLoadCustomers(false)
+    async function OnChangeCustomer(customer: ISearchCustomerModel){
+        console.log("OnChangeCustomer", customer)
+        const temp = customers.filter(x=>x.id !== customer.id)
+        temp.push(customer)
+        setCustomers(temp)
     }
 
-    function div_datePickers() {
+    async function OnRemoveCustomer(customer: ISearchCustomerModel){
+        console.log("OnRemoveCustomer", customer)
+        const temp = customers.filter(x=>x.id !== customer.id)
+        setCustomers(temp)
+    }
+
+
+    function getCustomersInfo() {
+        //console.log("getCustomersInfo length", customersInfo.length)
+        if (isLoadCustomers) {
+            return <div className="center">Идет поиск...</div>
+        }
+        if (customers.length === 0) {
+            return <div className="center">Нет результатов</div>
+        }
+
+        return (
+            <ul className="center search form-group col-md-12">
+                {customers && customers.map(customer =>
+                    <Customer
+                        customer={customer}
+                        organization={organization as IOrganization}
+                        onChange={OnChangeCustomer}
+                        onRemove={OnRemoveCustomer}
+                        key={customer.id}
+                    />)}
+            </ul>
+        )
+    }
+
+
+    function div_OnlineParams() {
+
         return (
             <div className="div-datePicker">
                 <label htmlFor="dateFrom" >Период с </label>
@@ -138,7 +128,6 @@ const SearchPage: FC = () => {
                     placeholderText="Период с"
 
                 />
-
                 <label htmlFor="dateTo" > по </label>
                 <DatePicker
                     dateFormat='dd MMMM yyyy'
@@ -155,121 +144,21 @@ const SearchPage: FC = () => {
             </div>
         )
     }
-    function getCustomersInfo() {
-        //console.log("getCustomersInfo length", customersInfo.length)
-        if (isLoadCustomers) {
-            return <div className="center">Идет поиск...</div>
-        }
-        if (customers.length === 0) {
-            return <div className="center">Нет результатов</div>
-        }
-        const div_ChangeCustomerCategory = (customer:ISearchCustomerModel) => {
-            return (<div>
-                <label>Добавить или удалить выбранные категории</label>
-                <span>
-                    <button className="button"
-                        onClick={() => ChangeCustomerCategory(customer.bizId, customer.name, false)}>
-                        Добавить
-                    </button>
-                    <button className="button red"
-                        onClick={() => ChangeCustomerCategory(customer.bizId, customer.name, true)}>
-                        Удалить
-                    </button>
-                </span>
-            </div>)
-        }
-        const div_ChangeCustomerBalance = (customer: ISearchCustomerModel) => {
-            return (<div>
-                <label>Изменение баланса</label>
-                    <button className="button"
-                        onClick={() => ChangeCustomerBalance(customer.bizId, customer.name)}>
-                        Установить
-                    </button>
-            </div>)
-        }
-        return (
-            <div className="center search form-group col-md-12">
-                <ul>
-                    {customers && customers.map(customer => {
-                        return (
-                            <li key={customer.id}>
-                                <dt>{customer.name}</dt>
-                                {div_ChangeCustomerCategory(customer)}
-                                {div_ChangeCustomerBalance(customer)}
-                                <dd>
-                                    <ul>
-                                        <li>Организация: {customer.organization}</li>
-                                        <li>Карта: {customer.card}</li>
-                                        <li>Табельный №: {customer.tabNumber}</li>
-                                        <li>Баланс: {customer.balance}</li>
-                                        <li>Сумма заказов: {customer.sum}</li>
-                                        <li>Количество заказов: {customer.orders}</li>
-                                    </ul>
-                                    <ul>
-                                        <li>Категории:</li>
-                                        {customer.categories && customer.categories.map(category => {
-                                            return (<li>{category}</li>)
-                                        })}
-                                        <li>Последний визит: {getLastVisit(customer.lastVisit)}</li>
-                                    </ul>
-                                </dd>
-                                
-                            </li>
-                        )
-                    })}
-                </ul>
 
-            </div>
-        )
-    }
-    function getLastVisit(value:Date):string{
-        const dt = new Date(value)
-        if (dt.getFullYear() < 2000)
-            return "";
-        return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString()}`;
-    }
-
-    function div_OnlineParams() {
-
-        return (
-            <div>
-                <label htmlFor="categories">Укажите категорию для добавления/удаления у пользователя</label>
-                <Select
-                    id="categories"
-                    onChange={values => setSelectedCategories(values as ICategory[])}
-                    value={selectedCategories}
-                    options={organization?.categories}
-                    getOptionLabel={option => option.name}
-                    getOptionValue={option => option.id}
-                    placeholder='Категории'
-                    isMulti
-                />
-                { div_datePickers() }
-                <label htmlFor="balance">Баланс</label>
-                <input
-                    id='balance'
-                    onChange={e => setBalance(parseInt(e.target.value))}
-                    value={balance}
-                    type='number'
-                    placeholder='Баланс'
-                />
-            </div>
-        )
-    }
     useEffect(() => {
         firstInit();
         console.log("time offset", -(new Date().getTimezoneOffset()))
         //console.log('SearchCustomerForm useEffect');
     }, []);
     if (organizationStore.isLoading) {
-        return <h1>Loading...</h1>
+        return <Loader/>
     }
 
     return (
 
-        <div>
-            <h1 className="center form-group col-md-12">Поиск сотрудника</h1>
-            <div className="center form-group col-md-12">
+        <div  className="center form-group col-md-12">
+            <h1>Поиск сотрудника</h1>
+            <div >
                 <label htmlFor="organizations">Организации</label>
                 <Select
                     id='organizations'
@@ -313,10 +202,7 @@ const SearchPage: FC = () => {
 
             </div>
             {getCustomersInfo()}
-
-
         </div>
-
     );
 };
 

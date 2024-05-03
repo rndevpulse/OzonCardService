@@ -54,9 +54,9 @@ public class CustomerController(
         return result;
     }
 
-    [HttpDelete]
-    public async Task<CustomerModel> Remove(CustomerRemoveCommand cmd, CancellationToken ct = default) =>
-        Mapper.Map<CustomerModel>(await Commands.Send(cmd, ct));
+    [HttpDelete("{id}")]
+    public async Task<CustomerModel> Remove(Guid id, CancellationToken ct = default) =>
+        Mapper.Map<CustomerModel>(await Commands.Send(new CustomerRemoveCommand(id), ct));
     
     [HttpPut]
     public async Task<CustomerModel> Update(CustomerUpdateCommand cmd, CancellationToken ct = default) =>

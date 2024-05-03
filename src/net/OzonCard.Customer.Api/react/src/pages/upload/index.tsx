@@ -11,6 +11,7 @@ import BizService from "../../services/BizServise";
 import FileService from "../../services/FileServise";
 import {IOrganization} from "../../models/org/IOrganization";
 import "./index.css"
+import {Loader} from "../../components/loader";
 
 
 
@@ -109,7 +110,7 @@ const UploadPage: FC = () => {
         //console.log('UploadForm useEffect');
     }, []);
     if (organizationStore.isLoading) {
-        return <h1>Loading...</h1>
+        return <Loader/>
     }
     return (
 

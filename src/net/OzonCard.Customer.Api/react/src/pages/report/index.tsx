@@ -15,6 +15,7 @@ import BizService from "../../services/BizServise";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import './index.css'
+import {Loader} from "../../components/loader";
 registerLocale("ru", ru)
 
 const ReportPage: FC = () => {
@@ -178,7 +179,7 @@ const ReportPage: FC = () => {
 
 
     if (organizationStore.isLoading) {
-        return <h1>Loading...</h1>
+        return <Loader />
     }
 
     return (

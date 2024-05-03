@@ -13,6 +13,7 @@ import TasksPage from "./pages/tasks";
 import ServicePage from "./pages/service";
 import ReportPage from "./pages/report";
 import SearchPage from "./pages/search";
+import {Loader} from "./components/loader";
 
 
 
@@ -25,16 +26,13 @@ function App() {
       loginStore.checkAuth()
     }
   }, [])
+
   if (loginStore.IsLoading) {
-    return <div>Loading...</div>
+    return <Loader/>
   }
 
   if (!loginStore.IsAuth) {
-    return (
-        <div>
-          <LoginPage />
-        </div>
-    )
+    return <LoginPage />
   }
 
   return (
@@ -48,8 +46,6 @@ function App() {
             <Route path='/tasks' element={<TasksPage/>} />
             <Route path='/service' element={<ServicePage />} />
             <Route path='/search' element={<SearchPage />} />
-
-
           </Routes>
         </Container>
       </BrowserRouter>

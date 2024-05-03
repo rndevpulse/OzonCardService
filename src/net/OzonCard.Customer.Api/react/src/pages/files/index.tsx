@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import {IFile} from "../../models/file/IFile";
 import FileService from "../../services/FileServise";
 import './index.css'
+import {File} from "../../components/file";
 
 
 const FilesPage: FC = () => {
@@ -16,7 +17,6 @@ const FilesPage: FC = () => {
     }
     async function onRemoveFile(url: string) {
         //console.log('onRemoveFile: ', url)
-
         await FileService.removeFile(url);
         await getFiles();
     }
@@ -43,40 +43,23 @@ const FilesPage: FC = () => {
         getFiles()
     }, []);
 
-    //<h1>Мои документы</h1>
-
     if (files.length === 0) {
         return <h4 className="center">Файлов нет</h4>
     }
 
     return (
-        <div>
-            <h1 className="center form-group col-md-12">Мои документы</h1>
-            <div className="center form-group col-md-12">
+        <div className="center form-group col-md-12">
+            <h1>Мои документы</h1>
+            <div>
                 <ul>
-                    {files && files.map(file => {
-                        return (
-                            <li className="file" key={file.url}>
-                                <label>
-                                    <span onClick={(e) => downloadHandler(e, file.url, `${file.name}`)}>
-                                        {file.name} | {new Date(file.created).toLocaleString()}
-                                    </span>
-                                    <span>
-                                        <i className="material-icons blue-text"
-                                        onClick={(e) => downloadHandler(e, file.url, `${file.name}`)}>
-                                            file_download
-                                        </i>
-                                        <i className="material-icons red-text"
-                                            onClick={() => onRemoveFile(file.url)}>
-                                            delete
-                                        </i>
-                                    </span>
-                                </label>
-
-                            </li>
-                        );
-                    })
-                   }
+                    {files && files.map(file =>
+                        <File
+                            file={file}
+                            onRemove={onRemoveFile}
+                            onSave={downloadHandler}
+                            key={file.id}
+                        />
+                    )}
                 </ul>
             </div>
 

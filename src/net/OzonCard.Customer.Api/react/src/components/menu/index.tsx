@@ -63,7 +63,7 @@ const NavMenu: FC = () => {
                         <NavLink tag={Link} className="text-dark" to="/">Выгрузка</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink tag={Link} className="text-dark" to="/search_customer">Поиск</NavLink>
+                        <NavLink tag={Link} className="text-dark" to="/search">Поиск</NavLink>
                     </NavItem>
                 </div>
             )

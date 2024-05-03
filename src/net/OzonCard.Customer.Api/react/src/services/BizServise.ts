@@ -1,12 +1,14 @@
 ﻿import { AxiosResponse } from "axios";
 import api from "../api";
-import {ICustomerOption} from "../models/biz/ICustomerOption";
-import {IReportOption} from "../models/biz/IReportOption";
-import {ISearchCustomer} from "../models/biz/ISearchCustomer";
-import {ISearchCustomerModel} from "../models/biz/ISearchCustomerModel";
-import {IChangeCustomerCategory} from "../models/biz/IChangeCustomerCategory";
-import {IChangeCustomerBalance} from "../models/biz/IChangeCustomerBalance";
-import {ITask} from "../models/task/ITask";
+import {
+    IChangeCustomer,
+    IChangeCustomerBalance,
+    IChangeCustomerCategory,
+    ICustomerOption, IReportOption,
+    ISearchCustomer,
+    ISearchCustomerModel
+} from "../models/biz";
+import {ITask} from "../models/task";
 
 export default class BizService {
 
@@ -24,6 +26,14 @@ export default class BizService {
 
     static async ChangeCustomerBizBalance(option: IChangeCustomerBalance): Promise<AxiosResponse<number>> {
         return api.post<number>('/customer/balance', option)
+    }
+
+    static async RemoveCustomer(id: string): Promise<AxiosResponse<ISearchCustomerModel>> {
+        return api.delete<ISearchCustomerModel>(`/customer/${id}`)
+    }
+
+    static async UpdateCustomer(option:IChangeCustomer): Promise<AxiosResponse<ISearchCustomerModel>> {
+        return api.put<ISearchCustomerModel>('/customer', option)
     }
 
 

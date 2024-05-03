@@ -54,14 +54,16 @@ public class CustomerSearchQueryHandler(
             var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
             var shortRep = repTransactions.FirstOrDefault(r => r.Card == request.Card);
             return new CustomerSearch(
-                c.Id, c.BizId, c.Name,
+                c.Id, c.BizId, request.ProgramId, c.Name,
                 rep?.GuestCardTrack ?? string.Join(", ", c.Cards.Select(x => x.Number)),
                 c.TabNumber ?? "", c.Position ?? "", c.Division ?? "",
                 org.Name,
                 bizCustomer.WalletBalances.FirstOrDefault(w => w.Wallet.Id == walletId)?.Balance,
                 rep?.PayFromWalletSum,
                 rep?.PaidOrdersCount,
-                bizCustomer.Categories.Select(cat => cat.Name),
+                bizCustomer.Categories
+                    .Where(cat=>cat.IsActive)
+                    .Select(cat => new Category(cat.Id){Name =  cat.Name}),
                 shortRep?.LastVisitDate.DateTime,
                 shortRep?.DaysGrant
             );

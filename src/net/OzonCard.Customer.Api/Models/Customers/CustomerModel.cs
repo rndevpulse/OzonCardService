@@ -1,9 +1,12 @@
-﻿namespace OzonCard.Customer.Api.Models.Customers;
+﻿using OzonCard.Customer.Api.Models.Organizations;
+
+namespace OzonCard.Customer.Api.Models.Customers;
 
 public class CustomerModel
 {
     public Guid Id { get; set; }
     public Guid BizId { get; set; }
+    public Guid ProgramId { get; set; }
     public string Name { get; set; } = "";
     public string Card { get; set; } = "";
     public string TabNumber { get; set; } = "";
@@ -13,7 +16,7 @@ public class CustomerModel
     public decimal? Balance { get; set; }
     public decimal? Sum { get; set; }
     public decimal? Orders { get; set; }
-    public IEnumerable<string> Categories { get; set; } = new List<string>();
+    public IEnumerable<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
     public DateTime LastVisit { get; set; }
     public int? DaysGrant { get; set; }

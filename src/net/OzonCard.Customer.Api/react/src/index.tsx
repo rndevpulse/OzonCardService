@@ -5,6 +5,7 @@ import App from './App';
 import LoginStore from "./stores/LoginStore";
 import OrganizationStore from "./stores/OrganizationStore";
 import TaskStore from "./stores/TaskStore";
+import {ModalState} from "./context/modal";
 
 
 interface IStoreState {
@@ -26,7 +27,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <Context.Provider value={{ loginStore, organizationStore , taskStore}} >
-       <App />
+        <ModalState>
+            <App />
+        </ModalState>
     </Context.Provider>
 )
 
