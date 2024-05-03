@@ -29,7 +29,7 @@
     "react-tabs": "4.3.0",
     "reactstrap": "^9.0.2",
     "svgo": "^2.8.0",
-    "typescript": "^3.2.1"
+    "typescript": "3.9.10"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",

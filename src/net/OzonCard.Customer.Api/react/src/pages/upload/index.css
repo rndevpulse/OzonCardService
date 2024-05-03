@@ -1,0 +1,21 @@
+
+input {
+    text-align: center;
+}
+
+.container-row-customer {
+    display: flex;
+    flex-wrap: inherit;
+    justify-content: space-between;
+    padding-top: 1rem;
+}
+.container-row-wrap {
+    flex-wrap: wrap;
+}
+.container-row-customer button{
+    max-height: 4rem;
+
+}
+label{
+    margin-right: 1.5rem;
+}
