@@ -122,7 +122,7 @@ const SearchCustomerForm: FC = () => {
                 new_arr.find(x => x.id === id)!.categories = customer_categories
             console.log(new_arr)
             setCustomersInfo(new_arr)
-            confirm(`У пользователя "${name}" удалена указанная категория`)
+            window.confirm(`У пользователя "${name}" удалена указанная категория`)
         }
         else {
             const new_arr = customersInfo
@@ -130,15 +130,14 @@ const SearchCustomerForm: FC = () => {
             
             console.log(new_arr)
             setCustomersInfo(new_arr)
-            confirm(`Пользователю "${name}" добавлена указанная категория`)
+            window.confirm(`Пользователю "${name}" добавлена указанная категория`)
         }
         setIsLoadCustomers(false)
 
 
     }
     async function ChangeCustomerBalance(id: string, name: string, isIncrement: boolean) {
-
-        const response = await BizService.ChangeCustomerBizBalance({
+        await BizService.ChangeCustomerBizBalance({
             id,
             organizationId,
             corporateNutritionId,
@@ -147,15 +146,21 @@ const SearchCustomerForm: FC = () => {
         })
         setIsLoadCustomers(true)
         if (isIncrement)
-            confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
+            window.confirm(`Пользователю "${name}" зачислено ${balance} рублей`)
         else
-            confirm(`У пользователя "${name}" списано ${balance} рублей`)
-        customersInfo.find(x => x.id === id)!.balanse = response.data
+            window.confirm(`У пользователя "${name}" списано ${balance} рублей`)
+        const old_summ = customersInfo.find(x => x.id === id)!.balance
+       
+        customersInfo.find(x => x.id === id)!.balance = isIncrement
+            ? old_summ + balance
+            : old_summ - balance
 
+        console.log(customersInfo)
+        setCustomersInfo(customersInfo)
         setIsLoadCustomers(false)
 
-
     }
+
     function div_datePickers() {
         return (
             <div className="div-datePicker">
@@ -245,15 +250,17 @@ const SearchCustomerForm: FC = () => {
                                         <li>Организация: {customer.organization}</li>
                                         <li>Карта: {customer.card}</li>
                                         <li>Табельный №: {customer.tabNumber}</li>
-                                        <li>Баланс: {customer.balanse}</li>
+                                        <li>Баланс: {customer.balance}</li>
                                         <li>Сумма заказов: {customer.sum}</li>
                                         <li>Количество заказов: {customer.orders}</li>
                                     </ul>
                                     <ul>
+                                        <li>Обновлено: {convertUTCDateToLocalDate(customer.timeUpdateBalance)}</li>
                                         <li>Категории:</li>
                                         {customer.categories && customer.categories.map(category => {
                                             return (<li>{category}</li>)
                                         })}
+                                        <li>Последний визит: {customer.lastVisit}</li>
                                     </ul>
                                 </dd>
                                 
@@ -265,7 +272,17 @@ const SearchCustomerForm: FC = () => {
             </div>
         )
     }
+    function convertUTCDateToLocalDate(date_string: string): string {
+        date_string = date_string.replace('Z', '');
+        console.log("string",date_string);
+        var date = new Date(date_string);
+        console.log("date", date);
 
+        var newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+        console.log("newDate", newDate);
+
+        return newDate.toLocaleDateString() + ' ' + newDate.toLocaleTimeString();
+    }
     function div_OnlineParametrs() {
         if (isOffline)
             return;

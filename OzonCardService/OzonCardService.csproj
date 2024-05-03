@@ -9,12 +9,12 @@
 	  <TypeScriptJSXEmit>react-jsx</TypeScriptJSXEmit>
 	  <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 	  <TypeScriptLib>es5,es2015,es2016,es2018,dom</TypeScriptLib>
-	  <AssemblyVersion>3.3.0</AssemblyVersion>
-	  <FileVersion>3.3.0</FileVersion>
-	  <!--
-	  <TypeScriptCompileOnSaveEnabled>true</TypeScriptCompileOnSaveEnabled>
-	  <TypeScriptEnableIncrementalMSBuild>true</TypeScriptEnableIncrementalMSBuild>
-	  -->
+	  <AssemblyVersion>4.0.0</AssemblyVersion>
+	  <FileVersion>4.0.0</FileVersion>
+	  
+	  <!--<TypeScriptCompileOnSaveEnabled>false</TypeScriptCompileOnSaveEnabled>-->
+	  <TypeScriptEnableIncrementalMSBuild>false</TypeScriptEnableIncrementalMSBuild>
+	  
   </PropertyGroup>
 
   <ItemGroup>
@@ -54,35 +54,20 @@
     <None Remove="FileReports\**" />
     <None Remove="logs\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    <None Remove="ClientApp\build\**" />
+    <Compile Remove="ClientApp\build\**" />
+    <EmbeddedResource Remove="ClientApp\build\**" />
+    <Content Remove="ClientApp\build\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Remove="ClientApp\node_modules\**" />
+	  <TypeScriptCompile Remove="*" />
+      <TypeScriptCompile Remove="$(SpaRoot)**" />
+	  <TypeScriptCompile Remove="ClientApp\node_modules\**" />
+	  
+	  <TypeScriptCompile Remove="node_modules\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="ClientApp\src\components\FilesForm.tsx" />
-    <None Remove="ClientApp\src\components\ReportForm.tsx" />
-    <None Remove="ClientApp\src\components\SearchCustomerForm.tsx" />
-    <None Remove="ClientApp\src\components\ServiceForm.tsx" />
-    <None Remove="ClientApp\src\components\TasksForm.tsx" />
-    <None Remove="ClientApp\src\http\index.ts" />
-    <None Remove="ClientApp\src\index.ts" />
-    <None Remove="ClientApp\src\models\IAdvancedOptionsResponse.ts" />
-    <None Remove="ClientApp\src\models\ICategoryResponse.ts" />
-    <None Remove="ClientApp\src\models\IChangeCustomerBalance.ts" />
-    <None Remove="ClientApp\src\models\IChangeCustomerCategory.ts" />
-    <None Remove="ClientApp\src\models\IFileResponse.ts" />
-    <None Remove="ClientApp\src\models\IInfoSearhCustomerResponse.ts" />
-    <None Remove="ClientApp\src\models\IOrganizationResponse.ts" />
-    <None Remove="ClientApp\src\models\ISearchCustomer.ts" />
-    <None Remove="ClientApp\src\services\BizServise.ts" />
-    <None Remove="ClientApp\src\services\FileServise.ts" />
-    <None Remove="ClientApp\src\services\OrganizationServise.ts" />
-    <None Remove="ClientApp\src\services\TaskService.ts" />
-    <None Remove="ClientApp\src\services\UserService.ts" />
-   
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OzonCard.BizClient\OzonCard.BizClient.csproj" />
@@ -91,7 +76,7 @@
 	<ProjectReference Include="..\OzonCard.Excel\OzonCard.Excel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\SearchCustomerForm.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\TasksForm.tsx">
       <SubType>Code</SubType>
@@ -129,12 +114,17 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\services\OrganizationServise.ts" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <None Update="ClientApp\public\logo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="ClientApp\build\asset-manifest.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\build\manifest.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -163,6 +153,6 @@
     </ItemGroup>
   </Target>
 
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" clientapp_4package_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" clientapp_4package_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

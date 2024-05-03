@@ -18,12 +18,15 @@ namespace OzonCardService.Helpers
 				.ForMember(m => m.Url, opt => opt.MapFrom(b => b.Id + "." + b.Format));
 
 			CreateMap<Customer, InfoSearchCustomer_dto>()
+				.ForMember(m=>m.Id, opt=>opt.MapFrom(b=>b.Id))
 				.ForMember(m => m.Card, opt => opt.MapFrom(b => b.Cards.First(x => x.IsActive).Number))
 				.ForMember(m => m.Organization, opt => opt.MapFrom(b => b.Organization.Name))
 				.ForMember(m => m.TabNumber, opt => opt.MapFrom(b => b.TabNumber))
-				.ForMember(m => m.Balanse, opt => opt.MapFrom(b => b.Wallets.First().Balance))
-				.ForMember(m => m.Categories, opt => opt.MapFrom(b => b.Categories.Select(x => x.Category.Name)))
+				.ForMember(m => m.Balance, opt => opt.MapFrom(b => b.Wallets.First().Balance))
+				.ForMember(m => m.Categories, opt => opt.MapFrom(b => b.Categories.Where(x=>x.Category.isActive).Select(x => x.Category.Name)))
+				.ForMember(m=>m.TimeUpdateBalance, opt=>opt.MapFrom(b=> b.Wallets.First().Update))
 				;
+			CreateMap<CustomerReport, ReportCN_dto>();
 		}
 	}
 }

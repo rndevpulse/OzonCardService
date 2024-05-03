@@ -4,19 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { Context } from '..';
 import { ICorporateNutritionResponse } from '../models/ICorporateNutritionResponse';
 import { observer } from 'mobx-react-lite';
-
-
 import DatePicker, { registerLocale, setDefaultLocale }  from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ru from "date-fns/locale/ru";
-registerLocale("ru", ru);
 import { IReportOptionResponse } from '../models/IReportOptionResponse';
 import { ICategoryResponse } from '../models/ICategoryResponse';
 import * as moment from 'moment';
 import BizService from '../services/BizServise';
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import '../css/ReportForm.css'
+import Select from "react-select";
+registerLocale("ru", ru);
 
 const ReportForm: FC = () => {
     const navigate = useNavigate()
@@ -26,14 +25,17 @@ const ReportForm: FC = () => {
     const [organizationId, setOrganizationId] = useState('');
     const [corporateNutritions, setCorporateNutritions] = useState<ICorporateNutritionResponse[]>([]);
     const [corporateNutritionId, setCorporateNutritionId] = useState('');
-    const [categoryId, setCategoryId] = useState('');
+    
     const [categories, setCategories] = useState<ICategoryResponse[]>([]);
 
+
+    
     const [fileName, setFileName] = useState('');
     const [dateFrom, setDateFrom] = useState<Date>(new Date(new Date().setDate(1)));
     const [dateTo, setDateTo] = useState<Date>(new Date());
     
-    const [isFilter, setIsFilter] = useState(true);
+    const [isFilter, setIsFilter] = useState(false);
+    const [isOffline, setIsOffline] = useState(false);
 
 
     const CustomSelect = ({ id, value, options, onChange }) => {
@@ -52,7 +54,7 @@ const ReportForm: FC = () => {
 
         setOrganizationId(organization?.id ?? '')
         setCategories(organization?.categories ?? [])
-        setCategoryId(organization?.categories[0]?.id ?? '')
+        setCurrentCategories([]);
         setCorporateNutritions(organization?.corporateNutritions ?? [])
         setCorporateNutritionId(organization?.corporateNutritions[0]?.id ?? '')
     }
@@ -64,7 +66,7 @@ const ReportForm: FC = () => {
         setCorporateNutritionId(organizationstore.organizations[0]?.corporateNutritions[0]?.id ?? '')
 
         setCategories(organizationstore.organizations[0]?.categories ?? []);
-        setCategoryId(organizationstore.organizations[0]?.categories[0]?.id ?? '');
+        setCurrentCategories([]);
 
         organizationstore.setLoading(false);
     }
@@ -72,13 +74,14 @@ const ReportForm: FC = () => {
     async function reportFromBiz() {
         const option: IReportOptionResponse = {
             organizationId: organizationId,
-            categoryId: isFilter ? categoryId : "00000000-0000-0000-0000-000000000000",
+            categoriesId: currentCategories,
             corporateNutritionId: corporateNutritionId,
             dateFrom: (moment(dateFrom)).format("YYYY-MM-DD"),
             dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
             title: fileName === ''
                 ? `Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`
-                : fileName
+                : `${fileName} ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`,
+            isOffline
         }
         const response = await BizService.ReportFromBiz(option)
         taskstore.onAddTask(response.data, 'Отчет: ' + option.title)
@@ -87,13 +90,14 @@ const ReportForm: FC = () => {
     async function transactionsFromBiz() {
         const option: IReportOptionResponse = {
             organizationId: organizationId,
-            categoryId: isFilter ? categoryId : "00000000-0000-0000-0000-000000000000",
+            categoriesId: currentCategories,
             corporateNutritionId: corporateNutritionId,
             dateFrom: (moment(dateFrom)).format("YYYY-MM-DD"),
             dateTo: (moment(dateTo)).add(1, 'days').format("YYYY-MM-DD"),
             title: fileName === ''
                 ? `Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`
-                : fileName
+                : `${fileName} ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`,
+            isOffline
         }
         const response = await BizService.TransactionsFromBiz(option)
         taskstore.onAddTask(response.data, 'Отчет: ' + option.title)
@@ -134,6 +138,16 @@ const ReportForm: FC = () => {
             </div>
         )
     }
+
+    const [currentCategories, setCurrentCategories] = useState<string[]>([]);
+    const getValue = () => {
+        return currentCategories
+            ? categories.filter(c => currentCategories.indexOf(c.id) >= 0)
+            : []
+    }
+    const onChangeCategory = (newCategory: any) => {
+        setCurrentCategories(newCategory.map(c => c.id))
+    }
     function div_nameFileReport() {
         return (
             <label htmlFor="name" >
@@ -150,6 +164,33 @@ const ReportForm: FC = () => {
     }
 
 
+    function div_SelectorCategories(){
+        return (
+            <div>
+                <label htmlFor="allCategories" className="label-checkbox-category">
+                    <input id='allCategories' type='checkbox' checked={isFilter}
+                           onChange={() => setIsFilter(!isFilter)}
+                    />
+                    Учитывать фильтр категорий
+                    <i className="check_box material-icons red-text">
+                        {isFilter ? 'check_box' : 'check_box_outline_blank'}
+                    </i>
+                </label>
+
+                <label htmlFor="categories">Фильтр категорий</label>
+                <Select
+                    id= 'categories'
+                    onChange={onChangeCategory}
+                    value={getValue()}
+                    options={categories}
+                    getOptionLabel={option => option.name}
+                    getOptionValue={option => option.id}
+                    placeholder='Категории'
+                    isMulti />
+            </div>
+        )
+    }
+    
     useEffect(() => {
         firstInit();
     }, []);
@@ -165,6 +206,15 @@ const ReportForm: FC = () => {
         <div>
             <h1 className="center form-group col-md-12">Отчеты</h1>
             <div className="center form-group col-md-12">
+                <label htmlFor="isOffline" className="label-checkbox-category">
+                    <input id='isOffline' type='checkbox' checked={isOffline}
+                        onChange={() => setIsOffline(!isOffline)}
+                    />
+                    Работать в оффлайн режиме
+                    <i className="check_box material-icons red-text">
+                        {isOffline ? 'check_box' : 'check_box_outline_blank'}
+                    </i>
+                </label>
                 <Tabs className="Tabs">
                     <TabList>
                         <Tab>Отчет за период</Tab>
@@ -175,18 +225,8 @@ const ReportForm: FC = () => {
                         <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                             onChange={onOrganizationSelectChange} />
 
-                        <label htmlFor="allCategories" className="label-checkbox-category">
-                            <input id='allCategories' type='checkbox' checked={isFilter}
-                                onChange={() => setIsFilter(!isFilter)}
-                            />
-                            Учитывать фильтр категорий
-                            <i className="check_box material-icons red-text">
-                                {isFilter ? 'check_box' : 'check_box_outline_blank'}
-                            </i>
-                        </label>
-
-                        <label htmlFor="categories">Фильтр категорий</label>
-                        <CustomSelect id="categories" value={categoryId} options={categories} onChange={event => setCategoryId(event.target.value)} />
+                        {div_SelectorCategories()}
+                        
                         <label htmlFor="corporateNutritions">Программы питания</label>
                         <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
                             onChange={event => setCorporateNutritionId(event.target.value)} />
@@ -201,6 +241,9 @@ const ReportForm: FC = () => {
                         <label htmlFor="organizations">Организации</label>
                         <CustomSelect id="organizations" value={organizationId} options={organizationstore.organizations}
                             onChange={onOrganizationSelectChange} />
+
+                        {div_SelectorCategories()}
+                        
                         <label htmlFor="corporateNutritions">Программы питания</label>
                         <CustomSelect id="corporateNutritions" value={corporateNutritionId} options={corporateNutritions}
                             onChange={event => setCorporateNutritionId(event.target.value)} />

@@ -62,7 +62,7 @@ namespace OzonCard.Excel
                 return card;
             }
             card = string.Concat(matches.Select(x => x.Value));
-            if (card == "")
+            if (card == "" || card.Length > 8)
                 return card;
             card = "00000000".Remove(0, card.Length) + card;
             return card;

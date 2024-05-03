@@ -22,13 +22,15 @@ namespace OzonCardService.Services.Implementation
         readonly IOrganizationRepository _repository;
         readonly IMapper _mapper;
         readonly IHttpClientService _client;
+        private readonly IEventRepository _eventRepository;
         private readonly ILogger log = Log.ForContext(typeof(RepositoryService));
 
-        public RepositoryService(IOrganizationRepository repository, IMapper mapper, IHttpClientService httpClientService)
+        public RepositoryService(IOrganizationRepository repository, IMapper mapper, IHttpClientService httpClientService, IEventRepository eventRepository)
         {
             _repository = repository;
             _mapper = mapper;
             _client = httpClientService;
+            _eventRepository = eventRepository;
         }
 
      
@@ -135,7 +137,7 @@ namespace OzonCardService.Services.Implementation
                 throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found");
             if (!organization.Users.Any(x => x.Id == userId))
                 throw new ArgumentException($"Organization with {infoUpload.OrganizationId} not found in current user");
-            var customers_rep = _repository.GetCustomersForCardNumber(customers_excel.Select(x => x.Card))
+            var customers_rep = _repository.GetCustomersForCardNumber(organization.Id, customers_excel.Select(x => x.Card))
                 .Result.ToList();
 
             
@@ -315,35 +317,56 @@ namespace OzonCardService.Services.Implementation
                 throw new ArgumentException($"CorporateNutrition with {reportOption.CorporateNutritionId} not found");
 
 
-            var session = await _client.GetSession(organization.Login, organization.Password);
-            var report = _mapper.Map<IEnumerable<ReportCN_dto>>(
+            var dateTo = DateTime.Parse(reportOption.DateTo).AddDays(-1);
+            IEnumerable<ReportCN_dto> report = new List<ReportCN_dto>();
+            if (reportOption.IsOffline)
+            {
+                var CN = organization.CorporateNutritions.FirstOrDefault(x => x.Id == reportOption.CorporateNutritionId);
+                report = _mapper.Map<IEnumerable<ReportCN_dto>>(
+                    await _eventRepository.GetCustomersReportOrganization(organization.Id, DateTime.Parse(reportOption.DateFrom), dateTo, CN.Name)
+                );
+                if (token.IsCancellationRequested)
+                    return new List<ReportCN_dto>();
+            }
+            else
+            {
+                var session = await _client.GetSession(organization.Login, organization.Password);
+                report = _mapper.Map<IEnumerable<ReportCN_dto>>(
                 await _client.GerReportCN(
                     session,
                     reportOption.OrganizationId, reportOption.CorporateNutritionId,
                     reportOption.DateFrom,
                     reportOption.DateTo));
-            if (token.IsCancellationRequested)
-                return new List<ReportCN_dto>();
-            //фильтрация пользователей по запрашиваемой категории, если необходимо
-            if (reportOption.CategoryId != Guid.Empty)
-            {
-                var categoryName = organization.Categories.FirstOrDefault(x => x.Id == reportOption.CategoryId)?.Name;
-                if (categoryName != String.Empty)
+                if (token.IsCancellationRequested)
+                    return new List<ReportCN_dto>();
+                var customers = await _repository.GetCustomersForOrganization(organization.Id);
+                foreach (var row in report)
                 {
-                    report = report.Where(x=>x.guestCategoryNames?.Contains(categoryName) == true).ToList();
+                    var customer = customers.FirstOrDefault(x => x.iikoBizId == row.guestId);
+                    if (customer != null)
+                    {
+                        row.position = customer.Position;
+                        row.employeeNumber = customer.TabNumber;
+                        row.guestName = customer.Name;
+                    }
                 }
+
+                //синхронизируем категории принудительно из биза
+                //    await _eventRepository.SetCategories(report.Select(x => (x.guestId, x.guestCategoryNames)), organization.Id);
             }
 
 
-            var customers = await _repository.GetCustomersForOrganization(organization.Id);
-            foreach (var row in report)
+            //фильтрация пользователей по запрашиваемой категории, если необходимо
+            if (reportOption.CategoriesId.Any())
             {
-                var customer = customers.FirstOrDefault(x => x.iikoBizId == row.guestId);
-                if (customer != null)
-                {
-                    row.position = customer.Position;
-                    row.employeeNumber = customer.TabNumber;
-                }
+                var namesCategories = organization.Categories
+                    .Where(x => x.isActive && !string.IsNullOrEmpty(x.Name)
+                                && reportOption.CategoriesId.Contains(x.Id))
+                    .Select(x => x.Name)
+                    .ToArray();
+                report = report
+                    .Where(x=> namesCategories.Any(category=> x.guestCategoryNames?.Contains(category) == true))
+                    .ToList();
             }
             return report;
         }
@@ -377,6 +400,12 @@ namespace OzonCardService.Services.Implementation
                 await _client.DelCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
             else
                 await _client.AddCategotyCustomer(session, customer.Id, organization.Id, customer.CategoryId);
+            var c = await _repository.GetCustomersForIikoBizID(customer.Id);
+            await _eventRepository.UpdateCategory(new CategoryCustomer[] {new CategoryCustomer
+                    {
+                        CategoryId = customer.CategoryId,
+                        CustomerId = c.Id
+                    }}, customer.isRemove);
         }
         public async Task<IEnumerable<InfoSearchCustomer_dto>> SearchCustomers(SearchCustomer_vm customer)
         {
@@ -386,50 +415,61 @@ namespace OzonCardService.Services.Implementation
                 throw new ArgumentException($"CorporateNutrition with {customer.CorporateNutritionId} not found");
 
 
-            var customers_db = new List<Customer>();
-            var customers_db_names = new List<Customer>();
-            var customers_db_cards = new List<Customer>();
+            var customersDb = new List<Customer>();
+            var customersDbNames = new List<Customer>();
+            var customersDbCards = new List<Customer>();
             if (customer.Name != String.Empty)
-                customers_db_names.AddRange(await _repository.GetCustomersForName(customer.Name));
+                customersDbNames.AddRange(await _repository.GetCustomersForName(organization.Id, customer.Name));
             if (customer.Card != String.Empty)
-                customers_db_cards.AddRange(await _repository.GetCustomersForCardNumber(customer.Card));
+                customersDbCards.AddRange(await _repository.GetCustomersForCardNumber(organization.Id, customer.Card));
             if (customer.Name != String.Empty && customer.Card != String.Empty)
-                customers_db = customers_db_names.Intersect(customers_db_cards).ToList();
+                customersDb = customersDbNames.Intersect(customersDbCards).ToList();
             else
             {
-                customers_db.AddRange(customers_db_names);
-                customers_db.AddRange(customers_db_cards);
+                customersDb.AddRange(customersDbNames);
+                customersDb.AddRange(customersDbCards);
             }
-            var customer_dto = new List<InfoSearchCustomer_dto>();
-            customers_db = customers_db.Where(x => x.Organization.Id == customer.OrganizationId).ToList();
-            if (customers_db.Count == 0)
-                return customer_dto;
+            var customerDto = new List<InfoSearchCustomer_dto>();
+            customersDb = customersDb.Where(x => x.Organization.Id == customer.OrganizationId).ToList();
+            if (customersDb.Count == 0)
+                return customerDto;
             if (customer.isOffline)
             {
-                customer_dto.AddRange(_mapper.Map<IEnumerable<InfoSearchCustomer_dto>>(customers_db));
-                return customer_dto;
+                customerDto.AddRange(_mapper.Map<IEnumerable<InfoSearchCustomer_dto>>(customersDb));
+                var reportDb = await _eventRepository.GetCustomersReportOrganization(organization.Id, DateTime.Parse(customer.DateFrom), DateTime.Parse(customer.DateTo), 
+                    organization.CorporateNutritions.FirstOrDefault(x=>x.Id == customer.CorporateNutritionId)?.Name);
+                foreach (var c in customerDto)
+                    c.SetMetrics(reportDb.FirstOrDefault(x => x.guestId == c.Id));
+                return customerDto;
             }
             var session = await _client.GetSession(organization.Login, organization.Password);
-            foreach(var c in customers_db)
+            foreach(var c in customersDb)
             {
-                var customer_biz = await _client.GetCustomerForId(session, c.iikoBizId, organization.Id);
-                if (customer_biz == null)
+                var customerBiz = await _client.GetCustomerForId(session, c.iikoBizId, organization.Id);
+                if (customerBiz == null)
                     continue;
-                customer_biz.comment = organization.Name;
-                customer_biz.userData = c.TabNumber;
-                customer_dto.Add(_mapper.Map<InfoSearchCustomer_dto>(customer_biz));
+                customerBiz.comment = organization.Name;
+                customerBiz.userData = c.TabNumber;
+                customerDto.Add(_mapper.Map<InfoSearchCustomer_dto>(customerBiz));
             };
             
-            //переделать но запрос отчета
-            //ид организации есть
-            //ид корпита передавать из веб формы
-            //даты подставлять автоматически с начала месяца
+            //запрос отчета
             var report = await _client.GerReportCN(session, organization.Id, customer.CorporateNutritionId,
                 customer.DateFrom, customer.DateTo);
-            foreach (var c in customer_dto)
-                c.SetMetrics(report.FirstOrDefault(x => x.guestId == c.Id));
+            
+            // var reportCustomers = await _client.GetCustomersByPeriod(session, organization.Id, 
+            //     customer.DateFrom, customer.DateTo);
+            var evOrgCustomers = await _eventRepository.GetLastVisit(organization.Id, customerDto.Select(x=>x.Card));
+            
+            foreach (var c in customerDto)
+            {
+                c.SetMetrics(report?.FirstOrDefault(x => x.guestId == c.Id) ?? null);
+                var events = evOrgCustomers.FirstOrDefault(x => x.Card == c.Card) ?? null;
+                c.SetLastVisitDate(events?.LastVisit ?? new DateTime());
+                c.SetCountGrant(events?.DaysGrant ?? 0);
+            }
 
-            return customer_dto;
+            return customerDto;
 
         }
 
@@ -441,54 +481,92 @@ namespace OzonCardService.Services.Implementation
                 throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found");
             if (!organization.Users.Any(x => x.Id == userId))
                 throw new ArgumentException($"Organization with {reportOption.OrganizationId} not found in current user");
-            var TransactionsReport = new TransactionsReport();
-
-
-            var session = await _client.GetSession(organization.Login, organization.Password);
-            var dateTo_transaction = DateTime.Parse(reportOption.DateTo).AddDays(-1).ToString("yyyy-MM-dd");
-            var biz_transactions =
-                await _client.GerTransactionsReport(session, reportOption.OrganizationId, reportOption.DateFrom, dateTo_transaction);
-            if (token.IsCancellationRequested || !biz_transactions.Any())
-                return TransactionsReport;
-            var biz_report = await _client.GerReportCN(
-                    session, reportOption.OrganizationId, reportOption.CorporateNutritionId,
-                    reportOption.DateFrom, reportOption.DateTo);
+            var transactionsReport = new TransactionsReport();
+            var dateToTransaction = DateTime.Parse(reportOption.DateTo).AddDays(-1);
+            IEnumerable<Event> transactions;
+            IEnumerable<CustomerReport> report;
+            //если дата запрашиваемого отчета вчера или дальше 
+            //и последнее событие по данной организации позже чем запрашиваемая дата
+            if (reportOption.IsOffline)
+            {
+                //берем события из базы
+                var CN = organization.CorporateNutritions.FirstOrDefault(x => x.Id == reportOption.CorporateNutritionId);
+                var dateFromTransaction = DateTime.Parse(reportOption.DateFrom);
+                transactions = await _eventRepository.GetEventsOrganization(organization.Id, dateFromTransaction, dateToTransaction);
+                report = await _eventRepository.GetCustomersReportOrganization(organization.Id, dateFromTransaction, dateToTransaction, CN.Name);
+            }
+            else
+            {
+                var session = await _client.GetSession(organization.Login, organization.Password);
+                
+                transactions = _mapper.Map<IEnumerable<Event>>(
+                    await _client.GerTransactionsReport(session, reportOption.OrganizationId, reportOption.DateFrom, dateToTransaction.ToString("yyyy-MM-dd"))
+                );
+                log.Information("Transaction report contains {0} rows", transactions.Count());
+                if (token.IsCancellationRequested)
+                    return transactionsReport;
+                var bizReport = await _client.GerReportCN(
+                        session, reportOption.OrganizationId, reportOption.CorporateNutritionId,
+                        reportOption.DateFrom, reportOption.DateTo);
+                report = _mapper.Map<IEnumerable<CustomerReport>>(bizReport);
+                log.Information("CorporateNutrition report contains {0} rows", report.Count());
+            }
+            
             var customers = await _repository.GetCustomersForOrganization(organization.Id);
             if (token.IsCancellationRequested)
-                return TransactionsReport;
+                return transactionsReport;
+            //фильтрация пользователей по запрашиваемой категории, если необходимо
+            if (reportOption.CategoriesId.Any())
+            {
+                var namesCategories = organization.Categories
+                    .Where(x => x.isActive && !string.IsNullOrEmpty(x.Name)
+                                           && reportOption.CategoriesId.Contains(x.Id))
+                    .Select(x => x.Name)
+                    .ToArray();
+                report = report
+                    .Where(x=> namesCategories.Any(category=> x.guestCategoryNames?.Contains(category) == true))
+                    .ToList();
+            }
+            
 
-
-            TransactionsReport.Transactions = 
-                (from t in biz_transactions
-                join r in biz_report on t.cardNumbers equals r.guestCardTrack
+            
+            transactionsReport.Transactions = 
+                (from t in transactions
+                join r in report on t.CardNumbers.Split(',').MaxBy(number=>number.Length) equals r.guestCardTrack
                 join c in customers on r.guestId equals c.iikoBizId
                 select new TransactionsReport_dto()
                 {
-                    Date = t.transactionCreateDate.ToString("yyyy-MM-dd"),
-                    Time = t.transactionCreateDate.ToString("HH:mm:ss"),
+                    Date = t.Create.ToString("yyyy-MM-dd"),
+                    Time = t.Create.ToString("HH:mm:ss"),
                     TabNumber = c.TabNumber,
                     Name = c.Name,
                     Division = c.Position,
                     Categories = r.guestCategoryNames,
                     СardNumbers = r.guestCardTrack,
-                    Eating = GetNameEating(t.transactionCreateDate)
+                    Eating = GetNameEating(t.Create)
                 }).ToList();
 
+
+            // var categories = new List<string>();
+            // transactionsReport.Transactions = transactionsReport.Transactions
+            //     .Where(t => categories.Any(c => t.Categories.Contains(c)))
+            //     .ToList();
             var reportSummary = new List<TransactionsSummaryReport_dto>();
-            foreach (var group_customer in TransactionsReport.Transactions.GroupBy(x=>x.Name))
+            foreach (var groupCustomer in transactionsReport.Transactions.GroupBy(x=>
+                         new {x.Name, x.СardNumbers}))
             {
-                var customer = group_customer.First();
+                var customer = groupCustomer.First();
                 reportSummary.Add(new TransactionsSummaryReport_dto()
                 {
-                    Name = group_customer.Key,
+                    Name = groupCustomer.Key.Name,
                     Categories = customer.Categories,
                     Division = customer.Division,
-                    CountDay = group_customer.GroupBy(x=>x.Date).Count()
+                    CountDay = groupCustomer.GroupBy(x=>x.Date).Count()
                 });
 
             }
-            TransactionsReport.TransactionsSummary = reportSummary;
-            return TransactionsReport;
+            transactionsReport.TransactionsSummary = reportSummary.OrderBy(x=>x.Name);
+            return transactionsReport;
         }
         string GetNameEating(DateTime date)
         {

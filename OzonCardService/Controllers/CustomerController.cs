@@ -25,7 +25,7 @@ namespace OzonCardService.Controllers
     {
         IRepositoryService _service;
         ITasksManagerProgress _tasksManager;
-        private readonly ILogger log = Log.ForContext(typeof(OrganizationController));
+        private readonly ILogger log = Log.ForContext(typeof(CustomerController));
 
         public CustomerController(IRepositoryService repositoryService, ITasksManagerProgress tasksManager)
         {
@@ -41,11 +41,8 @@ namespace OzonCardService.Controllers
         {
             try
             {
-                log.Information("UploadCustomersReport {@infoUpload}", infoUpload);
-                Guid userId = new Guid();
-                await Task.Run(() => Guid.TryParse(
-                        User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value, out userId)
-                );
+                Guid.TryParse(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value, out var userId);
+                log.Information("UploadCustomersReport user '{userId}' {@infoUpload}", userId, infoUpload);
                
                 var customers = new List<ShortCustomerInfo_excel>();
                 if (infoUpload.Customer != null)

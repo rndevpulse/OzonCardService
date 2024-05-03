@@ -37,11 +37,11 @@ const ServiceForm: FC = () => {
         if (ruleReport) { rules.push(111) }
         await UserService.createUser(user, password, rules)
         getUsers()
-        confirm('Пользователь добавлен')
+        window.confirm('Пользователь добавлен')
     }
     async function createOrganization() {
         await organizationstore.createOrganization(organizationLogin, organizationPassword)
-        confirm('Организация добавлена')
+        window.confirm('Организация добавлена')
 
     }
     async function addUserForOrganization(userId: string){

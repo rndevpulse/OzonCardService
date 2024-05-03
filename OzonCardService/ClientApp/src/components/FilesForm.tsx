@@ -40,10 +40,13 @@ const FilesForm: FC = () => {
         //console.log('useEffect')
         getFiles()
     }, []);
-    <h1>Мои документы</h1>
+
+    //<h1>Мои документы</h1>
+
     if (files.length === 0) {
         return <h4 className="center">Файлов нет</h4>
     }
+
     return (
         <div>
             <h1 className="center form-group col-md-12">Мои документы</h1>

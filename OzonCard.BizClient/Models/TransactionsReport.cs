@@ -13,7 +13,8 @@ namespace OzonCard.BizClient.Models
         public string? phoneNumber { get; set; }
         public string? cardNumbers { get; set; }
         public string? comment { get; set; }
-
-
-}
+        public Guid organizationId { get; set; }
+        public string? programName { get; set; }
+        public string? marketingCampaignName { get; set; }
+    }
 }

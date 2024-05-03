@@ -14,6 +14,7 @@ namespace OzonCardService.Services.Quartzs.Workers
         Task CreateBackup(string path, int countBackup);
         Task RemoveOldFile(string path, int countDays);
         Task RemoveOldTokensRefresh(int countDays);
+        Task RemoveOldEvents(int countDays);
     }
 
 
@@ -38,7 +39,7 @@ namespace OzonCardService.Services.Quartzs.Workers
         }
         public async Task RemoveOldFile(string path, int countDays)
         {
-            log.Information("Remove old files");
+            log.Information($"Remove old files from {path} where date create > {countDays} days");
             if (await _repository.RemoveOldFile(countDays))
             {
                 var files = Directory.GetFiles(path);
@@ -133,9 +134,14 @@ namespace OzonCardService.Services.Quartzs.Workers
 
         public async Task RemoveOldTokensRefresh(int countDays)
         {
-            log.Information("Remove old TokensRefresh");
+            log.Information($"Remove old TokensRefresh {countDays} days");
             await _repository.RemoveOldTokensRefresh(countDays);
 
+        }
+        public async Task RemoveOldEvents(int countDays)
+        {
+            log.Information($"Remove old events > {countDays} days");
+            await _repository.RemoveOldEvents(countDays);
         }
     }
 }

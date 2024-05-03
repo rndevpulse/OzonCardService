@@ -105,7 +105,7 @@ const UploadForm: FC = () => {
 
     async function  uploadToBiz() {
         if (file === '')
-            confirm('Не выбран вайл выгрузки')
+            window.confirm('Не выбран вайл выгрузки')
         const option: ICustomerOptionResponse = {
             organizationId: organizationId,
             corporateNutritionId: corporateNutritionId,
@@ -223,9 +223,9 @@ const UploadForm: FC = () => {
                         placeholder='ФИО сотрудника'
                     /></label>
                 <br />
-                <label htmlFor="customerCard">Сотрудник
+                <label htmlFor="customerCard">Карта сотрудника
                     <input
-                        id='customerName'
+                        id='customerCard'
                         onChange={e => setCustomerCard(e.target.value)}
                         value={customerCard}
                         type='text'

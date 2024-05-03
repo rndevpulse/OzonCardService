@@ -6,8 +6,10 @@ export interface IInfoSearhCustomerResponse {
     card: string;
     tabNumber: string;
     organization: string;
-    balanse: number;
+    balance: number;
+    timeUpdateBalance: string;
     sum: number;
     orders: string;
     categories: string[];
+    lastVisit: string;
 }

@@ -16,7 +16,7 @@ namespace OzonCard.BizClient.Models
         public bool isBlocked { get; set; }
         public bool isDeleted { get; set; }
         public string middleName { get; set; }
-        public string name { get; set; }
+        public string? name { get; set; }
         public object personalDataConsentFrom { get; set; }
         public object personalDataConsentTo { get; set; }
         public object personalDataProcessingFrom { get; set; }

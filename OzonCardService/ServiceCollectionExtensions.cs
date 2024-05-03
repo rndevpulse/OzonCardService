@@ -44,6 +44,10 @@ namespace OzonCardService
                 configuration.GetConnectionString("DefaultConnection"),
                 provider.GetService<IRepositoryContextFactory>())
             );
+            services.AddScoped<IEventRepository>(provider => new EventRepository(
+               configuration.GetConnectionString("DefaultConnection"),
+               provider.GetService<IRepositoryContextFactory>())
+           );
             services.AddScoped<IRepositoryService, RepositoryService>();
             services.AddScoped<IIdentityService, IdentityService>();
 
@@ -74,12 +78,12 @@ namespace OzonCardService
 
 
 
-        public static IServiceCollection AddBizClient(this IServiceCollection services)
+        public static IServiceCollection AddBizClient(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpClient<IClient, Client>(c =>
             {
                 c.BaseAddress = new Uri(HttpClientService.URL);
-                c.Timeout = TimeSpan.FromMinutes(3);
+                c.Timeout = TimeSpan.FromMinutes(configuration.GetValue<int>("HttpTimeout"));
             });
             services.AddScoped<IHttpClientService, HttpClientService>();
 
@@ -99,6 +103,7 @@ namespace OzonCardService
             
             services.AddTransient<IServiceDatabase, ServiceDatabase>();
             services.AddTransient<IServiceBalance, ServiceBalance>();
+            services.AddTransient<IServiceEvent, ServiceEvent>();
             services.AddQuartz(q =>
             {
                 // base quartz scheduler, job and trigger configuration
@@ -117,12 +122,22 @@ namespace OzonCardService
                     );
 
 
-                q.ScheduleJob<ServiceBalanceJob>(t => t
-                    .WithIdentity("Timeout_Job", "Balance")
+                //q.ScheduleJob<ServiceBalanceJob>(t => t
+                //    .WithIdentity("Timeout_Job", "Balance")
+                //    .UsingJobData(
+                //        JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
+                //        TimeSpan.FromMinutes(5).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
+                //    .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(1).RepeatForever(); })
+                //    //.StartAt(DateTimeOffset.Now.AddMinutes(1))
+                //    );
+
+
+                q.ScheduleJob<ServiceEventJob>(t => t
+                    .WithIdentity("Timeout_Job", "Event")
                     .UsingJobData(
                         JobInterruptMonitorPlugin.JobDataMapKeyMaxRunTime,
-                        TimeSpan.FromMinutes(5).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
-                    .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(1).RepeatForever(); })
+                        TimeSpan.FromMinutes(30).TotalMilliseconds.ToString(CultureInfo.InvariantCulture))
+                    .WithSimpleSchedule(simpleSchedule => { simpleSchedule.WithIntervalInHours(4).RepeatForever(); })
                     //.StartAt(DateTimeOffset.Now.AddMinutes(1))
                     );
 

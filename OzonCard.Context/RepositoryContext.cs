@@ -24,7 +24,8 @@ namespace OzonCard.Context
 		public DbSet<Wallet> Wallets { get; set; }
 		public DbSet<FileReport> FileReports { get; set; }
 		public DbSet<User> Users { get; set; }
-		
+		public DbSet<Event> Events { get; set; }
+
 
 		public static void InitializationValue(MigrationBuilder migrationBuilder)
 		{

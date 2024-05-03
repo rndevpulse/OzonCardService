@@ -11,7 +11,7 @@
 @media screen and (min-width: 1000px) {
     html {
         font-size: 16px;
-        background-image: url("../../public/background.jpg");
+        /*background-image: url("../../public/background.jpg");*/
         background-repeat: no-repeat;
         background-position: center center;
         background-attachment: fixed;
@@ -33,7 +33,7 @@
 @media screen and (max-width: 1000px) {
     html {
         font-size: 16px;
-        background-image: url("../../public/background.jpg");
+        /*background-image: url("../../public/background.jpg");*/
         background-repeat: no-repeat;
         background-position: center center;
         background-attachment: fixed;

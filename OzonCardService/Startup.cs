@@ -37,7 +37,7 @@ namespace OzonCardService
             services.AddMvc();
             services.AddContext(Configuration);
             services.AddAutoMapper(typeof(MappingProfileContext), typeof(MappingProfileBiz));
-            services.AddBizClient();
+            services.AddBizClient(Configuration);
             services.AddManagerTasksProgress();
             services.AddQuartz(Configuration);
 
