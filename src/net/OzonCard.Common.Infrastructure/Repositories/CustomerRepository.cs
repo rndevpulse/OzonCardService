@@ -22,10 +22,11 @@ public class CustomerRepository(
 
     public async Task<IEnumerable<Customer>> SearchCustomersAsync(Guid organizationId, string name, string card, CancellationToken ct = default)
     {
-        return await GetQuery()
-            .Where(x => x.OrgId == organizationId)
-            .Where(x => x.Name == name || x.Cards.Any(c => c.Number == card))
-            .ToListAsync(ct);
+        var queqry = GetQuery();
+        queqry = string.IsNullOrEmpty(name)
+            ? queqry.Where(x => x.Cards.Any(c => c.Number == card))
+            : queqry.Where(x => EF.Functions.Like(x.Name, $"%{name}%"));
+        return await queqry.ToListAsync(ct);
     }
 
     public async Task<IEnumerable<Customer>> GetItemsAsync(Guid organizationId, CancellationToken ct = default)

@@ -124,6 +124,18 @@ export function ChangeCustomer({customer, categories, onChange, onRemove}: IChan
                     />
                 </label>
                 {error && <ErrorMessage error={error}/>}
+
+                <label className="changeCustomerLabel" htmlFor="categories">Категории</label>
+                <Select
+                    id='categories'
+                    onChange={values => setSelectedCategories(values as ICategory[])}
+                    value={selectedCategories}
+                    options={categories}
+                    getOptionLabel={option => option.name}
+                    getOptionValue={option => option.id}
+                    placeholder='Категории'
+                    isMulti
+                />
                 <label className="changeCustomerLabel" htmlFor="customerTabNumber">Табельный номер
                     <input
                         id="customerTabNumber"
@@ -161,17 +173,6 @@ export function ChangeCustomer({customer, categories, onChange, onRemove}: IChan
                     />
                 </label>
 
-                <label className="changeCustomerLabel" htmlFor="categories">Категории</label>
-                <Select
-                    id='categories'
-                    onChange={values => setSelectedCategories(values as ICategory[])}
-                    value={selectedCategories}
-                    options={categories}
-                    getOptionLabel={option => option.name}
-                    getOptionValue={option => option.id}
-                    placeholder='Категории'
-                    isMulti
-                />
             </div>
             <div className="container-row-customer">
                 <button className="button red"
