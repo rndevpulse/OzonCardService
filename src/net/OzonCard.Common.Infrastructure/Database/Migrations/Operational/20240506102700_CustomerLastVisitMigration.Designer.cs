@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OzonCard.Common.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using OzonCard.Common.Infrastructure.Database;
 namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
 {
     [DbContext(typeof(InfrastructureContext))]
-    partial class InfrastructureContextModelSnapshot : ModelSnapshot
+    [Migration("20240506102700_CustomerLastVisitMigration")]
+    partial class CustomerLastVisitMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,9 +229,6 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                 {
                     b.OwnsMany("OzonCard.Common.Domain.Organizations.Category", "Categories", b1 =>
                         {
-                            b1.Property<Guid>("OrganizationId")
-                                .HasColumnType("uniqueidentifier");
-
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("uniqueidentifier");
@@ -240,7 +240,12 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("OrganizationId", "Id");
+                            b1.Property<Guid>("OrganizationId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("OrganizationId");
 
                             b1.ToTable("organizations_categories", (string)null);
 

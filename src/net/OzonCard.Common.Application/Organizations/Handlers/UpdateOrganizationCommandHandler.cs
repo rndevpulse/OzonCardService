@@ -25,35 +25,25 @@ public class UpdateOrganizationCommandHandler : ICommandHandler<UpdateOrganizati
         var organization = await _repository.TryGetItemAsync(request.Id, cancellationToken);
         if (organization == null)
             throw EntityNotFoundException.For<Organization>(request.Id);
-        _logger.LogDebug($"Update organization {organization.Name}");
+        _logger.LogDebug($"Update organization '{organization.Name}'");
 
         var client = new BizClient(organization.Login, organization.Password);
         var orgs = await client.GetOrganizationsAsync(cancellationToken);
         if (orgs.FirstOrDefault(x => x.Id == request.Id) is { } org)
             organization.Name = org.Name;
-        
-        
 
         var categories = await client.GetCategoriesAsync(organization.Id, cancellationToken);
-        organization.UpdateCategories(categories.Select(x =>
-            new Category(x.Id)
-            {
-                IsActive = x.IsActive,
-                Name = x.Name
-            }));
+        foreach (var category in categories)
+            organization.UpdateCategory(category.Id, category.Name, category.IsActive);
+
         var programs = await client.GetProgramsAsync(organization.Id, cancellationToken);
-        organization.UpdatePrograms(programs.Select(p =>
-        {
-            var program = new Program(p.Id)
-            {
-                IsActive = p.ServiceTo == null || p.ServiceTo > DateTime.UtcNow,
-                Name = p.Name,
-            };
-            foreach (var wallet in p.Wallets)
-                program.AddOrUpdateWallet(
-                    new Wallet(wallet.Id, wallet.Name, wallet.ProgramType, wallet.Type));
-            return program;
-        }));
+        foreach (var program in programs)
+            organization.UpdatePrograms(
+                program.Id,
+                program.Name,
+                program.ServiceTo == null || program.ServiceTo > DateTime.UtcNow,
+                program.Wallets.FirstOrDefault()?.Id ?? Guid.Empty,
+                program.Wallets.FirstOrDefault()?.Type ?? "");
         return organization;
     }
 }

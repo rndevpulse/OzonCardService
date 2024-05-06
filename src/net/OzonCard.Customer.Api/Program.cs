@@ -28,6 +28,7 @@ using OzonCard.Common.Infrastructure.Database.Materialization;
 using OzonCard.Common.Infrastructure.Piplines;
 using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Common.Logging;
+using OzonCard.Customer.Api.Quartz;
 using OzonCard.Customer.Api.Services.BackgroundTasks;
 using OzonCard.Customer.Api.Services.Bootstrap;
 using OzonCard.Excel;
@@ -35,6 +36,8 @@ using OzonCard.Files;
 using OzonCard.Identity.Domain;
 using OzonCard.Identity.Infrastructure.Jwt;
 using OzonCard.Identity.Infrastructure.Security;
+using Quartz;
+using Quartz.AspNetCore;
 
 var assemblies = new[]
 {
@@ -140,7 +143,7 @@ builder.Services.AddScoped<IQueryBus, MediatrQueryBus>();
 builder.Services.AddDbContext<InfrastructureContext>(b =>
     (builder.Environment.IsDevelopment() ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
         builder.Configuration.GetConnectionString("service"),
-        optionsBuilder => optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+        optionsBuilder => optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
     .AddInterceptors(ContextMaterializationInterceptor.Instance));
 builder.Services.AddDbContext<SecurityContext>(b =>
     (builder.Environment.IsDevelopment() ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
@@ -203,7 +206,23 @@ builder.Services.AddVersionedApiExplorer(o =>
 
 #endregion
 
+#region Quartz
 
+builder.Services.AddQuartz(q =>
+{
+    q.ScheduleJob<CustomerLastVisitJob>(t => t
+        .WithIdentity("Last visit", "Reports")
+        .StartAt(DateTimeOffset.Now.AddMinutes(2))
+        .WithSimpleSchedule(b => b
+            .RepeatForever()
+            .WithInterval(TimeSpan.FromHours(4))
+        )
+    );
+});
+builder.Services.AddQuartzServer(opt => opt.WaitForJobsToComplete = true);
+    
+
+#endregion
 
 #region OtherStaff
 
