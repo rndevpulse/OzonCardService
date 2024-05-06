@@ -143,7 +143,7 @@ builder.Services.AddScoped<IQueryBus, MediatrQueryBus>();
 builder.Services.AddDbContext<InfrastructureContext>(b =>
     (builder.Environment.IsDevelopment() ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
         builder.Configuration.GetConnectionString("service"),
-        optionsBuilder => optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+        optionsBuilder => optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
     .AddInterceptors(ContextMaterializationInterceptor.Instance));
 builder.Services.AddDbContext<SecurityContext>(b =>
     (builder.Environment.IsDevelopment() ? b.EnableSensitiveDataLogging() : b).UseSqlServer(

@@ -25,17 +25,19 @@ public class UpdateOrganizationCommandHandler : ICommandHandler<UpdateOrganizati
         var organization = await _repository.TryGetItemAsync(request.Id, cancellationToken);
         if (organization == null)
             throw EntityNotFoundException.For<Organization>(request.Id);
-        _logger.LogDebug($"Update organization {organization.Name}");
+        _logger.LogDebug($"Update organization '{organization.Name}'");
 
         var client = new BizClient(organization.Login, organization.Password);
         var orgs = await client.GetOrganizationsAsync(cancellationToken);
         if (orgs.FirstOrDefault(x => x.Id == request.Id) is { } org)
             organization.Name = org.Name;
 
-        foreach (var category in await client.GetCategoriesAsync(organization.Id, cancellationToken))
+        var categories = await client.GetCategoriesAsync(organization.Id, cancellationToken);
+        foreach (var category in categories)
             organization.UpdateCategory(category.Id, category.Name, category.IsActive);
 
-        foreach (var program in await client.GetProgramsAsync(organization.Id, cancellationToken))
+        var programs = await client.GetProgramsAsync(organization.Id, cancellationToken);
+        foreach (var program in programs)
             organization.UpdatePrograms(
                 program.Id,
                 program.Name,

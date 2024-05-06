@@ -43,24 +43,28 @@ public class Organization : AggregateRoot
             _members.Remove(member);
     }
 
-    public void UpdateCategory(Guid id, string name, bool isActive)
+    public Category UpdateCategory(Guid id, string name, bool isActive)
     {
         var item = _categories.FirstOrDefault(x => x.Id == id);
         if (item == null)
-            _categories.Add(new Category(id)
+        {
+            item = new Category(id)
             {
                 Name = name,
                 IsActive = isActive
-            });
+            };
+            _categories.Add(item);
+        }
         else
         {
             item.Name = name;
             item.IsActive = isActive;
         }
+        return item;
     }
     
     
-    public void UpdatePrograms(Guid id, string name, bool isActive, Guid walletId, string wallettype)
+    public void UpdatePrograms(Guid id, string name, bool isActive, Guid walletId, string walletType)
     {
         var program = _programs.FirstOrDefault(x => x.Id == id);
         if (program == null)
@@ -77,6 +81,6 @@ public class Organization : AggregateRoot
             program.Name = name;
             program.IsActive = isActive;
         }
-        program.AddOrUpdateWallet(new Wallet(walletId, name, "", wallettype));
+        program.AddOrUpdateWallet(new Wallet(walletId, name, "", walletType));
     }
 }
