@@ -26,3 +26,7 @@
     line-height: 2rem;
     margin: 0 0 0.5rem;
 }
+.modalContent h1 i {
+    margin: auto;
+    float: right;
+}

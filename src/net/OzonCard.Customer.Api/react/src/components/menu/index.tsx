@@ -68,7 +68,7 @@ const NavMenu: FC = () => {
                 </div>
             )
         }
-    };
+    }
     function linkReport() {
         if (loginStore.Roles.includes('Report')) {
             links.push({ link: '/report', name: 'Отчеты' })
@@ -78,7 +78,7 @@ const NavMenu: FC = () => {
                 </NavItem>
             )
         }
-    };
+    }
     function linkAdmin() {
         if (loginStore.Roles.includes('Admin')) {
             links.push({ link: '/service', name: 'Сервис' })
@@ -88,7 +88,7 @@ const NavMenu: FC = () => {
                 </NavItem>
             )
         }
-    };
+    }
 
     function onClickLink(l: { link: string, name: string }) {
         close()
@@ -105,7 +105,7 @@ const NavMenu: FC = () => {
             <div className={StyledMenu.join(' ')} ref={node}>
                 {links && links.map(l => {
                     return (
-                        <div className="styledLink " key={l.name} onClick={(e) => onClickLink(l)}>{l.name}</div>
+                        <div className="styledLink " key={l.name} onClick={() => onClickLink(l)}>{l.name}</div>
                     )
                 })}
             </div>
