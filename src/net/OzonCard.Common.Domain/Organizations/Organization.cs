@@ -12,7 +12,7 @@ public class Organization : AggregateRoot
     public string Password { get; private set; }
     public IEnumerable<Member> Members => _members;
     public IEnumerable<Program> Programs => _programs;
-    public IEnumerable<Category> Categories => _categories.Where(x=>x.IsActive);
+    public IEnumerable<Category> Categories => _categories;
 
     
 
@@ -43,40 +43,40 @@ public class Organization : AggregateRoot
             _members.Remove(member);
     }
 
-    public void UpdateCategories(IEnumerable<Category> categories)
+    public void UpdateCategory(Guid id, string name, bool isActive)
     {
-        foreach (var category in categories)
-        {
-            var item = _categories.FirstOrDefault(x => x.Id == category.Id);
-            if (item == null)
-                _categories.Add(category);
-            else
+        var item = _categories.FirstOrDefault(x => x.Id == id);
+        if (item == null)
+            _categories.Add(new Category(id)
             {
-                item.Name = category.Name;
-                item.IsActive = category.IsActive;
-            }
+                Name = name,
+                IsActive = isActive
+            });
+        else
+        {
+            item.Name = name;
+            item.IsActive = isActive;
         }
     }
     
     
-    public void UpdatePrograms(IEnumerable<Program> programs)
+    public void UpdatePrograms(Guid id, string name, bool isActive, Guid walletId, string wallettype)
     {
-        var updated = new List<Guid>();
-        foreach (var program in programs)
+        var program = _programs.FirstOrDefault(x => x.Id == id);
+        if (program == null)
         {
-            var item = _programs.FirstOrDefault(x => x.Id == program.Id);
-            if (item == null)
-                _programs.Add(program);
-            else
+            program = new Program(id)
             {
-                item.Name = program.Name;
-                item.IsActive = program.IsActive;
-                foreach (var wallet in program.Wallets)
-                    item.AddOrUpdateWallet(wallet);
-            }
-            updated.Add(program.Id);
+                Name = name,
+                IsActive = isActive,
+            };
+            _programs.Add(program);
         }
-        foreach (var program in _programs.Where(x => updated.Contains(x.Id)))
-            program.IsActive = false;
+        else
+        {
+            program.Name = name;
+            program.IsActive = isActive;
+        }
+        program.AddOrUpdateWallet(new Wallet(walletId, name, "", wallettype));
     }
 }
