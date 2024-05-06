@@ -15,6 +15,7 @@ public class Customer : AggregateRoot
     public string? Comment { get; private set; }
     public Guid BizId { get; private set; }
     public Guid OrgId { get; private set; }
+    public DateTimeOffset LastVisit { get; set; }
 
     public IEnumerable<Card> Cards => _cards;
     public IEnumerable<CustomerWallet> Wallets => _wallets;
