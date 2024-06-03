@@ -1,4 +1,5 @@
-﻿using OzonCard.Biz.Client;
+﻿using Microsoft.Extensions.Logging;
+using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
@@ -9,7 +10,8 @@ namespace OzonCard.Common.Application.Customers.Handlers;
 
 public class CustomersUpdateLastVisitHandler(
     ICustomerRepository repository,
-    IOrganizationRepository organizations
+    IOrganizationRepository organizations,
+    ILogger<CustomersUpdateLastVisitHandler> logger
 ) : ICommandHandler<CustomersUpdateLastVisit, IEnumerable<Customer>>
 {
     
@@ -24,11 +26,25 @@ public class CustomersUpdateLastVisitHandler(
         {
             if (string.IsNullOrEmpty(visit.Card))
                 continue;
-            var customer = customers.FirstOrDefault(x => x.Cards.Any(c => c.Number == visit.Card));
+            var customer = customers.FirstOrDefault(x => x.Cards.Any(c => visit.Card.Contains(c.Number)));
             if (customer == null)
             {
-                customer = await TryCreateCustomer(client, org, visit.Card, cancellationToken);
-                await repository.AddAsync(customer);
+                var card = visit.Card.Split(",").FirstOrDefault();
+                if (string.IsNullOrEmpty(card))
+                    continue;
+                try
+                {
+                    customer = await TryCreateCustomer(client, org, card, cancellationToken);
+                    if (customer == null)
+                        continue;
+                    await repository.AddAsync(customer);
+                }
+                catch (Exception e)
+                {
+                    logger.LogWarning(e, $"FAIL added new customer {customer.Name} with cards {visit.Card}");
+                    continue;
+                }
+                logger.LogInformation($"added new customer '{customer.Name}'");
             }
             customer.LastVisit = visit.LastVisitDate;
             result.Add(customer);
