@@ -16,7 +16,7 @@ public class TasksController(
     [HttpGet]
     public IEnumerable<BackgroundTaskModel> Index([FromQuery] IEnumerable<Guid> id, CancellationToken ct = default)
     {
-        logger.LogDebug("Get tasks:");
+        // logger.LogDebug("Get tasks:");
         return Mapper.Map<IEnumerable<BackgroundTaskModel>>(queue.GetTasks(id.ToArray()));
     }
 
