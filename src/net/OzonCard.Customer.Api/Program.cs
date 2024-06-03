@@ -215,7 +215,7 @@ builder.Services.AddQuartz(q =>
         .StartAt(DateTimeOffset.Now.AddMinutes(2))
         .WithSimpleSchedule(b => b
             .RepeatForever()
-            .WithInterval(TimeSpan.FromHours(4))
+            .WithInterval(TimeSpan.FromHours(3))
         )
     );
 });

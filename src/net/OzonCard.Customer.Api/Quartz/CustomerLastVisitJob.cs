@@ -30,9 +30,8 @@ public class CustomerLastVisitJob(
                 .GroupBy(x => x.CardNumbers)
                 .Select(x => new CustomerVisit(
                     x.Key,
-                    x.Max(r => r.CreateDate(offset)),
-                    x.GroupBy(t => t.CreateDate(offset)).Count())
-                );
+                    x.Select(r => r.CreateDate(offset))
+                ));
             var result = await commands.Send(new CustomersUpdateLastVisit(org.Id, customers));
             logger.LogInformation($"updated '{result.Count()}' customers in '{org.Name}' from '{from}' to '{to}'");
 
