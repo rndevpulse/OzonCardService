@@ -32,12 +32,12 @@ public class CustomerSearchQueryHandler(
         var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
         logger.LogInformation($"Search customer for '{org.Name}' from '{from}' to '{to}' offset '{request.Offset}'");
 
-        var report = await client.GetProgramReport(
-            org.Id, request.ProgramId, 
-            from, to,
-            cancellationToken); 
-        var transactions =
-            await client.GetTransactionReport(org.Id, from, to.AddDays(-1), ct: cancellationToken);
+        // var report = await client.GetProgramReport(
+        //     org.Id, request.ProgramId, 
+        //     from, to,
+        //     cancellationToken); 
+        // var transactions =
+        //     await client.GetTransactionReport(org.Id, from, to.AddDays(-1), ct: cancellationToken);
         // var repTransactions = transactions
         //     .GroupBy(x => x.CardNumbers)
         //     .Select(x=>new CustomerVisit(
@@ -50,21 +50,22 @@ public class CustomerSearchQueryHandler(
         var result = customers.Select(async c => 
         {
             var bizCustomer = await client.GetCustomerAsync(c.BizId, org.Id, cancellationToken);
-            var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
+            // var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
+            var visits = (await c.Context.GetVisitsAsync(from, to, cancellationToken)).ToList();
             // var shortRep = repTransactions.FirstOrDefault(r => r.Card?.Contains(request.Card) == true);
             return new CustomerSearch(
                 c.Id, c.BizId, request.ProgramId, c.Name,
-                rep?.GuestCardTrack ?? string.Join(", ", c.Cards.Select(x => x.Number)),
+                string.Join(", ", c.Cards.Select(x => x.Number)),
                 c.TabNumber ?? "", c.Position ?? "", c.Division ?? "",
                 org.Name,
                 bizCustomer.WalletBalances.FirstOrDefault(w => w.Wallet.Id == walletId)?.Balance,
-                rep?.PayFromWalletSum,
-                rep?.PaidOrdersCount,
+                visits.Sum(v=>v.Sum),
+                visits.Count,
                 bizCustomer.Categories
                     .Where(cat=>cat.IsActive)
                     .Select(cat => new Category(cat.Id){Name =  cat.Name}),
-                c.LastVisit.DateTime,
-                0
+                visits.Max(r => r.Date).Date,
+                visits.GroupBy(t => t).Count()
                 // shortRep?.LastVisitDate.DateTime,
                 // shortRep?.DaysGrant
             );

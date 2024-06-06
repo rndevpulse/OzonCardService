@@ -4,7 +4,8 @@ using OzonCard.Common.Domain.Customers;
 
 namespace OzonCard.Common.Application.Customers.Commands;
 
-public record CustomersUpdateLastVisit(
+public record CustomersUpdateLastVisitCommand(
     Guid OrganizationId,
-    IEnumerable<CustomerVisit> CustomersVisit
+    IEnumerable<CardVisit> CustomersVisit
 ) : ICommand<IEnumerable<Customer>>;
+

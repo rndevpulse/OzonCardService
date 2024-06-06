@@ -1,6 +1,7 @@
 ﻿using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
+using OzonCard.Common.Application.Visits;
 using OzonCard.Common.Core;
 using OzonCard.Common.Domain.Customers;
 using OzonCard.Common.Domain.Organizations;
@@ -9,12 +10,13 @@ namespace OzonCard.Common.Application.Customers.Handlers;
 
 public class CustomersUpdateLastVisitHandler(
     ICustomerRepository repository,
+    IVisitRepository visitRepository,
     IOrganizationRepository organizations
-) : ICommandHandler<CustomersUpdateLastVisit, IEnumerable<Customer>>
+) : ICommandHandler<CustomersUpdateLastVisitCommand, IEnumerable<Customer>>
 {
     
     
-    public async Task<IEnumerable<Customer>> Handle(CustomersUpdateLastVisit request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Customer>> Handle(CustomersUpdateLastVisitCommand request, CancellationToken cancellationToken)
     {
         var org = await organizations.GetItemAsync(request.OrganizationId, cancellationToken);
         var client = new BizClient(org.Login, org.Password);
@@ -29,8 +31,17 @@ public class CustomersUpdateLastVisitHandler(
             {
                 customer = await TryCreateCustomer(client, org, visit.Card, cancellationToken);
                 await repository.AddAsync(customer);
+                customer.Context = new CoreCustomerContext(customer, visitRepository);
             }
-            customer.LastVisit = visit.LastVisitDate;
+            // customer.LastVisit = visit.LastVisitDate;
+            await customer.Context.UpdateAsync(
+                visit.Visits.Select(v=>new CustomerVisit()
+                {
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    Customer = customer.Id,
+                    Date = v.Date,
+                    Sum = v.Sum
+                }), cancellationToken);
             result.Add(customer);
         }
         return result;

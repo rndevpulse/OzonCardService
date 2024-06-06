@@ -22,7 +22,8 @@ public class CustomerDomainObjectConfiguration : DomainObjectConfiguration<Custo
         builder.Property(x => x.Phone);
         builder.Property(x => x.Comment);
 
-        builder.Property(x => x.LastVisit);
+        builder.Ignore(x => x.Context);
+        // builder.Property(x => x.LastVisit);
 
         builder.OwnsMany(x => x.Cards, cards =>
         {

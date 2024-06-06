@@ -28,11 +28,15 @@ public class CustomerLastVisitJob(
             var transactions = await client.GetTransactionReport(org.Id, from, to);
             var customers = transactions
                 .GroupBy(x => x.CardNumbers)
-                .Select(x => new CustomerVisit(
+                .Select(x => new CardVisit(
                     x.Key,
-                    x.Select(r => r.CreateDate(offset))
+                    x.Select(r => 
+                        new CardVisitTransaction(
+                            r.CreateDate(offset), 
+                            r.TransactionSum ?? 0)
+                    )
                 ));
-            var result = await commands.Send(new CustomersUpdateLastVisit(org.Id, customers));
+            var result = await commands.Send(new CustomersUpdateLastVisitCommand(org.Id, customers));
             logger.LogInformation($"updated '{result.Count()}' customers in '{org.Name}' from '{from}' to '{to}'");
 
         }
