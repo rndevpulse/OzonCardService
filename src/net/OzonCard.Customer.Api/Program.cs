@@ -214,7 +214,7 @@ builder.Services.AddQuartz(q =>
 {
     q.ScheduleJob<CustomerLastVisitJob>(t => t
         .WithIdentity("Last visit", "Reports")
-        .StartAt(DateTimeOffset.Now.AddMinutes(2))
+        .StartAt(DateTimeOffset.Now.AddMinutes(1))
         .WithSimpleSchedule(b => b
             .RepeatForever()
             .WithInterval(TimeSpan.FromHours(3))

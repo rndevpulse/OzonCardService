@@ -3,8 +3,8 @@ import {IAuth} from "../models/auth/IAuth";
 import {Bounce, Slide, toast} from "react-toastify";
 
 // export const API_URL = 'https://localhost:5180/api/v1'
-// export const API_URL = 'https://ozon.kolur.keenetic.link/api/v1'
-export const API_URL = 'https://cardozon.pulse2.keenetic.link/api/v1'
+// export const API_URL = 'https://ozon.pulse2.keenetic.link/api/v1'
+export const API_URL = 'https://ozon.pulse2.keenetic.link/api/v1'
 
 const api = axios.create({
     withCredentials: true,
