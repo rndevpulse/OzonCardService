@@ -45,13 +45,15 @@ export function Customer({customer, organization, onChange, onRemove} : ICustome
                         <li>Баланс: {customer.balance}</li>
                         <li>Сумма заказов: {customer.sum ?? 0}</li>
                         <li>Количество заказов: {customer.orders ?? 0}</li>
+                        <li>Количество дней питания: {customer.daysGrant ?? 0}</li>
                     </ul>
                     <ul>
                         <li>Категории:</li>
                         {customer.categories && customer.categories.map(category => {
                             return (<li>{category.name}</li>)
                         })}
-                        <li>Последний визит: {getLastVisit(customer.lastVisit)}</li>
+                        <li>Последний визит: {getTime(customer.lastVisit)}</li>
+                        <li>обновлено: {getTime(customer.updated)}</li>
                     </ul>
                 </dd>
             </li>
@@ -60,7 +62,7 @@ export function Customer({customer, organization, onChange, onRemove} : ICustome
     )
 }
 
-function getLastVisit(value:Date):string{
+function getTime(value:Date):string{
     const dt = new Date(value)
     if (dt.getFullYear() < 2000)
         return "";
