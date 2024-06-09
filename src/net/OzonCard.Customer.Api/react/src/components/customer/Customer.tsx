@@ -53,7 +53,7 @@ export function Customer({customer, organization, onChange, onRemove} : ICustome
                             return (<li>{category.name}</li>)
                         })}
                         <li>Последний визит: {getTime(customer.lastVisit)}</li>
-                        <li>обновлено: {getTime(customer.updated)}</li>
+                        <li>Обновлено: {getTime(customer.updated)}</li>
                     </ul>
                 </dd>
             </li>

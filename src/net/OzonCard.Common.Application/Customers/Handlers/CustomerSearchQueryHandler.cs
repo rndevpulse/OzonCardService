@@ -65,7 +65,7 @@ public class CustomerSearchQueryHandler(
                 bizCustomer.Categories
                     .Where(cat=>cat.IsActive)
                     .Select(cat => new Category(cat.Id){Name =  cat.Name}),
-                visits.GroupBy(t => t).Count(),
+                visits.GroupBy(t => t.Date.Date).Count(),
                 lastVisit?.Date,
                 lastVisit?.CreatedAt
                 // shortRep?.LastVisitDate.DateTime,

@@ -26,7 +26,7 @@ public class CustomersUpdateLastVisitHandler(
         var result = new List<Customer>();
         foreach (var visit in request.CustomersVisit)
         {
-            var card = visit.Card?.Split(",").FirstOrDefault();
+            var card = visit.Card?.Split(",").MaxBy(x=>x.Length);
             if (string.IsNullOrEmpty(card))
                 continue;
             var customer = customers.FirstOrDefault(x => x.Cards.Any(c => c.Number == card));
