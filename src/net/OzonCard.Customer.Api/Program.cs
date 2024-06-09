@@ -18,6 +18,7 @@ using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
+using OzonCard.Common.Application.Visits;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Infrastructure;
@@ -161,6 +162,7 @@ builder.Services.AddHostedService<DatabaseBootstrapService>();
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 builder.Services.AddScoped<IFileRepository, FileRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IVisitRepository, VisitRepository>();
 
 #endregion
 
@@ -212,10 +214,10 @@ builder.Services.AddQuartz(q =>
 {
     q.ScheduleJob<CustomerLastVisitJob>(t => t
         .WithIdentity("Last visit", "Reports")
-        .StartAt(DateTimeOffset.Now.AddMinutes(2))
+        .StartAt(DateTimeOffset.Now.AddMinutes(1))
         .WithSimpleSchedule(b => b
             .RepeatForever()
-            .WithInterval(TimeSpan.FromHours(4))
+            .WithInterval(TimeSpan.FromHours(3))
         )
     );
 });

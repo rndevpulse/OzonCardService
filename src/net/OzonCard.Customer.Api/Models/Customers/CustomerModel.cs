@@ -18,6 +18,7 @@ public class CustomerModel
     public decimal? Orders { get; set; }
     public IEnumerable<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
-    public DateTime LastVisit { get; set; }
+    public DateTimeOffset? LastVisit { get; set; }
+    public DateTimeOffset? Updated { get; set; }
     public int? DaysGrant { get; set; }
 }

@@ -90,7 +90,7 @@ public class ReportTransactionsCommandHandler(
             new TransactionReportDataSet(
                 transactionsReportTable, transactionsSummaryTable
             ),
-            $"{request.Title} в период с {from} по {to.AddSeconds(-1)}"
+            $"{request.Title} в период с {from} по {to.Date.AddSeconds(-1)}"
         );
         
         var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);

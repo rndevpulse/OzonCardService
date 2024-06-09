@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Customers.Data;
@@ -11,13 +12,15 @@ namespace OzonCard.Customer.Api.Quartz;
 public class CustomerLastVisitJob(
     ILogger<CustomerLastVisitJob> logger,
     ICommandBus commands,
-    IOrganizationRepository organizations
+    IOrganizationRepository organizations,
+    IConfiguration configuration
 ) : IJob
 {
     
     public async Task Execute(IJobExecutionContext context)
     {
-        var from = DateTime.Now.AddDays(-5);
+        var period = 0 - configuration.GetValue("jobs:period", 5);
+        var from = DateTime.Now.AddDays(period);
         var to = DateTime.Now;
         var offset = TimeSpan.FromMinutes(180);
 
@@ -28,12 +31,18 @@ public class CustomerLastVisitJob(
             var transactions = await client.GetTransactionReport(org.Id, from, to);
             var customers = transactions
                 .GroupBy(x => x.CardNumbers)
-                .Select(x => new CustomerVisit(
+                .Select(x => new CardVisit(
                     x.Key,
-                    x.Max(r => r.CreateDate(offset)),
-                    x.GroupBy(t => t.CreateDate(offset)).Count())
-                );
-            var result = await commands.Send(new CustomersUpdateLastVisit(org.Id, customers));
+                    x.Select(r => 
+                        new CardVisitTransaction(
+                            r.CreateDate(offset), 
+                            r.TransactionSum ?? 0)
+                    ).ToArray()
+                ))
+                .ToArray();
+            if (customers.Length == 0)
+                continue;
+            var result = await commands.Send(new CustomersUpdateLastVisitCommand(org.Id, customers));
             logger.LogInformation($"updated '{result.Count()}' customers in '{org.Name}' from '{from}' to '{to}'");
 
         }
