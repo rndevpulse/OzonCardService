@@ -16,32 +16,6 @@ interface ICustomerProps{
 export function Customer({customer, organization, onChange, onRemove} : ICustomerProps) {
 
     const {modal, open, close}=useContext(ModalContext)
-
-    // const div_ChangeCustomerCategory = () => {
-    //     return (<div>
-    //         <label>Добавить или удалить выбранные категории</label>
-    //         <span>
-    //                 <button className="button"
-    //                         onClick={() => onChangeCategory(customer.bizId, customer.name, false)}>
-    //                     Добавить
-    //                 </button>
-    //                 <button className="button red"
-    //                         onClick={() => onChangeCategory(customer.bizId, customer.name, true)}>
-    //                     Удалить
-    //                 </button>
-    //             </span>
-    //     </div>)
-    // }
-    // const div_ChangeCustomerBalance = () => {
-    //     return (<div>
-    //         <label>Изменение баланса</label>
-    //         <button className="button"
-    //                 onClick={() => onChangeBalance(customer.bizId, customer.name)}>
-    //             Установить
-    //         </button>
-    //     </div>)
-    // }
-
     const onChangeHandler = (customer:ISearchCustomerModel) => {
         close()
         onChange(customer)
@@ -63,23 +37,23 @@ export function Customer({customer, organization, onChange, onRemove} : ICustome
             </Modal>}
             <li key={customer.id} onClick={open}>
                 <dt>{customer.name}</dt>
-                {/*{div_ChangeCustomerCategory()}*/}
-                {/*{div_ChangeCustomerBalance()}*/}
                 <dd>
                     <ul>
                         <li>Организация: {customer.organization}</li>
                         <li>Карта: {customer.card}</li>
                         <li>Табельный №: {customer.tabNumber}</li>
                         <li>Баланс: {customer.balance}</li>
-                        <li>Сумма заказов: {customer.sum}</li>
-                        <li>Количество заказов: {customer.orders}</li>
+                        <li>Сумма заказов: {customer.sum ?? 0}</li>
+                        <li>Количество заказов: {customer.orders ?? 0}</li>
+                        <li>Количество дней питания: {customer.daysGrant ?? 0}</li>
                     </ul>
                     <ul>
                         <li>Категории:</li>
                         {customer.categories && customer.categories.map(category => {
                             return (<li>{category.name}</li>)
                         })}
-                        <li>Последний визит: {getLastVisit(customer.lastVisit)}</li>
+                        <li>Последний визит: {getTime(customer.lastVisit)}</li>
+                        <li>Обновлено: {getTime(customer.updated)}</li>
                     </ul>
                 </dd>
             </li>
@@ -88,7 +62,7 @@ export function Customer({customer, organization, onChange, onRemove} : ICustome
     )
 }
 
-function getLastVisit(value:Date):string{
+function getTime(value:Date):string{
     const dt = new Date(value)
     if (dt.getFullYear() < 2000)
         return "";

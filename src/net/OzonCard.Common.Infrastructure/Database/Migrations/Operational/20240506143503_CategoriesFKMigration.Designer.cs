@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OzonCard.Common.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using OzonCard.Common.Infrastructure.Database;
 namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
 {
     [DbContext(typeof(InfrastructureContext))]
-    partial class InfrastructureContextModelSnapshot : ModelSnapshot
+    [Migration("20240506143503_CategoriesFKMigration")]
+    partial class CategoriesFKMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,6 +49,9 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                     b.Property<bool>("IsRemoved")
                         .HasColumnType("bit");
 
+                    b.Property<DateTimeOffset>("LastVisit")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -72,31 +78,6 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                     b.HasKey("Id");
 
                     b.ToTable("customers", (string)null);
-                });
-
-            modelBuilder.Entity("OzonCard.Common.Domain.Customers.CustomerVisit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("Customer")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<decimal>("Sum")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("customers_visits", (string)null);
                 });
 
             modelBuilder.Entity("OzonCard.Common.Domain.Files.SaveFile", b =>

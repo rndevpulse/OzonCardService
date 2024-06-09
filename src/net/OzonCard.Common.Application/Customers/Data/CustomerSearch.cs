@@ -16,6 +16,7 @@ public record CustomerSearch(
     decimal? Sum,
     decimal? Orders,
     IEnumerable<Category> Categories,
-    DateTime? LastVisit,
-    int? DaysGrant
+    int? DaysGrant,
+    DateTimeOffset? LastVisit,
+    DateTimeOffset? Updated
     );

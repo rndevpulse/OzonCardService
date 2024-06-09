@@ -18,7 +18,6 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
         builder.OwnsMany(x => x.Categories, categories =>
         {
             categories.ToTable("organizations_categories");
-            categories.HasKey(x => x.Id);
             categories.Property(x => x.Name);
             categories.Property(x => x.IsActive);
         });

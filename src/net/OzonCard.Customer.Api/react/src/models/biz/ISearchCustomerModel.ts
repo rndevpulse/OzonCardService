@@ -17,4 +17,5 @@ export interface ISearchCustomerModel {
     daysGrant: number
     categories: ICategory[]
     lastVisit: Date
+    updated: Date
 }

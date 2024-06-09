@@ -76,7 +76,7 @@ public class ReportPaymentsCommandHandler(
         excelManager.CreateWorkbook(
             Path.Combine(fileManager.GetDirectory(), $"{request.TaskId}.xlsx"),
             new ProgramReportDataSet(resultReport.OrderBy(x=>x.Name)),
-            $"{request.Title} в период с {request.DateFrom.Date} по {request.DateTo.Date.AddSeconds(-1)}"
+            $"{request.Title} в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
             );
         
         var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);
