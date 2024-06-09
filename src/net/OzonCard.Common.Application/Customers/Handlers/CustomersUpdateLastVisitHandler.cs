@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
@@ -11,7 +12,8 @@ namespace OzonCard.Common.Application.Customers.Handlers;
 public class CustomersUpdateLastVisitHandler(
     ICustomerRepository repository,
     IVisitRepository visitRepository,
-    IOrganizationRepository organizations
+    IOrganizationRepository organizations,
+    ILogger<CustomersUpdateLastVisitHandler> logger
 ) : ICommandHandler<CustomersUpdateLastVisitCommand, IEnumerable<Customer>>
 {
     
@@ -24,14 +26,24 @@ public class CustomersUpdateLastVisitHandler(
         var result = new List<Customer>();
         foreach (var visit in request.CustomersVisit)
         {
-            if (string.IsNullOrEmpty(visit.Card))
+            var card = visit.Card?.Split(",").FirstOrDefault();
+            if (string.IsNullOrEmpty(card))
                 continue;
-            var customer = customers.FirstOrDefault(x => x.Cards.Any(c => c.Number == visit.Card));
+            var customer = customers.FirstOrDefault(x => x.Cards.Any(c => c.Number == card));
             if (customer == null)
             {
-                customer = await TryCreateCustomer(client, org, visit.Card, cancellationToken);
-                await repository.AddAsync(customer);
-                customer.Context = new CoreCustomerContext(customer, visitRepository);
+                try
+                {
+                    customer = await CreateCustomer(client, org, card, cancellationToken);
+                    await repository.AddAsync(customer);
+                    customer.Context = new CoreCustomerContext(customer, visitRepository);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e,$"Not sucsess create customer with card '{card}' in organiazation '{org.Id}': {client.Reason}");
+                    continue;
+                }
+                
             }
             // customer.LastVisit = visit.LastVisitDate;
             await customer.Context.UpdateAsync(
@@ -47,7 +59,7 @@ public class CustomersUpdateLastVisitHandler(
         return result;
     }
     
-    private async Task<Customer?> TryCreateCustomer(BizClient client, Organization org, string card, CancellationToken ct)
+    private async Task<Customer> CreateCustomer(BizClient client, Organization org, string card, CancellationToken ct)
     {
         var bizCustomer = await client.GetCustomerAsync(card, org.Id, ct);
         

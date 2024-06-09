@@ -53,6 +53,7 @@ public class CustomerSearchQueryHandler(
             // var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
             var visits = (await c.Context.GetVisitsAsync(from, to, cancellationToken)).ToList();
             // var shortRep = repTransactions.FirstOrDefault(r => r.Card?.Contains(request.Card) == true);
+            var lastVisit = visits.MaxBy(r => r.Date);
             return new CustomerSearch(
                 c.Id, c.BizId, request.ProgramId, c.Name,
                 string.Join(", ", c.Cards.Select(x => x.Number)),
@@ -64,8 +65,9 @@ public class CustomerSearchQueryHandler(
                 bizCustomer.Categories
                     .Where(cat=>cat.IsActive)
                     .Select(cat => new Category(cat.Id){Name =  cat.Name}),
-                visits.Max(r => r.Date).Date,
-                visits.GroupBy(t => t).Count()
+                visits.GroupBy(t => t).Count(),
+                lastVisit?.Date,
+                lastVisit?.CreatedAt
                 // shortRep?.LastVisitDate.DateTime,
                 // shortRep?.DaysGrant
             );
