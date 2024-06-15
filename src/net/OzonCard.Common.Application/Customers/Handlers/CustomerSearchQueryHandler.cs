@@ -46,36 +46,47 @@ public class CustomerSearchQueryHandler(
         //         x.GroupBy(t => t.CreateDate(offset)).Count())
         //     );
         var walletId = program.Wallets.First().Id;
-        
-        var result = customers.Select(async c => 
+        try
         {
-            var bizCustomer = await client.GetCustomerAsync(c.BizId, org.Id, cancellationToken);
-            // var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
-            var visits = (await c.Context.GetVisitsAsync(from, to, cancellationToken)).ToList();
-            // var shortRep = repTransactions.FirstOrDefault(r => r.Card?.Contains(request.Card) == true);
-            var lastVisit = visits.MaxBy(r => r.Date);
-            return new CustomerSearch(
-                c.Id, c.BizId, request.ProgramId, c.Name,
-                string.Join(", ", c.Cards.Select(x => x.Number)),
-                c.TabNumber ?? "", c.Position ?? "", c.Division ?? "",
-                org.Name,
-                bizCustomer.WalletBalances.FirstOrDefault(w => w.Wallet.Id == walletId)?.Balance,
-                visits.Sum(v=>v.Sum),
-                visits.Count,
-                bizCustomer.Categories
-                    .Where(cat=>cat.IsActive)
-                    .Select(cat => new Category(cat.Id){Name =  cat.Name}),
-                visits.GroupBy(t => t.Date.Date).Count(),
-                lastVisit?.Date,
-                lastVisit?.CreatedAt
-                // shortRep?.LastVisitDate.DateTime,
-                // shortRep?.DaysGrant
-            );
-        })
-        .Select(t => t.Result)
-        .ToList();
+            var result = customers.Select(async c =>
+                {
+                    logger.LogInformation($"try get customer from biz: {c.BizId}");
+                    var bizCustomer = await client.GetCustomerAsync(c.BizId, org.Id, cancellationToken);
+                    logger.LogInformation($"customer success found from biz: {c.BizId}");
+
+                    // var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
+                    var visits = (await c.Context.GetVisitsAsync(from, to, cancellationToken)).ToList();
+                    // var shortRep = repTransactions.FirstOrDefault(r => r.Card?.Contains(request.Card) == true);
+                    var lastVisit = visits.MaxBy(r => r.Date);
+                    return new CustomerSearch(
+                        c.Id, c.BizId, request.ProgramId, c.Name,
+                        string.Join(", ", c.Cards.Select(x => x.Number)),
+                        c.TabNumber ?? "", c.Position ?? "", c.Division ?? "",
+                        org.Name,
+                        bizCustomer.WalletBalances.FirstOrDefault(w => w.Wallet.Id == walletId)?.Balance,
+                        visits.Sum(v=>v.Sum),
+                        visits.Count,
+                        bizCustomer.Categories
+                            .Where(cat=>cat.IsActive)
+                            .Select(cat => new Category(cat.Id){Name =  cat.Name}),
+                        visits.GroupBy(t => t.Date.Date).Count(),
+                        lastVisit?.Date,
+                        lastVisit?.CreatedAt
+                        // shortRep?.LastVisitDate.DateTime,
+                        // shortRep?.DaysGrant
+                    );
+                })
+                .Select(t => t.Result)
+                .ToList();
         
-        return result;
+            return result;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, $"Fail search customer: {client.Reason}");
+            throw;
+        }
+        
 
     }
 }
