@@ -166,10 +166,10 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
 
     }
 
-    public async Task<IEnumerable<ShortGuestInfoDto>> GetShortCustomersReport(Guid orgId, CancellationToken ct = default)
+    public async Task<IEnumerable<ShortGuestInfoDto>> GetShortCustomersReport(Guid orgId, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
     {
         var result = await _client.GetFromJsonAsync<IEnumerable<ShortGuestInfoDto>>(
-            $"customers/get_customers_by_organization_and_by_period?organizationId={orgId}&date_from={DateTime.Now:yyyy-MM-dd}&date_to={DateTime.Now.AddDays(-95):yyyy-MM-dd}",
+            $"customers/get_customers_by_organization_and_by_period?organization={orgId}&dateFrom={dateFrom:yyyy-MM-dd}&dateTo={dateTo:yyyy-MM-dd}",
             ct);
         return result ?? throw new Exception($"Cannot load short customers report");
     }

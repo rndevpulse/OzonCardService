@@ -31,5 +31,5 @@ public interface IBizClient
     Task<IEnumerable<TransactionsReportDto>> GetTransactionReport(Guid orgId, DateTime dateFrom,
         DateTime dateTo, TransactionType type = TransactionType.PayFromWallet, CancellationToken ct = default);
 
-    Task<IEnumerable<ShortGuestInfoDto>> GetShortCustomersReport(Guid orgId, CancellationToken ct = default);
+    Task<IEnumerable<ShortGuestInfoDto>> GetShortCustomersReport(Guid orgId, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default);
 }

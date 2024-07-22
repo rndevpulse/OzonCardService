@@ -16,5 +16,7 @@ public class VisitEntityTypeConfiguration : IEntityTypeConfiguration<CustomerVis
 
         builder.Property(typeof(int), "Id");
         builder.HasKey("Id");
+
+        builder.HasIndex(x => x.Customer);
     }
 }

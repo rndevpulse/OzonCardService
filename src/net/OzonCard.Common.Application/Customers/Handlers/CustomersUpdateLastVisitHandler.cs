@@ -24,7 +24,7 @@ public class CustomersUpdateLastVisitHandler(
         var client = new BizClient(org.Login, org.Password);
         var customers = await repository.GetItemsAsync(request.OrganizationId, cancellationToken);
         var result = new List<Customer>();
-        foreach (var visit in request.CustomersVisit)
+        foreach (var visit in request.CardVisits)
         {
             var card = visit.Card?.Split(",").MaxBy(x=>x.Length);
             if (string.IsNullOrEmpty(card))
@@ -40,7 +40,7 @@ public class CustomersUpdateLastVisitHandler(
                 }
                 catch (Exception e)
                 {
-                    logger.LogError(e,$"Not sucsess create customer with card '{card}' in organiazation '{org.Id}': {client.Reason}");
+                    logger.LogError(e,$"Not success create customer with card '{card}' in organization '{org.Id}': {client.Reason}");
                     continue;
                 }
                 
@@ -54,6 +54,11 @@ public class CustomersUpdateLastVisitHandler(
                     Date = v.Date,
                     Sum = v.Sum
                 }), cancellationToken);
+            
+            if (customer.CreatedBiz == null
+                && request.Customers.FirstOrDefault(c => c.Id == customer.BizId) is { } visitInfo)
+                customer.CreatedBiz = visitInfo.CreatedAt;
+            
             result.Add(customer);
         }
         return result;

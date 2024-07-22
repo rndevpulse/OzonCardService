@@ -6,6 +6,7 @@ namespace OzonCard.Common.Application.Customers.Commands;
 
 public record CustomersUpdateLastVisitCommand(
     Guid OrganizationId,
-    IEnumerable<CardVisit> CustomersVisit
+    IEnumerable<CardVisit> CardVisits,
+    IEnumerable<CustomerInfoVisit> Customers
 ) : ICommand<IEnumerable<Customer>>;
 

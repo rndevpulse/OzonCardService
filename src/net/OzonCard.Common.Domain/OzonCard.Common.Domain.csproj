@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
+      <ProjectReference Include="..\OzonCard.Common.Worker\OzonCard.Common.Worker.csproj" />
     </ItemGroup>
 
 </Project>
