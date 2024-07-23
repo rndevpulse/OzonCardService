@@ -18,4 +18,5 @@ export interface ISearchCustomerModel {
     categories: ICategory[]
     lastVisit: Date
     updated: Date
+    createdAt: Date
 }

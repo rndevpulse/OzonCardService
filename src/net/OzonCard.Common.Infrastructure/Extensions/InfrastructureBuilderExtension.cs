@@ -1,4 +1,3 @@
-using System.Reflection;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +11,9 @@ using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Materialization;
 using OzonCard.Common.Infrastructure.Piplines;
 using OzonCard.Common.Infrastructure.Repositories;
+using OzonCard.Common.Infrastructure.Services;
 using OzonCard.Common.Worker.Extensions;
+using OzonCard.Common.Worker.JobsProgress;
 
 namespace OzonCard.Common.Infrastructure.Extensions;
 
@@ -58,6 +59,7 @@ public static class InfrastructureBuilderExtension
         services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IVisitRepository, VisitRepository>();
+        services.AddScoped<IJobProgressRepository, JobProgressRepository>();
         return services;
 
     }
@@ -73,6 +75,8 @@ public static class InfrastructureBuilderExtension
     private static IServiceCollection AddHangfire(this IServiceCollection services, InfrastructureOptions options)
     {
         services.AddHangfireBackgroundJobService(options.Connection ?? string.Empty);
+        
+        services.AddHostedService<ScheduleUpdateBootstrapService>();
         
         if (options.ServerWorker)
             services.AddHangfireServer();

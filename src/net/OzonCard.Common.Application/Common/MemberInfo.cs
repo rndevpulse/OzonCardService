@@ -7,6 +7,13 @@ public abstract class MemberInfo
     public string User { get; private set; } = "";
     public void SetUser(string user) => User = user;
     
-    public Guid TaskId { get; private set; }
-    public void SetTaskId(Guid taskId) => TaskId = taskId;
+    public Guid? Tracking { get; private set; }
+
+    public Guid UseTracking()
+    {
+        var tracking  = Guid.NewGuid();
+        Tracking = tracking;
+        return tracking;
+    } 
+
 }

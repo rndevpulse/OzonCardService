@@ -15,7 +15,6 @@ public class JobProgressEntityTypeConfiguration : IEntityTypeConfiguration<JobPr
         
         builder.Property(x => x.TaskId);
         builder.Property(x => x.Path);
-        builder.Property(x => x.Reference);
 
         builder.HasIndex(x => x.TaskId);
     }

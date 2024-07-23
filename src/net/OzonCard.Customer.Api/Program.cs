@@ -12,13 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Core.Exceptions;
-using OzonCard.Common.Infrastructure.BackgroundTasks;
 using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Extensions;
 using OzonCard.Common.Logging;
-using OzonCard.Customer.Api.Services.BackgroundTasks;
 using OzonCard.Excel;
 using OzonCard.Files;
 using OzonCard.Identity.Domain;
@@ -124,8 +121,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddInfrastructure(opt =>
     opt.SetAssemblies(assemblies)
         .SetConnection(builder.Configuration.GetConnectionString("service"))
-        .SetDevEnvironment(builder.Environment.IsDevelopment()
-    )
+        .SetDevEnvironment(builder.Environment.IsDevelopment())
 );
 
 
@@ -177,16 +173,7 @@ builder.Services.AddVersionedApiExplorer(o =>
 builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<IExcelManager, ExcelManager>();
 
-
 #endregion
-
-#region BackgroundWorker
-
-builder.Services.AddSingleton<IBackgroundQueue, BackgroundQueue>();
-builder.Services.AddHostedService<TaskRunningService>();
-
-#endregion
-
 
 
 var app = builder.Build();

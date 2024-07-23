@@ -18,9 +18,9 @@ public class InfrastructureOptions
         IsDevelopment = value;
         return this;
     }
-    public InfrastructureOptions SetServerWorker(bool value)
+    public InfrastructureOptions SetServerWorker()
     {
-        ServerWorker = value;
+        ServerWorker = true;
         return this;
     }
     public InfrastructureOptions SetAssemblies(Assembly[] value)

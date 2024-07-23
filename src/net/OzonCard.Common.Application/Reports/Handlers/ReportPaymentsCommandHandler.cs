@@ -70,16 +70,16 @@ public class ReportPaymentsCommandHandler(
                 PaidOrders = rowReport.PaidOrdersCount,
             });
         }
-        
-        
-        
+
+
+        var fileId = Guid.NewGuid();
         excelManager.CreateWorkbook(
-            Path.Combine(fileManager.GetDirectory(), $"{request.TaskId}.xlsx"),
+            Path.Combine(fileManager.GetDirectory(), $"{fileId}.xlsx"),
             new ProgramReportDataSet(resultReport.OrderBy(x=>x.Name)),
             $"{request.Title} в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
             );
         
-        var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);
+        var saveFile = new SaveFile(fileId, "xlsx", request.Title, request.UserId);
         await fileRepository.AddAsync(saveFile);
         return saveFile;
     }

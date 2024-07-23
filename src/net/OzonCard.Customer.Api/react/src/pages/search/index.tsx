@@ -14,11 +14,14 @@ import './index.css'
 import {ISearchCustomerModel} from "../../models/biz/ISearchCustomerModel";
 import {Customer} from "../../components/customer";
 import {Loader} from "../../components/loader";
+import {useToast} from "../../components/toast";
 registerLocale("ru", ru)
 
 
 
 const SearchPage: FC = () => {
+
+    const toast = useToast();
 
     const { organizationStore } = useContext(Context);
     const [organization, setOrganization] = useState<IOrganization>();
@@ -90,9 +93,11 @@ const SearchPage: FC = () => {
     function getCustomersInfo() {
         //console.log("getCustomersInfo length", customersInfo.length)
         if (isLoadCustomers) {
+            toast.show("Идет поиск...", "info");
             return <div className="center">Идет поиск...</div>
         }
         if (customers.length === 0) {
+            toast.show("Сотрудников не найдено", "info");
             return <div className="center">Нет результатов</div>
         }
 

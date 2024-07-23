@@ -2,6 +2,8 @@ import * as React from 'react'
 import { FC, useContext, useState } from 'react'
 import { Context } from '../../index';
 import { observer } from 'mobx-react-lite';
+import {toast, ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
 
 
@@ -21,9 +23,10 @@ const LoginPage: FC = () => {
     }
     return (
         <div className="center form-group  col-md-6">
+            <ToastContainer/>
             <h5>Corporate Catering Card Service</h5>
             <h1>Authorization</h1>
-            <br />
+            <br/>
             <div className="autorization">
                 <label htmlFor='email' className="">
                     Email

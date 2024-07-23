@@ -1,4 +1,3 @@
-
 using Hangfire;
 using OzonCard.Common.Core;
 using OzonCard.Common.Worker.Data;
@@ -6,39 +5,38 @@ using OzonCard.Common.Worker.Data;
 namespace OzonCard.Common.Worker.Services;
 
 internal class BackgroundJobService(
-    IBackgroundJobQueue queue,
+    IBackgroundJobQueue jobQueue,
     ITrackingBackgroundJobs tracking
 ) : IBackgroundJobsService
 {
 
-    public void AppendSchedule<TResult>(string taskId, ICommand<TResult> task, string schedule = "*/10 * * * *")
+    public IBackgroundTask AppendSchedule<TResult>(
+        string taskId, 
+        ICommand<TResult> task, 
+        string schedule = "*/10 * * * *", 
+        string queue = "default")
     {
-        queue.AppendSchedule<ICommandBus>(
+        jobQueue.AppendSchedule<ICommandBus>(
             taskId, 
             commands => commands.Send(task, CancellationToken.None), 
-            schedule);
-    }
-
-
-
-    public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task)
-    {
-        var taskId = queue.Enqueue<ICommandBus>(commands => commands.Send(task, CancellationToken.None));
+            schedule,
+            queue);
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
         return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, jobData.State);
-        // return tracking.Append(reference?.ToString() ?? id);
     }
 
-    public async Task<IBackgroundTask> Enqueue<TResult, TStatus>(ICommand<TResult> task, Guid reference) where TStatus: class, new()
+
+
+    public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task, Guid? track = null)
     {
-        var taskId = queue.Enqueue<ICommandBus>(commands => commands.Send(task, CancellationToken.None));
+        var taskId = jobQueue.Enqueue<ICommandBus>(commands => commands.Send(task, CancellationToken.None));
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
-        return new BackgroundTask<TResult, TStatus>(taskId, jobData.CreatedAt, jobData.State)
-        {
-            Progress = await tracking.CreateAsync<TStatus>(taskId, reference, CancellationToken.None)
-        };
+        if (track != null && track != Guid.Empty)
+            tracking.Observe(taskId, (Guid)track);
+        return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, jobData.State);
     }
-    
+    public void Dequeue(string taskId) => jobQueue.Dequeue(taskId);
+
 
     public IEnumerable<IBackgroundTask> GetTasks(params string[] tasksId)
     {
@@ -57,5 +55,10 @@ internal class BackgroundJobService(
         return jobs.ToList();
         
     }
-    
+
+    public IBackgroundTask? Cancel(string taskId)
+    {
+        jobQueue.Cancel(taskId);
+        return GetTasks([taskId]).FirstOrDefault();
+    } 
 }

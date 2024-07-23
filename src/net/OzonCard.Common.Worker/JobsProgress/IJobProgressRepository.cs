@@ -4,7 +4,8 @@ namespace OzonCard.Common.Worker.JobsProgress;
 
 public interface IJobProgressRepository
 {
-    Task<IJobProgress> AddAsync(string taskId, Guid reference, string path, CancellationToken ct);
-    Task<IJobProgress?> FindJobAsync(Guid reference, CancellationToken ct);
-    Task<IEnumerable<IJobProgress>> GetJobsAsync(IEnumerable<string> taskId, CancellationToken ct);
+    IJobProgress Add(string taskId, Guid track, string path);
+    Task<IJobProgress?> GetItemAsync(string taskId, CancellationToken ct);
+    Task<IJobProgress?> GetItemAsync(Guid track, CancellationToken ct);
+    Task<IEnumerable<IJobProgress>> GetItemsAsync(IEnumerable<string> taskId, CancellationToken ct);
 }

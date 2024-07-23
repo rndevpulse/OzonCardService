@@ -2,8 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OzonCard.Common.Infrastructure.Database;
 
-namespace OzonCard.Common.Infrastructure.Database;
+namespace OzonCard.Common.Infrastructure.Services;
 
 public class DatabaseBootstrapService : BackgroundService
 {

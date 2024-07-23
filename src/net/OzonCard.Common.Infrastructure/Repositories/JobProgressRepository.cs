@@ -10,24 +10,29 @@ public class JobProgressRepository(
     InfrastructureContext context
 ) : IJobProgressRepository
 {
-    public async Task<IJobProgress> AddAsync(string taskId, Guid reference, string path, CancellationToken ct)
+    public  IJobProgress Add(string taskId, Guid track, string path)
     {
         var job = new JobProgress
         {
             TaskId = taskId,
-            Reference = reference,
-            Path = path
+            Track = track,
+            Path = path,
+            CreatedAt = DateTimeOffset.Now
         };
-        await context.Set<JobProgress>().AddAsync(job, ct);
+        context.Set<JobProgress>().Add(job);
         return job;
     }
 
-    public async Task<IJobProgress?> FindJobAsync(Guid reference, CancellationToken ct)
+    public async Task<IJobProgress?> GetItemAsync(string taskId, CancellationToken ct)
     {
-        return await context.Set<JobProgress>().FirstOrDefaultAsync(x=>x.Reference == reference, ct);
+        return await context.Set<JobProgress>().FirstOrDefaultAsync(x=>x.TaskId == taskId, ct);
+    }
+    public async Task<IJobProgress?> GetItemAsync(Guid track, CancellationToken ct)
+    {
+        return await context.Set<JobProgress>().FirstOrDefaultAsync(x=>x.Track == track, ct);
     }
 
-    public async Task<IEnumerable<IJobProgress>> GetJobsAsync(IEnumerable<string> taskId, CancellationToken ct)
+    public async Task<IEnumerable<IJobProgress>> GetItemsAsync(IEnumerable<string> taskId, CancellationToken ct)
     {
         return await context.Set<JobProgress>().Where(x=>taskId.Contains(x.TaskId)).ToListAsync(ct);
 

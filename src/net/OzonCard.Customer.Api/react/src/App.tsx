@@ -14,7 +14,8 @@ import ServicePage from "./pages/service";
 import ReportPage from "./pages/report";
 import SearchPage from "./pages/search";
 import {Loader} from "./components/loader";
-
+import {Slide, ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -38,6 +39,16 @@ function App() {
   return (
       <BrowserRouter>
         <NavMenu />
+        <ToastContainer
+            position={"bottom-right"}
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick={true}
+            pauseOnHover={true}
+            draggable={true}
+            theme={"light"}
+            transition={Slide}
+        />
         <Container>
           <Routes>
             <Route path='/' element={<UploadPage/>} />

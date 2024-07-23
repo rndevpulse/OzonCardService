@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using OzonCard.Biz.Client;
-using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Domain.Customers;
 using OzonCard.Common.Domain.Organizations;
+using OzonCard.Common.Worker.Services;
 using OzonCard.Excel;
 using OzonCard.Files;
 
@@ -16,7 +16,7 @@ public class CustomersUploadCommandHandler(
     ILogger<CustomersUploadCommandHandler> logger,
     IOrganizationRepository orgRepository,
     ICustomerRepository customerRepository,
-    IBackgroundQueue queue, 
+    ITrackingBackgroundJobs tracking, 
     IExcelManager excelManager,
     IFileManager fileManager
 ) : CustomerBaseHandler, ICommandHandler<CustomersUploadCommand, IEnumerable<Customer>>
@@ -24,6 +24,10 @@ public class CustomersUploadCommandHandler(
 
     public async Task<IEnumerable<Customer>> Handle(CustomersUploadCommand request, CancellationToken cancellationToken)
     {
+        var task = request.Tracking is { } track
+            ? await tracking.GetJobAsync(track, cancellationToken)
+            : null;
+        
         var fileCustomers = request.Customer != null
             ? [ new()
                 {
@@ -42,7 +46,7 @@ public class CustomersUploadCommandHandler(
         
         Progress.CountAll = fileCustomers.Count;
         logger.LogInformation($"Try upload by {request.User} '{fileCustomers.Count}' customers");
-        queue.UpdateProgress(request.TaskId, Progress);
+        tracking.ReportProgress(task, Progress);
 
         var customers = (await customerRepository.GetCustomersByCardsAsync(
             org.Id,
@@ -87,7 +91,7 @@ public class CustomersUploadCommandHandler(
             
             result.Add(customer);
             //update progress task
-            queue.UpdateProgress(request.TaskId, Progress);
+            tracking.ReportProgress(task, Progress);
         }
 
         return result;

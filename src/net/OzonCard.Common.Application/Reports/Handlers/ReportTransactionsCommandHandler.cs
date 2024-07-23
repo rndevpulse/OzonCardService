@@ -85,15 +85,16 @@ public class ReportTransactionsCommandHandler(
             .OrderBy(x=>x.Name)
             .ToList();
 
+        var fileId = Guid.NewGuid();
         excelManager.CreateWorkbook(
-            Path.Combine(fileManager.GetDirectory(), $"{request.TaskId}.xlsx"),
+            Path.Combine(fileManager.GetDirectory(), $"{fileId}.xlsx"),
             new TransactionReportDataSet(
                 transactionsReportTable, transactionsSummaryTable
             ),
             $"{request.Title} в период с {from} по {to.Date.AddSeconds(-1)}"
         );
         
-        var saveFile = new SaveFile(request.TaskId, "xlsx", request.Title, request.UserId);
+        var saveFile = new SaveFile(fileId, "xlsx", request.Title, request.UserId);
         await fileRepository.AddAsync(saveFile);
         return saveFile;
     }

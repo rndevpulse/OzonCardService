@@ -3,11 +3,12 @@ using OzonCard.Common.Worker.Data;
 
 namespace OzonCard.Common.Worker.Services;
 
-internal interface ITrackingBackgroundJobs
+public interface ITrackingBackgroundJobs
 {
-    Task<TStatus> CreateAsync<TStatus>(string taskId, Guid reference, CancellationToken ct) where TStatus: class, new();
+    void Observe(string taskId, Guid track);
     object? GetJobProgress(IJobProgress job);
-    Task<IJobProgress?> GetJobAsync(Guid reference, CancellationToken ct);
+    Task<IJobProgress?> GetJobAsync(string taskId, CancellationToken ct);
+    Task<IJobProgress?> GetJobAsync(Guid track, CancellationToken ct);
     Task<IEnumerable<IJobProgress>> GetJobsAsync(IEnumerable<string> ids, CancellationToken ct);
-    void ReportProgress<TProgress>(IJobProgress job, TProgress progress);
+    void ReportProgress<TProgress>(IJobProgress? job, TProgress progress) where TProgress : IProgress<TProgress>, new();
 }

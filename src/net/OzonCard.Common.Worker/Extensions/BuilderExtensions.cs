@@ -1,17 +1,13 @@
 using Hangfire;
 using OzonCard.Common.Worker.Filters;
 using OzonCard.Common.Worker.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using OzonCard.Common.Core;
 
 namespace OzonCard.Common.Worker.Extensions;
 
 public static class BuilderExtensions
 {
-    public static IApplicationBuilder UseHangfireJobDashboard(this IApplicationBuilder builder)
-        => builder.UseHangfireDashboard();
-    
+   
     public static IServiceCollection AddHangfireBackgroundJobService(
         this IServiceCollection services, 
         string connection, 

@@ -1,9 +1,14 @@
 ﻿using System.Reflection;
+using Hangfire;
+using Hangfire.Dashboard;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OzonCard.Common.Core;
-using OzonCard.Common.Infrastructure.Buses;
+using OzonCard.Common.Infrastructure.Extensions;
 using OzonCard.Common.Logging;
+using OzonCard.Excel;
+using OzonCard.Files;
 
 var assemblies = new[]
 {
@@ -12,14 +17,34 @@ var assemblies = new[]
     Assembly.Load("OzonCard.Common.Domain"), 
     Assembly.Load("OzonCard.Common.Application"), 
 };
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.UseDefaultLogging();
 
 
 builder.Services.AddAutoMapper(assemblies);
 builder.Services.AddMemoryCache();
-builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(assemblies));
-builder.Services.AddScoped<ICommandBus, MediatrCommandBus>();
-builder.Services.AddScoped<IQueryBus, MediatrQueryBus>();
+
+builder.Services.AddInfrastructure(opt =>
+    opt.SetAssemblies(assemblies)
+        .SetConnection(builder.Configuration.GetConnectionString("service"))
+        .SetDevEnvironment(builder.Environment.IsDevelopment())
+        .SetServerWorker()
+);
+
+
+#region OtherStaff
+
+builder.Services.AddScoped<IFileManager, FileManager>();
+builder.Services.AddScoped<IExcelManager, ExcelManager>();
+
+#endregion
+
+var app = builder.Build();
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    IsReadOnlyFunc = _ => true 
+});
+app.Run();
 
