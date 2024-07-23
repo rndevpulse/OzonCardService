@@ -1,7 +1,7 @@
 ﻿namespace OzonCard.Customer.Api.Models.BackgroundTask;
 
 public record BackgroundTaskModel(
-    Guid Id,
+    string Id,
     DateTimeOffset QueuedAt,
     DateTimeOffset? CompletedAt,
     string Status,

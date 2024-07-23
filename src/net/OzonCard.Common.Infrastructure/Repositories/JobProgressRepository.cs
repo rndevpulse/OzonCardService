@@ -10,7 +10,7 @@ public class JobProgressRepository(
     InfrastructureContext context
 ) : IJobProgressRepository
 {
-    public  IJobProgress Add(string taskId, Guid track, string path)
+    public IJobProgress Add(string taskId, Guid track, string path)
     {
         var job = new JobProgress
         {
@@ -20,7 +20,9 @@ public class JobProgressRepository(
             CreatedAt = DateTimeOffset.Now
         };
         context.Set<JobProgress>().Add(job);
+        context.SaveChanges();
         return job;
+        
     }
 
     public async Task<IJobProgress?> GetItemAsync(string taskId, CancellationToken ct)

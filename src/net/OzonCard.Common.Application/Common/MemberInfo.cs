@@ -2,12 +2,12 @@
 
 public abstract class MemberInfo
 {
-    public Guid UserId { get; private set; }
+    public Guid UserId { get; set; }
     public void SetUserId(Guid userId) => UserId = userId;
-    public string User { get; private set; } = "";
+    public string User { get; set; } = "";
     public void SetUser(string user) => User = user;
     
-    public Guid? Tracking { get; private set; }
+    public Guid? Tracking { get; set; }
 
     public Guid UseTracking()
     {

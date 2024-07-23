@@ -40,7 +40,11 @@ public static class InfrastructureBuilderExtension
         services.AddDbContext<InfrastructureContext>(b =>
             (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
                 options.Connection,
-                optionsBuilder => optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
+                optionsBuilder =>
+                {
+                    optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
+                    optionsBuilder.UseCompatibilityLevel(120);
+                })
             .AddInterceptors(ContextMaterializationInterceptor.Instance));
         services.AddDbContext<SecurityContext>(b =>
             (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(

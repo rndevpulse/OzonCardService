@@ -12,7 +12,7 @@ public class TasksController(
 {
 
     [HttpGet]
-    public IEnumerable<BackgroundTaskModel> Index([FromQuery] IEnumerable<string> id, CancellationToken ct = default)
+    public object Index([FromQuery] IEnumerable<string> id, CancellationToken ct = default)
     {
         // logger.LogDebug("Get tasks:");
         return Mapper.Map<IEnumerable<BackgroundTaskModel>>(jobsService.GetTasks(id.ToArray()));

@@ -9,7 +9,19 @@ internal class BackgroundJobService(
     ITrackingBackgroundJobs tracking
 ) : IBackgroundJobsService
 {
-
+    private string CastSate(string? state)
+    {
+        switch (state)
+        {
+            case "Succeeded":
+                return "Completed";
+            case "Deleted":
+            case "Failed":
+                return "Failed";
+            default: 
+                return "Running";
+        }
+    }
     public IBackgroundTask AppendSchedule<TResult>(
         string taskId, 
         ICommand<TResult> task, 
@@ -22,7 +34,9 @@ internal class BackgroundJobService(
             schedule,
             queue);
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
-        return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, jobData.State);
+        return new BackgroundTask<TResult>(taskId, 
+            jobData?.CreatedAt ?? DateTime.Now, 
+            CastSate(jobData?.State));
     }
 
 
@@ -33,7 +47,7 @@ internal class BackgroundJobService(
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
         if (track != null && track != Guid.Empty)
             tracking.Observe(taskId, (Guid)track);
-        return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, jobData.State);
+        return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, CastSate(jobData.State));
     }
     public void Dequeue(string taskId) => jobQueue.Dequeue(taskId);
 
@@ -45,7 +59,7 @@ internal class BackgroundJobService(
         {
             var job = JobStorage.Current.GetReadOnlyConnection().GetJobData(id);
             var jobTracking = processes.FirstOrDefault(p => p.TaskId == id);
-            return new BackgroundTask(id, job.CreatedAt, job.State)
+            return new BackgroundTask(id, job.CreatedAt, CastSate(job.State))
             {
                 Progress = jobTracking == null
                     ? null

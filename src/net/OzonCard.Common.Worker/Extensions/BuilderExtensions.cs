@@ -25,7 +25,7 @@ public static class BuilderExtensions
                 .UseRecommendedSerializerSettings()
                 .UseFilter(new SkipWhenPreviousJobIsRunningAttribute())
                 .UseFilter(new AutomaticRetryAttribute { Attempts = 3 })
-                .UseSqlServerStorage(connection.UseSchema(schema));
+                .UseSqlServerStorage(connection);
         });
        
         return services;

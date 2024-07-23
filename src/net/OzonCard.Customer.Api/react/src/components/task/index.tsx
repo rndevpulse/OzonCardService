@@ -41,19 +41,20 @@ function getLocalTime(time:string):string{
 
 const taskDescription = (savedTask: ISavedTask) => {
     const progress = savedTask.task.progress as ICustomersTasksProgress;
-    if (progress && progress.countAll) {
+    // console.log(savedTask.task.progress);
+    if (progress && progress.CountAll) {
         return (
             <dd>
                 <ul>
-                    <li>Гостей всего: {progress.countAll}</li>
-                    <li>Новых: {progress.countNew}</li>
-                    <li>Обработано с ошибкой: {progress.countFail}</li>
+                    <li>Гостей всего: {progress.CountAll}</li>
+                    <li>Новых: {progress.CountNew}</li>
+                    <li>Обработано с ошибкой: {progress.CountFail}</li>
                     <li>Время выполнения: {getTime(savedTask.time)}</li>
                 </ul>
                 <ul>
-                    <li>Изменен баланс у: {progress.countBalance}</li>
-                    <li>Присвоена категория: {progress.countCategory}</li>
-                    <li>Добавлено в кор.пит: {progress.countProgram}</li>
+                    <li>Изменен баланс у: {progress.CountBalance}</li>
+                    <li>Присвоена категория: {progress.CountCategory}</li>
+                    <li>Добавлено в кор.пит: {progress.CountProgram}</li>
                     <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
                 </ul>
             </dd>

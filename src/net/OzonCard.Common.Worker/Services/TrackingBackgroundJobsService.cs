@@ -28,7 +28,7 @@ internal class TrackingBackgroundJobsService : ITrackingBackgroundJobs
     
 
     public object? GetJobProgress(IJobProgress job) =>
-        ReadFromFile<JsonElement>(job.Path);
+        ReadFromFile<object>(job.Path);
 
     public async Task<IJobProgress?> GetJobAsync(string taskId, CancellationToken ct) =>
         await _repository.GetItemAsync(taskId, ct);
@@ -44,8 +44,8 @@ internal class TrackingBackgroundJobsService : ITrackingBackgroundJobs
     {
         if (job == null)
             return;
-        var value = ReadFromFile<TProgress>(job.Path);
-        value?.Report(progress);
+        var value = ReadFromFile<TProgress>(job.Path) ?? new TProgress();
+        value.Report(progress);
         SaveToFile(value, job.Path);
     } 
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OzonCard.Common.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using OzonCard.Common.Infrastructure.Database;
 namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
 {
     [DbContext(typeof(InfrastructureContext))]
-    partial class InfrastructureContextModelSnapshot : ModelSnapshot
+    [Migration("20240723133708_JobProcessedTableMigration")]
+    partial class JobProcessedTableMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,7 +209,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
 
             modelBuilder.Entity("OzonCard.Common.Domain.Customers.Customer", b =>
                 {
-                    b.OwnsMany("OzonCard.Common.Domain.Customers.Customer.Cards#OzonCard.Common.Domain.Customers.Card", "Cards", b1 =>
+                    b.OwnsMany("OzonCard.Common.Domain.Customers.Card", "Cards", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uniqueidentifier");
@@ -236,7 +239,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                                 .HasForeignKey("CustomerId");
                         });
 
-                    b.OwnsMany("OzonCard.Common.Domain.Customers.Customer.Wallets#OzonCard.Common.Domain.Customers.CustomerWallet", "Wallets", b1 =>
+                    b.OwnsMany("OzonCard.Common.Domain.Customers.CustomerWallet", "Wallets", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uniqueidentifier");
@@ -280,7 +283,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
 
             modelBuilder.Entity("OzonCard.Common.Domain.Organizations.Organization", b =>
                 {
-                    b.OwnsMany("OzonCard.Common.Domain.Organizations.Organization.Categories#OzonCard.Common.Domain.Organizations.Category", "Categories", b1 =>
+                    b.OwnsMany("OzonCard.Common.Domain.Organizations.Category", "Categories", b1 =>
                         {
                             b1.Property<Guid>("OrganizationId")
                                 .HasColumnType("uniqueidentifier");
@@ -304,7 +307,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                                 .HasForeignKey("OrganizationId");
                         });
 
-                    b.OwnsMany("OzonCard.Common.Domain.Organizations.Organization.Members#OzonCard.Common.Domain.Organizations.Member", "Members", b1 =>
+                    b.OwnsMany("OzonCard.Common.Domain.Organizations.Member", "Members", b1 =>
                         {
                             b1.Property<Guid>("OrganizationId")
                                 .HasColumnType("uniqueidentifier");
@@ -330,7 +333,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                                 .HasForeignKey("OrganizationId");
                         });
 
-                    b.OwnsMany("OzonCard.Common.Domain.Organizations.Organization.Programs#OzonCard.Common.Domain.Organizations.Program", "Programs", b1 =>
+                    b.OwnsMany("OzonCard.Common.Domain.Organizations.Program", "Programs", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()
@@ -355,7 +358,7 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                             b1.WithOwner()
                                 .HasForeignKey("OrganizationId");
 
-                            b1.OwnsMany("OzonCard.Common.Domain.Organizations.Organization.Programs#OzonCard.Common.Domain.Organizations.Program.Wallets#OzonCard.Common.Domain.Organizations.Wallet", "Wallets", b2 =>
+                            b1.OwnsMany("OzonCard.Common.Domain.Organizations.Wallet", "Wallets", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()

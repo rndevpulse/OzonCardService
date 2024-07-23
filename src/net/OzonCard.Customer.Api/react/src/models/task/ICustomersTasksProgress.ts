@@ -2,10 +2,10 @@
 
 
 export interface ICustomersTasksProgress {
-    countAll :number
-    countNew: number
-    countFail: number
-    countBalance: number
-    countCategory: number
-    countProgram: number
+    CountAll :number
+    CountNew: number
+    CountFail: number
+    CountBalance: number
+    CountCategory: number
+    CountProgram: number
 }

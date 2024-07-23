@@ -13,7 +13,7 @@ public class JobProgressEntityTypeConfiguration : IEntityTypeConfiguration<JobPr
         builder.Property(typeof(int), "Id");
         builder.HasKey("Id");
         
-        builder.Property(x => x.TaskId);
+        builder.Property(x => x.TaskId).HasConversion<string>();
         builder.Property(x => x.Path);
 
         builder.HasIndex(x => x.TaskId);
