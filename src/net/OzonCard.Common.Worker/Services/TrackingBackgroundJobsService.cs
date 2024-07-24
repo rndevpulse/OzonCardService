@@ -40,12 +40,13 @@ internal class TrackingBackgroundJobsService : ITrackingBackgroundJobs
         return await _repository.GetItemsAsync(ids, ct);
     }
 
-    public void ReportProgress<TProgress>(IJobProgress? job, TProgress progress) where TProgress : IProgress<TProgress>, new()
+    public void ReportProgress<TProgress>(IJobProgress? job, TProgress progress) where TProgress : NamedProgress<TProgress>, new()
     {
         if (job == null)
             return;
         var value = ReadFromFile<TProgress>(job.Path) ?? new TProgress();
         value.Report(progress);
+        value.SetType(typeof(TProgress).Name);
         SaveToFile(value, job.Path);
     } 
 

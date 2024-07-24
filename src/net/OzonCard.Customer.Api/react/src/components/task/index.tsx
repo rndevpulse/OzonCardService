@@ -1,4 +1,4 @@
-import {ICustomersTasksProgress, ITask} from "../../models/task";
+import {ICustomersTasksProgress, IReportsTasksProgress, ITask} from "../../models/task";
 import {ISavedTask} from "../../stores/models/ISavedTask";
 import * as React from "react";
 
@@ -20,7 +20,8 @@ export function Task({saved, onCancel, onRemove}: ITaskProps) {
     return (
         <li className={classes.join(' ')} key={saved.id}>
             {taskTitle({saved, onCancel, onRemove})}
-            {taskDescription(saved)}
+            {saved.task.error && taskError(saved)}
+            {switchTaskDescription(saved)}
         </li>
     )
 }
@@ -39,46 +40,68 @@ function getLocalTime(time:string):string{
     return date.toLocaleTimeString();
 }
 
-const taskDescription = (savedTask: ISavedTask) => {
-    const progress = savedTask.task.progress as ICustomersTasksProgress;
+const switchTaskDescription = (savedTask: ISavedTask) =>{
+
+    switch (savedTask.task.progress?.Type) {
+        case undefined: return taskDefaultDescription(savedTask);
+        case "CustomersTaskProgress":
+            return taskCustomerDescription(savedTask)
+        case "ReportsTaskProgress":
+            return taskReportDescription(savedTask)
+    }
+
+}
+
+
+const taskReportDescription = (savedTask: ISavedTask) => {
+    const status = savedTask.task.progress as IReportsTasksProgress;
+    return (
+        <div className={"description-simple"}>
+            <ul>
+                <li>Процесс выполнения: {status.Progress}% {status.Description}</li>
+                <li>Время выполнения: {getTime(savedTask.time)}</li>
+                <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
+            </ul>
+        </div>
+    )
+}
+const taskDefaultDescription = (savedTask: ISavedTask) => {
+    return (
+        <dd>
+            <ul>
+                <li>Время выполнения: {getTime(savedTask.time)}</li>
+            </ul>
+            <ul>
+                <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
+            </ul>
+        </dd>
+    )
+}
+const taskCustomerDescription = (savedTask: ISavedTask) => {
     // console.log(savedTask.task.progress);
-    if (progress && progress.CountAll) {
-        return (
-            <dd>
-                <ul>
-                    <li>Гостей всего: {progress.CountAll}</li>
-                    <li>Новых: {progress.CountNew}</li>
-                    <li>Обработано с ошибкой: {progress.CountFail}</li>
-                    <li>Время выполнения: {getTime(savedTask.time)}</li>
-                </ul>
-                <ul>
-                    <li>Изменен баланс у: {progress.CountBalance}</li>
-                    <li>Присвоена категория: {progress.CountCategory}</li>
-                    <li>Добавлено в кор.пит: {progress.CountProgram}</li>
-                    <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
-                </ul>
-            </dd>
-        )
-    }
-    else {
-        return (
-            <dd>
-                <ul>
-                    <li>Время выполнения: {getTime(savedTask.time)}</li>
-                </ul>
-                <ul>
-                    <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
-                </ul>
-            </dd>
-        )
-    }
+    const status = savedTask.task.progress as ICustomersTasksProgress;
+    return (
+        <dd>
+            <ul>
+                <li>Гостей всего: {status.CountAll}</li>
+                <li>Новых: {status.CountNew}</li>
+                <li>Обработано с ошибкой: {status.CountFail}</li>
+                <li>Время выполнения: {getTime(savedTask.time)}</li>
+            </ul>
+            <ul>
+                <li>Изменен баланс у: {status.CountBalance}</li>
+                <li>Присвоена категория: {status.CountCategory}</li>
+                <li>Добавлено в кор.пит: {status.CountProgram}</li>
+                <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
+            </ul>
+        </dd>
+    )
 }
 const taskTitle = (props: ITaskProps) => {
     if (props.saved.task.status === "Running") {
         return (
             <dt>
                 {props.saved.description}
-                {props.saved.task.error}
                 <i className="material-icons red-text"
                    onClick={() => props.onCancel(props.saved.id)}>
                     cancel
@@ -89,11 +112,17 @@ const taskTitle = (props: ITaskProps) => {
     return (
         <dt>
             {props.saved.description}
-            {props.saved.task.error}
             <i className="material-icons red-text"
                onClick={() => props.onRemove(props.saved.id)}>
                 delete
             </i>
         </dt>
+    )
+}
+const taskError = (saved: ISavedTask) => {
+    return(
+        <div className={"task-error"}>
+            Ошибка: {saved.task.error}
+        </div>
     )
 }

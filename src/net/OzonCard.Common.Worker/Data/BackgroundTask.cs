@@ -31,9 +31,9 @@ public class BackgroundTask<TResult, TStatus>(
     string id, 
     DateTimeOffset queuedAt, 
     string status = "Created"
-) : BackgroundTask<TResult>(id, queuedAt, status) where TStatus : IProgress<TStatus>
+) : BackgroundTask<TResult>(id, queuedAt, status) where TStatus : NamedProgress<TStatus>
 {
-    public new IProgress<TStatus>? Progress { get; init; }
+    public new NamedProgress<TStatus>? Progress { get; init; }
 }
 
 

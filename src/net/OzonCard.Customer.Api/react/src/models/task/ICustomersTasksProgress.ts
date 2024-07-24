@@ -1,7 +1,7 @@
+import {IProgress} from "./IProgress";
 
 
-
-export interface ICustomersTasksProgress {
+export interface ICustomersTasksProgress extends IProgress {
     CountAll :number
     CountNew: number
     CountFail: number

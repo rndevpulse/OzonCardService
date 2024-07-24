@@ -43,7 +43,7 @@ var app = builder.Build();
 
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
-    IsReadOnlyFunc = _ => true 
+    // IsReadOnlyFunc = _ => true 
 });
 app.Run();
 

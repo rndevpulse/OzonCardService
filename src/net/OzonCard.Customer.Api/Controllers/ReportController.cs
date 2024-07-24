@@ -21,7 +21,8 @@ public class ReportController(
         logger.LogInformation("Payments by '{user}': {@cmd}", UserClaimEmail,cmd);
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
-        var task = jobsService.Enqueue(cmd);
+        cmd.UseTracking();
+        var task = jobsService.Enqueue(cmd, cmd.Tracking);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
     
@@ -29,10 +30,10 @@ public class ReportController(
     public BackgroundTaskModel Transactions(ReportTransactionsCommand cmd, CancellationToken ct = default)
     {
         logger.LogInformation("Transactions by '{user}': {@cmd}", UserClaimEmail, cmd);
-        var reference = Guid.NewGuid();
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
-        var task = jobsService.Enqueue(cmd);
+        cmd.UseTracking();
+        var task = jobsService.Enqueue(cmd, cmd.Tracking);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
 }

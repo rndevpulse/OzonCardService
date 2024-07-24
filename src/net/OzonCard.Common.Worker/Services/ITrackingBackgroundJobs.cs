@@ -10,5 +10,5 @@ public interface ITrackingBackgroundJobs
     Task<IJobProgress?> GetJobAsync(string taskId, CancellationToken ct);
     Task<IJobProgress?> GetJobAsync(Guid track, CancellationToken ct);
     Task<IEnumerable<IJobProgress>> GetJobsAsync(IEnumerable<string> ids, CancellationToken ct);
-    void ReportProgress<TProgress>(IJobProgress? job, TProgress progress) where TProgress : IProgress<TProgress>, new();
+    void ReportProgress<TProgress>(IJobProgress? job, TProgress progress) where TProgress : NamedProgress<TProgress>, new();
 }

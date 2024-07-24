@@ -17,6 +17,8 @@ public class CustomerSearchQueryHandler(
 {
     public async Task<IEnumerable<CustomerSearch>> Handle(CustomersSearchQuery request, CancellationToken cancellationToken)
     {
+        if (request is { Card: "", Name: "" })
+            throw new BusinessException("Параметры поиска не заполнены");
         var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
         var program = org.Programs.FirstOrDefault(x => x.Id == request.ProgramId)
                       ?? throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");

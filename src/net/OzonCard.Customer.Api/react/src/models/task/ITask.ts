@@ -1,3 +1,4 @@
+import {IProgress} from "./IProgress";
 
 export interface ITask {
     id: string
@@ -5,6 +6,6 @@ export interface ITask {
     completedAt? : string
     status : string
     error? : string
-    progress : any
+    progress : IProgress | undefined
 }
 
