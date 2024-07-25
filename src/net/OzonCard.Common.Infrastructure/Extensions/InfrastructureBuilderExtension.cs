@@ -1,3 +1,5 @@
+using Medallion.Threading;
+using Medallion.Threading.SqlServer;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +32,13 @@ public static class InfrastructureBuilderExtension
         services.AddRepositories(options);
         services.AddHangfire(options);
         
-        
+        #region Locks
+
+        services.AddSingleton<IDistributedLockProvider>(_ =>
+            new SqlDistributedSynchronizationProvider(options.Connection!)
+        );
+
+        #endregion
         return services;
     }
     
