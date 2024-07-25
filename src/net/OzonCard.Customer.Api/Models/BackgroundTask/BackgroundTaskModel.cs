@@ -6,5 +6,6 @@ public record BackgroundTaskModel(
     DateTimeOffset? CompletedAt,
     string Status,
     string? Error,
-    object? Progress
+    object? Progress,
+    object? Result
 );

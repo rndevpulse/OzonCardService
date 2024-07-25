@@ -6,6 +6,7 @@ export interface ITask {
     completedAt? : string
     status : string
     error? : string
-    progress : IProgress | undefined
+    progress : IProgress | undefined,
+    result: any
 }
 

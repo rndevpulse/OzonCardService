@@ -13,11 +13,8 @@
     font-size: 110%;
 }
 .description-simple{
-    cursor: default;
     text-align: start;
-    padding: 0.4rem;
-    background: #f3f3f3;
-    font-size: 90%;
+
 }
 .task-error {
     background: #df777b;

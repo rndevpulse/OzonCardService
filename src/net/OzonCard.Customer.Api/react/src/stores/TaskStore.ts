@@ -25,6 +25,10 @@ export default class TaskStore {
         if (currents.length === 0)
             return
         const response = await TaskService.getTasks(currents)
+        if (!response)
+        {
+            return
+        }
         if (response.status === 200 && response.data.length === 0)
         {
         }

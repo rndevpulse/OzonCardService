@@ -59,11 +59,15 @@ internal class BackgroundJobService(
         {
             var job = JobStorage.Current.GetReadOnlyConnection().GetJobData(id);
             var jobTracking = processes.FirstOrDefault(p => p.TaskId == id);
-            return new BackgroundTask(id, job.CreatedAt, CastSate(job.State))
+            var jobProgress = jobTracking == null
+                ? null
+                : tracking.GetJobProgress(jobTracking);
+            return new BackgroundTask(id, 
+                job?.CreatedAt ?? DateTime.Now,
+                CastSate(job?.State ?? "Deleted"))
             {
-                Progress = jobTracking == null
-                    ? null
-                    : tracking.GetJobProgress(jobTracking)
+                Progress = jobProgress?.Status,
+                Result = jobProgress?.Result
             };
         });
         return jobs.ToList();

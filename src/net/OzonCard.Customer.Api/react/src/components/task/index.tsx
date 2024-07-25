@@ -1,6 +1,7 @@
 import {ICustomersTasksProgress, IReportsTasksProgress, ITask} from "../../models/task";
 import {ISavedTask} from "../../stores/models/ISavedTask";
 import * as React from "react";
+import FileService from "../../services/FileServise";
 
 interface ITaskProps {
     saved: ISavedTask,
@@ -56,13 +57,37 @@ const switchTaskDescription = (savedTask: ISavedTask) =>{
 const taskReportDescription = (savedTask: ISavedTask) => {
     const status = savedTask.task.progress as IReportsTasksProgress;
     return (
-        <div className={"description-simple"}>
-            <ul>
-                <li>Процесс выполнения: {status.Progress}% {status.Description}</li>
-                <li>Время выполнения: {getTime(savedTask.time)}</li>
-                <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
-            </ul>
-        </div>
+        <dd>
+            <div className={"description-simple"}>
+
+                <ul>
+                    <li>Процесс выполнения: {status.Progress}% {status.Description}</li>
+                    <li>Время выполнения: {getTime(savedTask.time)}</li>
+                    <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
+                </ul>
+
+            </div>
+            {savedTask.task.result
+                && savedTask.task.result?.Id
+                && savedTask.task.result?.Format
+                && savedTask.task.result?.Name
+                && onViewSaveButton(
+                    `${savedTask.task.result.Id}.${savedTask.task.result?.Format}`,
+                    `${savedTask.task.result.Name}.${savedTask.task.result?.Format}`
+                )
+            }
+        </dd>
+
+    )
+}
+const onViewSaveButton = (link:string, name:string)=>{
+    console.log("try save report from task",link)
+    return (
+        <i className="material-icons blue-text"
+           onClick={(e) => onSaveFile(link, name)}
+        >
+            file_download
+        </i>
     )
 }
 const taskDefaultDescription = (savedTask: ISavedTask) => {
@@ -125,4 +150,22 @@ const taskError = (saved: ISavedTask) => {
             Ошибка: {saved.task.error}
         </div>
     )
+}
+
+
+
+async function onSaveFile(url: string, name: string) {
+    //console.log('downloadHandler', url, name)
+    FileService.downloadFile(url)
+        .then(response => {
+            const type = response.headers['content-type']
+            const blob = new Blob([response.data], { type: type })
+            const _url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = _url
+            link.setAttribute('download', name);
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+        })
 }

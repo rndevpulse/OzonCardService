@@ -116,7 +116,7 @@ public class ReportTransactionsCommandHandler(
         var saveFile = new SaveFile(fileId, "xlsx", request.Title, request.UserId);
         await fileRepository.AddAsync(saveFile);
 
-        UpdateProgress("Отчет сохранен..", 100);
+        UpdateProgress("Отчет сохранен..", 100, saveFile);
 
         return saveFile;
     }
@@ -149,12 +149,12 @@ public class ReportTransactionsCommandHandler(
         return report;
     }
     
-    private void UpdateProgress(string description, int n)
+    private void UpdateProgress(string description, int n, SaveFile? result = null)
     {
         tracking.ReportProgress(_task, _status with
         {
             Description = description,
             Progress = n
-        });
+        }, result);
     }
 }

@@ -22,6 +22,7 @@ const LoginPage: FC = () => {
         classes_i.push('black-text')
     }
     return (
+
         <div className="center form-group  col-md-6">
             <ToastContainer/>
             <h5>Corporate Catering Card Service</h5>

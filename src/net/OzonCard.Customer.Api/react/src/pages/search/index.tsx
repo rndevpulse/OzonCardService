@@ -67,7 +67,7 @@ const SearchPage: FC = () => {
         }
     }
     async function clickSearchButton() {
-        toast.show("Идет поиск...", "info")
+        // toast.show("Идет поиск...", "info")
         // setIsLoadCustomers(true)
         const response = await BizService.SearchCustomerFromBiz({
             name:customerName,
@@ -81,9 +81,14 @@ const SearchPage: FC = () => {
         })
         console.log('customers: ', response)
         if (!response){
+            toast.show("Ошибка поиска...", "warning")
             return
         }
+        if (response.data.length === 0){
+            toast.show("Сотрудники не найдены...", "info")
+        }
         setCustomers(response.data)
+
         // setIsLoadCustomers(false)
     }
 
