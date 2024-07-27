@@ -31,6 +31,7 @@ builder.Services.AddInfrastructure(opt =>
         .SetServerWorker()
 );
 
+builder.Host.UseWindowsService();
 
 #region OtherStaff
 
