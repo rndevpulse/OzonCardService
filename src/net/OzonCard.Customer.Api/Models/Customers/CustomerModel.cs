@@ -20,5 +20,6 @@ public class CustomerModel
 
     public DateTimeOffset? LastVisit { get; set; }
     public DateTimeOffset? Updated { get; set; }
+    public DateTimeOffset? CreatedAt { get; set; }
     public int? DaysGrant { get; set; }
 }

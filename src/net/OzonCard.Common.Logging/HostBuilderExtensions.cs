@@ -14,4 +14,12 @@ public static class HostBuilderExtensions
         hostBuilder.Host.UseDefaultLogging();
         return hostBuilder;
     }
+
+    public static IHostApplicationBuilder UseDefaultLogging(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddSerilog(lConfig => lConfig.ReadFrom.Configuration(builder.Configuration));
+        return builder;
+    }
+
+  
 }

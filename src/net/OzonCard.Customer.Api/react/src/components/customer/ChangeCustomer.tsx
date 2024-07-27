@@ -124,7 +124,15 @@ export function ChangeCustomer({customer, categories, onChange, onRemove}: IChan
                     />
                 </label>
                 {error && <ErrorMessage error={error}/>}
-
+                <label className="changeCustomerLabel" htmlFor="customerCard">Карта
+                    <input
+                        id="customerCard"
+                        value={customer.card}
+                        type='text'
+                        placeholder='Карта сотрудника'
+                        disabled={true}
+                    />
+                </label>
                 <label className="changeCustomerLabel" htmlFor="categories">Категории</label>
                 <Select
                     id='categories'

@@ -2,43 +2,25 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using OzonCard.Common.Application.BackgroundTasks;
-using OzonCard.Common.Application.Customers;
-using OzonCard.Common.Application.Files;
-using OzonCard.Common.Application.Organizations;
-using OzonCard.Common.Application.Visits;
-using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
-using OzonCard.Common.Infrastructure;
-using OzonCard.Common.Infrastructure.BackgroundTasks;
-using OzonCard.Common.Infrastructure.Buses;
 using OzonCard.Common.Infrastructure.Database;
-using OzonCard.Common.Infrastructure.Database.Materialization;
-using OzonCard.Common.Infrastructure.Piplines;
-using OzonCard.Common.Infrastructure.Repositories;
+using OzonCard.Common.Infrastructure.Extensions;
 using OzonCard.Common.Logging;
-using OzonCard.Customer.Api.Quartz;
-using OzonCard.Customer.Api.Services.BackgroundTasks;
-using OzonCard.Customer.Api.Services.Bootstrap;
 using OzonCard.Excel;
 using OzonCard.Files;
 using OzonCard.Identity.Domain;
 using OzonCard.Identity.Infrastructure.Jwt;
 using OzonCard.Identity.Infrastructure.Security;
-using Quartz;
-using Quartz.AspNetCore;
 
 var assemblies = new[]
 {
@@ -132,39 +114,17 @@ builder.Services.AddAuthorization(opt =>
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddAutoMapper(assemblies);
 builder.Services.AddMemoryCache();
-builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(assemblies));
-builder.Services.AddScoped<ICommandBus, MediatrCommandBus>();
-builder.Services.AddScoped<IQueryBus, MediatrQueryBus>();
+
+builder.Services.AddInfrastructure(opt =>
+    opt.SetAssemblies(assemblies)
+        .SetConnection(builder.Configuration.GetConnectionString("service"))
+        .SetDevEnvironment(builder.Environment.IsDevelopment())
+);
 
 
-#region Context
-
-builder.Services.AddDbContext<InfrastructureContext>(b =>
-    (builder.Environment.IsDevelopment() ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
-        builder.Configuration.GetConnectionString("service"),
-        optionsBuilder => optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
-    .AddInterceptors(ContextMaterializationInterceptor.Instance));
-builder.Services.AddDbContext<SecurityContext>(b =>
-    (builder.Environment.IsDevelopment() ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
-        builder.Configuration.GetConnectionString("service")));
-
-builder.Services.AddScoped<ITransactionManager>(sp => sp.GetRequiredService<InfrastructureContext>());
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
-
-builder.Services.AddHostedService<DatabaseBootstrapService>();
-
-#endregion
-
-#region Repositories
-
-builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
-builder.Services.AddScoped<IFileRepository, FileRepository>();
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IVisitRepository, VisitRepository>();
-
-#endregion
 
 #region Problem details
 
@@ -208,39 +168,12 @@ builder.Services.AddVersionedApiExplorer(o =>
 
 #endregion
 
-#region Quartz
-
-builder.Services.AddQuartz(q =>
-{
-    q.ScheduleJob<CustomerLastVisitJob>(t => t
-        .WithIdentity("Last visit", "Reports")
-        .StartAt(DateTimeOffset.Now.AddMinutes(1))
-        .WithSimpleSchedule(b => b
-            .RepeatForever()
-            .WithInterval(TimeSpan.FromHours(3))
-        )
-    );
-});
-builder.Services.AddQuartzServer(opt => opt.WaitForJobsToComplete = true);
-    
-
-#endregion
-
 #region OtherStaff
 
 builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<IExcelManager, ExcelManager>();
 
-
 #endregion
-
-#region BackgroundWorker
-
-builder.Services.AddSingleton<IBackgroundQueue, BackgroundQueue>();
-builder.Services.AddHostedService<TaskRunningService>();
-
-#endregion
-
 
 
 var app = builder.Build();

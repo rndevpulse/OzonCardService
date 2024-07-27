@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Application.Reports.Commands;
+using OzonCard.Common.Worker.Services;
 using OzonCard.Customer.Api.Models.BackgroundTask;
 using OzonCard.Identity.Domain;
 
@@ -11,7 +11,7 @@ namespace OzonCard.Customer.Api.Controllers;
 [Authorize(UserRole.Report)]
 public class ReportController(
     ILogger<ReportController> logger,
-    IBackgroundQueue queue
+    IBackgroundJobsService jobsService
 ) : ApiController
 {
 
@@ -19,13 +19,10 @@ public class ReportController(
     public BackgroundTaskModel Payments(ReportPaymentsCommand cmd, CancellationToken ct = default)
     {
         logger.LogInformation("Payments by '{user}': {@cmd}", UserClaimEmail,cmd);
-        var reference = Guid.NewGuid();
-        cmd.SetTaskId(reference);
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
-        var task = queue.Enqueue(
-            cmd,
-            reference);
+        cmd.UseTracking();
+        var task = jobsService.Enqueue(cmd, cmd.Tracking);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
     
@@ -33,13 +30,10 @@ public class ReportController(
     public BackgroundTaskModel Transactions(ReportTransactionsCommand cmd, CancellationToken ct = default)
     {
         logger.LogInformation("Transactions by '{user}': {@cmd}", UserClaimEmail, cmd);
-        var reference = Guid.NewGuid();
-        cmd.SetTaskId(reference);
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
-        var task = queue.Enqueue(
-            cmd,
-            null);
+        cmd.UseTracking();
+        var task = jobsService.Enqueue(cmd, cmd.Tracking);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
 }

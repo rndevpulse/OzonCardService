@@ -6,5 +6,5 @@ public class ShortGuestInfoDto
     public string Name { get; set; } = "";
     public string Phone { get; set; } = "";
     public DateTime WhenCreated { get; set; }
-    public DateTime LastVisitDate { get; set; }
+    // public DateTime LastVisitDate { get; set; }
 }

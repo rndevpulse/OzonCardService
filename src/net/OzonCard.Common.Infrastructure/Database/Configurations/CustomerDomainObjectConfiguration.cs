@@ -21,6 +21,7 @@ public class CustomerDomainObjectConfiguration : DomainObjectConfiguration<Custo
         builder.Property(x => x.Division);
         builder.Property(x => x.Phone);
         builder.Property(x => x.Comment);
+        builder.Property(x => x.CreatedBiz);
 
         builder.Ignore(x => x.Context);
         // builder.Property(x => x.LastVisit);

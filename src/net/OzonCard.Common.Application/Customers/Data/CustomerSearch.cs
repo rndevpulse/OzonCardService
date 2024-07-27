@@ -18,5 +18,6 @@ public record CustomerSearch(
     IEnumerable<Category> Categories,
     int? DaysGrant,
     DateTimeOffset? LastVisit,
-    DateTimeOffset? Updated
-    );
+    DateTimeOffset? Updated,
+    DateTimeOffset? CreatedAt
+);

@@ -12,11 +12,13 @@ import FileService from "../../services/FileServise";
 import {IOrganization} from "../../models/org/IOrganization";
 import "./index.css"
 import {Loader} from "../../components/loader";
+import {useToast} from "../../components/toast";
 
 
 
 const UploadPage: FC = () => {
     const navigate = useNavigate()
+    const toast = useToast();
 
     const { organizationStore, taskStore } = useContext(Context);
 
@@ -65,6 +67,7 @@ const UploadPage: FC = () => {
         const response = await FileService.createFile(formData)
         setFile(response.data.url)
         setFileName(response.data.name)
+        toast.show("Файл прикреплен", "info")
     }
 
     function createCustomerOption(withCustomer:boolean) : ICustomerOption{

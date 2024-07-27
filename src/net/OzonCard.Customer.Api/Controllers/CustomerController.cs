@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OzonCard.Common.Application.BackgroundTasks;
 using OzonCard.Common.Application.Customers.Commands;
-using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Application.Customers.Queries;
+using OzonCard.Common.Worker.Services;
 using OzonCard.Customer.Api.Models.BackgroundTask;
 using OzonCard.Customer.Api.Models.Customers;
 
@@ -11,7 +10,7 @@ namespace OzonCard.Customer.Api.Controllers;
 
 public class CustomerController(
     ILogger<CustomerController> logger,
-    IBackgroundQueue queue
+    IBackgroundJobsService jobsService
 ) : ApiController
 {
 
@@ -20,13 +19,10 @@ public class CustomerController(
     public BackgroundTaskModel Upload(CustomersUploadCommand cmd, CancellationToken ct = default)
     {
         logger.LogInformation("Upload customers by '{user}': {@cmd}", UserClaimEmail, cmd);
-        var reference = Guid.NewGuid();
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
-        cmd.SetTaskId(reference);
-        var task = queue.Enqueue<IEnumerable<Common.Domain.Customers.Customer>,CustomersTaskProgress>(
-            cmd,
-            reference);
+        cmd.UseTracking();
+        var task = jobsService.Enqueue(cmd, cmd.Tracking);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
 

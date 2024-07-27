@@ -12,13 +12,20 @@ import BizService from "../../services/BizServise";
 import "react-datepicker/dist/react-datepicker.css";
 import './index.css'
 import {ISearchCustomerModel} from "../../models/biz/ISearchCustomerModel";
-import {Customer} from "../../components/customer";
+import {ChangeCustomer, Customer} from "../../components/customer";
 import {Loader} from "../../components/loader";
+import {useToast} from "../../components/toast";
+import {ModalContext} from "../../context/modal";
+import {Modal} from "../../components/modal";
 registerLocale("ru", ru)
 
 
 
 const SearchPage: FC = () => {
+
+    const toast = useToast();
+    const {modal, open, close}=useContext(ModalContext)
+
 
     const { organizationStore } = useContext(Context);
     const [organization, setOrganization] = useState<IOrganization>();
@@ -28,10 +35,13 @@ const SearchPage: FC = () => {
     const [customerCard, setCustomerCard] = useState('');
 
     const [customers, setCustomers] = useState<ISearchCustomerModel[]>([]);
-    const [isLoadCustomers, setIsLoadCustomers] = useState(false);
+    // const [isLoadCustomers, setIsLoadCustomers] = useState(false);
 
     const [dateFrom, setDateFrom] = useState<Date>(new Date(new Date().setDate(1)));
     const [dateTo, setDateTo] = useState<Date>(new Date());
+
+    const [customer, setCustomer] = useState<ISearchCustomerModel>();
+
 
     const onOrganizationSelectChange = (organization: IOrganization) => {
         setOrganization(organization)
@@ -57,7 +67,8 @@ const SearchPage: FC = () => {
         }
     }
     async function clickSearchButton() {
-        setIsLoadCustomers(true)
+        // toast.show("Идет поиск...", "info")
+        // setIsLoadCustomers(true)
         const response = await BizService.SearchCustomerFromBiz({
             name:customerName,
             card:customerCard,
@@ -68,32 +79,32 @@ const SearchPage: FC = () => {
             offset: -(new Date().getTimezoneOffset()),
             isOffline:false
         })
-        //console.log('customers: ', response.data)
+        console.log('customers: ', response)
+        if (!response){
+            toast.show("Ошибка поиска...", "warning")
+            return
+        }
+        if (response.data.length === 0){
+            toast.show("Сотрудники не найдены...", "info")
+        }
         setCustomers(response.data)
-        setIsLoadCustomers(false)
+
+        // setIsLoadCustomers(false)
     }
 
-    async function OnChangeCustomer(customer: ISearchCustomerModel){
-        console.log("OnChangeCustomer", customer)
-        const temp = customers.filter(x=>x.id !== customer.id)
-        temp.push(customer)
-        setCustomers(temp)
-    }
 
-    async function OnRemoveCustomer(customer: ISearchCustomerModel){
-        console.log("OnRemoveCustomer", customer)
-        const temp = customers.filter(x=>x.id !== customer.id)
-        setCustomers(temp)
-    }
 
 
     function getCustomersInfo() {
         //console.log("getCustomersInfo length", customersInfo.length)
-        if (isLoadCustomers) {
-            return <div className="center">Идет поиск...</div>
-        }
+        // if (isLoadCustomers) {
+        //     toast.show("Идет поиск...", "info");
+        //     return //<div className="center">Идет поиск...</div>
+        // }
         if (customers.length === 0) {
-            return <div className="center">Нет результатов</div>
+            // toast.show("Сотрудников не найдено", "info");
+
+            return //<div className="center">Нет результатов</div>
         }
 
         return (
@@ -102,14 +113,36 @@ const SearchPage: FC = () => {
                     <Customer
                         customer={customer}
                         organization={organization as IOrganization}
-                        onChange={OnChangeCustomer}
-                        onRemove={OnRemoveCustomer}
+                        onChanging={OnChangingCustomer}
                         key={customer.id}
                     />)}
             </ul>
         )
     }
+    function OnChangingCustomer(customer:ISearchCustomerModel, organization:IOrganization) {
+        console.log("OnChangingCustomer", customer.card)
+        setCustomer(customer)
+        open();
+    }
 
+
+
+    const onChangeHandler = (customer:ISearchCustomerModel) => {
+        console.log("OnChangeCustomer", customer)
+        const temp = customers.filter(x=>x.id !== customer.id)
+        temp.push(customer)
+        setCustomers(temp)
+        close()
+        toast.show("Сотрудник изменен", "info")
+    }
+    const onRemoveHandler = (customer:ISearchCustomerModel) => {
+        console.log("OnRemoveCustomer", customer)
+        const temp = customers.filter(x=>x.id !== customer.id)
+        setCustomers(temp)
+        close()
+        toast.show("Сотрудник удален", "info")
+
+    }
 
     function div_OnlineParams() {
 
@@ -202,6 +235,14 @@ const SearchPage: FC = () => {
 
             </div>
             {getCustomersInfo()}
+            {modal && customer && organization && <Modal title={'Редактирование сотрудника'} onClose={close}>
+                <ChangeCustomer
+                    customer={customer}
+                    categories={organization.categories}
+                    onChange={onChangeHandler}
+                    onRemove={onRemoveHandler}
+                />
+            </Modal>}
         </div>
     );
 };

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OzonCard.Common.Infrastructure.Database;
 
-namespace OzonCard.Customer.Api.Services.Bootstrap;
+namespace OzonCard.Common.Infrastructure.Services;
 
 public class DatabaseBootstrapService : BackgroundService
 {

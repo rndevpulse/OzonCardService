@@ -17,6 +17,8 @@ public class CustomerSearchQueryHandler(
 {
     public async Task<IEnumerable<CustomerSearch>> Handle(CustomersSearchQuery request, CancellationToken cancellationToken)
     {
+        if (request is { Card: "", Name: "" })
+            throw new BusinessException("Параметры поиска не заполнены");
         var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
         var program = org.Programs.FirstOrDefault(x => x.Id == request.ProgramId)
                       ?? throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
@@ -49,7 +51,10 @@ public class CustomerSearchQueryHandler(
         
         var result = customers.Select(async c => 
         {
+            logger.LogInformation($"try get customer from biz: {c.BizId}");
             var bizCustomer = await client.GetCustomerAsync(c.BizId, org.Id, cancellationToken);
+            logger.LogInformation($"customer success found from biz: {c.BizId}");
+
             // var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
             var visits = (await c.Context.GetVisitsAsync(from, to, cancellationToken)).ToList();
             // var shortRep = repTransactions.FirstOrDefault(r => r.Card?.Contains(request.Card) == true);
@@ -67,9 +72,10 @@ public class CustomerSearchQueryHandler(
                     .Select(cat => new Category(cat.Id){Name =  cat.Name}),
                 visits.GroupBy(t => t.Date.Date).Count(),
                 lastVisit?.Date,
-                lastVisit?.CreatedAt
+                lastVisit?.CreatedAt,
                 // shortRep?.LastVisitDate.DateTime,
                 // shortRep?.DaysGrant
+                c.CreatedBiz
             );
         })
         .Select(t => t.Result)

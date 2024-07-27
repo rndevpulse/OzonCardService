@@ -1,30 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OzonCard.Common.Application.BackgroundTasks;
-using OzonCard.Common.Infrastructure.BackgroundTasks;
+using OzonCard.Common.Worker.Services;
 using OzonCard.Customer.Api.Models.BackgroundTask;
-using OzonCard.Customer.Api.Services.BackgroundTasks;
 
 namespace OzonCard.Customer.Api.Controllers;
 
 public class TasksController(
     ILogger<TasksController> logger,
-    IBackgroundQueue queue
+    IBackgroundJobsService jobsService
 ) : ApiController
 {
 
     [HttpGet]
-    public IEnumerable<BackgroundTaskModel> Index([FromQuery] IEnumerable<Guid> id, CancellationToken ct = default)
+    public object Index([FromQuery] IEnumerable<string> id, CancellationToken ct = default)
     {
         // logger.LogDebug("Get tasks:");
-        return Mapper.Map<IEnumerable<BackgroundTaskModel>>(queue.GetTasks(id.ToArray()));
+        return Mapper.Map<IEnumerable<BackgroundTaskModel>>(jobsService.GetTasks(id.ToArray()));
     }
 
     [HttpGet("[action]")]
-    public BackgroundTaskModel Cancel(Guid id, CancellationToken ct = default)
+    public BackgroundTaskModel Cancel(string id, CancellationToken ct = default)
     {
         logger.LogDebug($"CancelTask {id}");
-        var result = queue.Cancel(id);
+        var result = jobsService.Cancel(id);
         return Mapper.Map<BackgroundTaskModel>(result);
     }
 }

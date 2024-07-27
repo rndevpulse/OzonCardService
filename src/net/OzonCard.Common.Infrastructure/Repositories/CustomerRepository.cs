@@ -22,7 +22,7 @@ public class CustomerRepository(
 
     public async Task<IEnumerable<Customer>> SearchCustomersAsync(Guid organizationId, string name, string card, CancellationToken ct = default)
     {
-        var query = GetQuery();
+        var query = GetQuery().Where(x=>x.OrgId == organizationId);
         if (!string.IsNullOrEmpty(name))
             query = query.Where(x => EF.Functions.Like(x.Name, $"%{name}%"));
         if (!string.IsNullOrEmpty(card))

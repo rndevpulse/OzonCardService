@@ -12,12 +12,23 @@
     background: #f3f3f3;
     font-size: 110%;
 }
+.description-simple{
+    text-align: start;
+
+}
+.task-error {
+    background: #df777b;
+    font-size: 110%;
+    display: flex;
+    padding-left: 1rem;
+}
 .task.completed dt {
     background-color: #7abd89;
 }
 .task.canceled dt {
     background-color: #df777b;
 }
+
 .task dd {
     width: 100%;
     display: flex;
