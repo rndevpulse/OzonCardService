@@ -31,6 +31,8 @@ builder.Services.AddInfrastructure(opt =>
         .SetServerWorker()
 );
 
+
+Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 builder.Host.UseWindowsService();
 
 #region OtherStaff
