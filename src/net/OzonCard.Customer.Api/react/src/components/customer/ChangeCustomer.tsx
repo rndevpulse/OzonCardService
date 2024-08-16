@@ -112,7 +112,7 @@ export function ChangeCustomer({customer, categories, onChange, onRemove}: IChan
     }
 
     return(
-        <div className="center form-group col-md-12 ">
+        <div className="center form-group col-md-12">
             <div>
                 <label className="changeCustomerLabel" htmlFor="customerName">ФИО
                     <input
@@ -133,7 +133,7 @@ export function ChangeCustomer({customer, categories, onChange, onRemove}: IChan
                         disabled={true}
                     />
                 </label>
-                <label className="changeCustomerLabel" htmlFor="categories">Категории</label>
+                <label className="changeCustomerLabel" htmlFor="categories">Категории
                 <Select
                     id='categories'
                     onChange={values => setSelectedCategories(values as ICategory[])}
@@ -144,6 +144,7 @@ export function ChangeCustomer({customer, categories, onChange, onRemove}: IChan
                     placeholder='Категории'
                     isMulti
                 />
+                </label>
                 <label className="changeCustomerLabel" htmlFor="customerTabNumber">Табельный номер
                     <input
                         id="customerTabNumber"

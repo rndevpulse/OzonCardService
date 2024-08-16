@@ -87,12 +87,12 @@ public static class InfrastructureBuilderExtension
     private static IServiceCollection AddHangfire(this IServiceCollection services, InfrastructureOptions options)
     {
         services.AddHangfireBackgroundJobService(options.Connection ?? string.Empty);
-        
+
+        if (!options.ServerWorker) 
+            return services;
         services.AddHostedService<ScheduleUpdateBootstrapService>();
-        
-        if (options.ServerWorker)
-            services.AddHangfireServer();
-        
+        services.AddHangfireServer();
+
         return services;
     }
 
