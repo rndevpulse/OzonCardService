@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
+using OzonCard.Common.Application.Properties;
 using OzonCard.Common.Application.Visits;
 using OzonCard.Common.Core;
 using OzonCard.Common.Infrastructure.Buses;
@@ -72,6 +73,7 @@ public static class InfrastructureBuilderExtension
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IVisitRepository, VisitRepository>();
         services.AddScoped<IJobProgressRepository, JobProgressRepository>();
+        services.AddScoped<IPropertiesRepository, PropertiesRepository>();
         return services;
 
     }

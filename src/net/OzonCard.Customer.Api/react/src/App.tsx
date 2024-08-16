@@ -13,6 +13,7 @@ import TasksPage from "./pages/tasks";
 import ServicePage from "./pages/service";
 import ReportPage from "./pages/report";
 import SearchPage from "./pages/search";
+import PatternsPage from "./pages/patterns";
 import {Loader} from "./components/loader";
 import {Slide, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
@@ -54,6 +55,7 @@ function App() {
             <Route path='/' element={<UploadPage/>} />
             <Route path='/files' element={<FilesPage/>} />
             <Route path='/report' element={<ReportPage/>} />
+            <Route path='/patterns' element={<PatternsPage/>} />
             <Route path='/tasks' element={<TasksPage/>} />
             <Route path='/service' element={<ServicePage />} />
             <Route path='/search' element={<SearchPage />} />

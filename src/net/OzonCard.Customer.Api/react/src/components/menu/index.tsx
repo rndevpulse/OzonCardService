@@ -72,10 +72,16 @@ const NavMenu: FC = () => {
     function linkReport() {
         if (loginStore.Roles.includes('Report')) {
             links.push({ link: '/report', name: 'Отчеты' })
+            links.push({ link: '/patterns', name: 'Шаблоны' })
             return (
-                <NavItem>
-                    <NavLink tag={Link} className="text-dark" to="/report">Отчеты</NavLink>
-                </NavItem>
+                <div>
+                    <NavItem>
+                        <NavLink tag={Link} className="text-dark" to="/report">Отчеты</NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink tag={Link} className="text-dark" to="/patterns">Шаблоны</NavLink>
+                    </NavItem>
+                </div>
             )
         }
     }
