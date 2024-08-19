@@ -13,4 +13,6 @@ public class ReportOption : MemberInfo
     public string Title { get; set; } = "";
     public bool IsOffline { get; set; }
     
+    public Guid? Batch { get; set; }
+    
 }

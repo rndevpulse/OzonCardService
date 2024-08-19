@@ -3,6 +3,8 @@ using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
+using OzonCard.Common.Application.Properties;
+using OzonCard.Common.Application.Properties.Data;
 using OzonCard.Common.Application.Reports.Commands;
 using OzonCard.Common.Application.Reports.Data;
 using OzonCard.Common.Core;
@@ -24,6 +26,7 @@ public class ReportPaymentsCommandHandler(
     IOrganizationRepository orgRepository,
     ICustomerRepository customerRepository,
     ITrackingBackgroundJobs tracking, 
+    IPropertiesRepository propertiesRepository,
     ILogger<ReportPaymentsCommandHandler> logger
 ) : ICommandHandler<ReportPaymentsCommand, SaveFile>
 {
@@ -93,15 +96,80 @@ public class ReportPaymentsCommandHandler(
             });
         }
 
+        var file = request.Batch == null 
+                   || await propertiesRepository.GetItemAsync((Guid)request.Batch, cancellationToken) is not {} batch
+            ? await SaveSimpleFileAsync(
+                request, 
+                new ProgramReportDataSet(resultReport.OrderBy(x => x.Name)), 
+                cancellationToken)
+            : await SaveBathFilesAsync(org, request, resultReport,  cancellationToken);
+        return file;
+    }
+
+   
+
+    private async Task<SaveFile> SaveBathFilesAsync(
+        Organization organization,
+        ReportPaymentsCommand request, 
+        List<ItemProgramReportTable> report, 
+        CancellationToken cancellationToken)
+    {
+        if (request.Batch == null)
+            throw new BusinessException("Error in id bath pattern");
+        
+        UpdateProgress("Выполняется пакетное сохранение..", 90);
+
+        
+        var tempFolder = Path.Combine(fileManager.GetTempDirectory(), request.Title);
+        var offset = TimeSpan.FromMinutes(request.Offset);
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
+        
+        //сохранить общий файл
+        excelManager.CreateWorkbook(
+            Path.Combine(tempFolder, $"{request.Title} - Общий"),
+            new ProgramReportDataSet(report.OrderBy(x => x.Name)),
+            $"{request.Title} - Общий: в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
+        );
+        
+        var batchProperty = await propertiesRepository.GetItemAsync((Guid)request.Batch, cancellationToken);
+        foreach (var batchProp in batchProperty.GetProperty<IEnumerable<ReportBatchProp>>() ?? ArraySegment<ReportBatchProp>.Empty)
+        {
+            var aggregationFilter = organization.Categories
+                .Where(x=>batchProp.Aggregations.Contains(x.Id))
+                .Select(x=>x.Name)
+                .ToArray();
+            var aggregationReport = report.Where(x =>
+                    aggregationFilter.Any(f => x.Categories.Contains(f)))
+                .ToList();
+            
+            //сохраняем каждый батч отдельно
+            excelManager.CreateWorkbook(
+                Path.Combine(tempFolder, $"{request.Title} - {batchProp.Name}"),
+                new ProgramReportDataSet(aggregationReport.OrderBy(x => x.Name)),
+                $"{request.Title} - {batchProp.Name}: в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
+            );
+            
+        }
+        //упаковываем все батчи в архив и кладем его в базу
+        var fileId = await fileManager.SaveAsBath(tempFolder);
+        var saveFile = new SaveFile(fileId, "zip", request.Title, request.UserId);
+        await fileRepository.AddAsync(saveFile);
+        UpdateProgress("Пакет сохранен..", 100, saveFile);
+        return saveFile;
+    }
+
+    private async Task<SaveFile> SaveSimpleFileAsync(ReportPaymentsCommand request, ProgramReportDataSet dataSet, CancellationToken ct)
+    {
         UpdateProgress("Сохраняем результат..", 95);
 
-
         var fileId = Guid.NewGuid();
+        var offset = TimeSpan.FromMinutes(request.Offset);
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
         excelManager.CreateWorkbook(
             Path.Combine(fileManager.GetDirectory(), $"{fileId}.xlsx"),
-            new ProgramReportDataSet(resultReport.OrderBy(x=>x.Name)),
+            dataSet,
             $"{request.Title} в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
-            );
+        );
         
         var saveFile = new SaveFile(fileId, "xlsx", request.Title, request.UserId);
         await fileRepository.AddAsync(saveFile);

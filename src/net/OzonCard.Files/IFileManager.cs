@@ -9,4 +9,6 @@ public interface IFileManager
     bool RemoveFile(string file);
     string GetFile(string name);
     string GetDirectory();
+    string GetTempDirectory();
+    Task<Guid> SaveAsBath(string folder);
 }
