@@ -16,6 +16,8 @@ import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import './index.css'
 import {Loader} from "../../components/loader";
+import {IBatch} from "../../models/batch";
+import PropsService from "../../services/PropsService";
 registerLocale("ru", ru)
 
 const ReportPage: FC = () => {
@@ -32,13 +34,27 @@ const ReportPage: FC = () => {
     const [fileName, setFileName] = useState('');
     const [dateFrom, setDateFrom] = useState<Date>(new Date(new Date().setDate(1)));
     const [dateTo, setDateTo] = useState<Date>(new Date());
-    
+
+
+    const [allBatches, setAllBatches] = useState<IBatch[]>([{
+        name: 'Без пакетной выгрузки',
+        organization: '',
+        properties: []
+    }]);
+    const [batches, setBatches] = useState<IBatch[]>([]);
+    const [batch, setBatch] = useState<IBatch>(allBatches[0]);
+
 
     const onOrganizationSelectChange = (organization : IOrganization) => {
         console.log(dateFrom.getTimezoneOffset())
         setOrganization(organization)
         setProgram(organization.programs[0])
         setCategories([])
+
+        setBatches(allBatches.filter(batch =>
+            batch.organization === organization.id
+            || batch.organization === ''))
+        setBatch(allBatches[0])
     }
 
     async function firstInit() {
@@ -48,6 +64,13 @@ const ReportPage: FC = () => {
         setProgram(org.programs[0])
         setCategories([])
         organizationStore.setLoading(false);
+
+        const response = await PropsService.getBatches();
+        setAllBatches(allBatches.concat(response.data))
+        setBatches(allBatches.concat(
+            response.data.filter(batch => batch.organization === org.id))
+        )
+        setBatch(allBatches[0])
     }
 
      function getOptions() : IReportOption{
@@ -61,7 +84,8 @@ const ReportPage: FC = () => {
              title: fileName === ''
                  ? `Отчет от ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`
                  : `${fileName} ${(moment(new Date())).format("DD.MM.YYYY HH.mm")}`,
-             isOffline:false
+             isOffline:false,
+             batch: batch?.id
          }
          return option;
      }
@@ -156,7 +180,6 @@ const ReportPage: FC = () => {
                     placeholder='Категории'
                     isMulti
                 />
-
                 <label htmlFor="programs">Программы питания</label>
                 <Select
                     id='programs'
@@ -165,6 +188,16 @@ const ReportPage: FC = () => {
                     getOptionLabel={option => option.name}
                     getOptionValue={option => option.id}
                     onChange={program => setProgram(program as IProgram)}
+                />
+                <label htmlFor="batches">Шаблон пакетной выгрузки</label>
+                <Select
+                    id='batches'
+                    onChange={values => setBatch(values as IBatch)}
+                    value={batch}
+                    options={batches}
+                    getOptionLabel={option => option.name}
+                    getOptionValue={option => option.id ?? "1"}
+                    placeholder='Сохраненный шаблон'
                 />
                 {div_datePickers()}
                 {div_nameFileReport()}
@@ -179,12 +212,12 @@ const ReportPage: FC = () => {
 
 
     if (organizationStore.isLoading) {
-        return <Loader />
+        return <Loader/>
     }
 
     return (
         <div className="center form-group col-md-12">
-        <h1>Отчеты</h1>
+            <h1>Отчеты</h1>
             <div>
                 <Tabs>
                     <TabList>
@@ -192,7 +225,7 @@ const ReportPage: FC = () => {
                         <Tab>Отчет по операциям</Tab>
                     </TabList>
                     <TabPanel>
-                        {div_TabItem()}
+                    {div_TabItem()}
                         <button className="button"
                                 onClick={reportFromBiz}>
                             Выгрузить

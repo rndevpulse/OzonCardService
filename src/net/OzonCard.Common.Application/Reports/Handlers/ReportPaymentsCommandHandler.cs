@@ -102,20 +102,20 @@ public class ReportPaymentsCommandHandler(
                 request, 
                 new ProgramReportDataSet(resultReport.OrderBy(x => x.Name)), 
                 cancellationToken)
-            : await SaveBathFilesAsync(org, request, resultReport,  cancellationToken);
+            : await SaveBatchFilesAsync(org, request, resultReport,  cancellationToken);
         return file;
     }
 
    
 
-    private async Task<SaveFile> SaveBathFilesAsync(
+    private async Task<SaveFile> SaveBatchFilesAsync(
         Organization organization,
         ReportPaymentsCommand request, 
         List<ItemProgramReportTable> report, 
         CancellationToken cancellationToken)
     {
         if (request.Batch == null)
-            throw new BusinessException("Error in id bath pattern");
+            throw new BusinessException("Error in id batch pattern");
         
         UpdateProgress("Выполняется пакетное сохранение..", 90);
 
@@ -126,7 +126,7 @@ public class ReportPaymentsCommandHandler(
         
         //сохранить общий файл
         excelManager.CreateWorkbook(
-            Path.Combine(tempFolder, $"{request.Title} - Общий"),
+            Path.Combine(tempFolder, $"{request.Title} - Общий.xlsx"),
             new ProgramReportDataSet(report.OrderBy(x => x.Name)),
             $"{request.Title} - Общий: в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
         );
@@ -144,14 +144,14 @@ public class ReportPaymentsCommandHandler(
             
             //сохраняем каждый батч отдельно
             excelManager.CreateWorkbook(
-                Path.Combine(tempFolder, $"{request.Title} - {batchProp.Name}"),
+                Path.Combine(tempFolder, $"{request.Title} - {batchProp.Name}.xlsx"),
                 new ProgramReportDataSet(aggregationReport.OrderBy(x => x.Name)),
                 $"{request.Title} - {batchProp.Name}: в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
             );
             
         }
         //упаковываем все батчи в архив и кладем его в базу
-        var fileId = await fileManager.SaveAsBath(tempFolder);
+        var fileId = await fileManager.SaveAsBatch(tempFolder);
         var saveFile = new SaveFile(fileId, "zip", request.Title, request.UserId);
         await fileRepository.AddAsync(saveFile);
         UpdateProgress("Пакет сохранен..", 100, saveFile);

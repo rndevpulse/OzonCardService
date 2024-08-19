@@ -7,4 +7,5 @@ export interface IReportOption{
     offset: number
     title: string
     isOffline:boolean
+    batch: string | undefined
 }

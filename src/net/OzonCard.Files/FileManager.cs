@@ -26,7 +26,7 @@ public class FileManager : IFileManager
     }
     public string GetDirectory() { return _path; }
     public string GetTempDirectory() { return _temp; }
-    public Task<Guid> SaveAsBath(string folder)
+    public Task<Guid> SaveAsBatch(string folder)
     {
         var id = Guid.NewGuid();
         var dirInfo = new DirectoryInfo(folder);

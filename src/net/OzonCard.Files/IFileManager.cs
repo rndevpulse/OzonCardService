@@ -10,5 +10,5 @@ public interface IFileManager
     string GetFile(string name);
     string GetDirectory();
     string GetTempDirectory();
-    Task<Guid> SaveAsBath(string folder);
+    Task<Guid> SaveAsBatch(string folder);
 }

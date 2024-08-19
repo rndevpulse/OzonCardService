@@ -8,6 +8,7 @@ import {Context} from "../../index";
 import {Batches} from "../../components/batch";
 import {IBatch} from "../../models/batch";
 import PropsService from "../../services/PropsService";
+import {toast} from "react-toastify";
 
 
 const PatternsPage: FC = () => {
@@ -41,9 +42,12 @@ const PatternsPage: FC = () => {
             temp.name = response.data.name
             temp.properties = response.data.properties
             setBatches(batches.map(x=>x))
+            toast.info("Шаблон изменен")
             return
         }
         setBatches(batches.concat(response.data))
+        toast.info("Шаблон добавлен")
+
     }
 
     return (
@@ -74,7 +78,7 @@ const PatternsPage: FC = () => {
 
                 </TabPanel>
                 <TabPanel>
-
+                    <h1>Данный раздел еще находится в разработке</h1>
                 </TabPanel>
             </Tabs>
         </div>
