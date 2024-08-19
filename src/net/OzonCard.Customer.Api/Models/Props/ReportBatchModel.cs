@@ -4,6 +4,7 @@ namespace OzonCard.Customer.Api.Models.Props;
 
 public class ReportBatchModel
 {
+    public Guid? Id { get; set; }
     public Guid Organization { get; set; }
     public string Name { get; set; }
     public IEnumerable<ReportBatchProp> Properties { get; set; }

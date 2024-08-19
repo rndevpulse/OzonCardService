@@ -3,14 +3,17 @@ import {observer} from "mobx-react-lite";
 import * as React from "react";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import Select from "react-select";
-import {ICategory, IOrganization, IProgram} from "../../models/org";
+import {IOrganization} from "../../models/org";
 import {Context} from "../../index";
 import {Batches} from "../../components/batch";
+import {IBatch} from "../../models/batch";
+import PropsService from "../../services/PropsService";
 
 
 const PatternsPage: FC = () => {
 
-    const {organizationStore, taskStore} = useContext(Context);
+    const {organizationStore} = useContext(Context);
+    const [batches, setBatches] = useState<IBatch[]>([]);
 
 
     const [organization, setOrganization] = useState<IOrganization>()
@@ -23,10 +26,26 @@ const PatternsPage: FC = () => {
         await organizationStore.requestOrganizations();
         const org = organizationStore.organizations[0];
         setOrganization(org);
+        const response = await PropsService.getBatches();
+        setBatches(response.data)
     }
     useEffect(() => {
         init()
     }, []);
+
+    async function onOrganizationBatchesChanged(batch: IBatch) {
+        const response = await PropsService.setBatch(batch)
+        const temp = batches.find(x=>x.id === response.data.id)
+        if (temp !== undefined)
+        {
+            temp.name = response.data.name
+            temp.properties = response.data.properties
+            setBatches(batches.map(x=>x))
+            return
+        }
+        setBatches(batches.concat(response.data))
+    }
+
     return (
         <div className="center form-group col-md-12">
             <h1>Шаблоны</h1>
@@ -49,6 +68,8 @@ const PatternsPage: FC = () => {
                 <TabPanel>
                     <Batches
                         organization={organization as IOrganization}
+                        batches={batches.filter(x=>x.organization === organization?.id)}
+                        onBatchesChanged={async batch=> await onOrganizationBatchesChanged(batch) }
                     />
 
                 </TabPanel>

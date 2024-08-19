@@ -16,10 +16,10 @@ public class PropertyDomainObjectConfiguration : DomainObjectConfiguration<Prope
         builder.Property(x => x.Type);
         builder.Property(x => x.Data);
 
-        builder.HasIndex(x => new { x.Type, x.Reference }).IsUnique();
+        // builder.HasIndex(x => new { x.Type, x.Reference }).IsUnique();
 
         builder.HasDiscriminator(x => x.Type)
-            .HasValue<MemberReportBatchProp>(PropType.Member)
+            .HasValue<MemberReportBatchProp>(PropType.MemberBatch)
             .IsComplete();
     }
     

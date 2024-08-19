@@ -10,6 +10,7 @@ public class PropsMappings : Profile
     public PropsMappings()
     {
         CreateMap<MemberReportBatchProp, ReportBatchModel>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Id))
             .ForMember(x => x.Name, opt => opt.MapFrom(x => x.Name))
             .ForMember(x => x.Organization, opt => opt.MapFrom(x => x.Organization))
             .ForMember(x=>x.Properties, opt=> opt.MapFrom(x=>x.GetProperty<IEnumerable<ReportBatchProp>>()))

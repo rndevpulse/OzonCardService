@@ -18,7 +18,7 @@ public class PropsController : ApiController
     }
 
     [HttpPost]
-    public async Task<ReportBatchModel> AddOrUpdate(Guid? id, ReportBatchModel model, CancellationToken ct = default)
+    public async Task<ReportBatchModel> AddOrUpdate(ReportBatchModel model, CancellationToken ct = default)
     {
         var result = await Commands.Send(
             new SetMemberReportBatchPropCommand(
@@ -26,7 +26,7 @@ public class PropsController : ApiController
                 model.Organization,
                 model.Name,
                 model.Properties,
-                id),
+                model.Id),
             ct);
         return Mapper.Map<ReportBatchModel>(result);
     } 

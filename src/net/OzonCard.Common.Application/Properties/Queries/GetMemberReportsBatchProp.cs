@@ -14,7 +14,7 @@ public record GetMemberReportsBatchProp(
         public async Task<IEnumerable<MemberReportBatchProp>> Handle(GetMemberReportsBatchProp request, CancellationToken cancellationToken)
         {
             var props = await repository.GetItemsAsync(
-                request.Member, PropType.Member, cancellationToken);
+                request.Member, PropType.MemberBatch, cancellationToken);
 
             return props.OfType<MemberReportBatchProp>();
 

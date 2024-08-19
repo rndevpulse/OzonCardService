@@ -5,7 +5,7 @@ cd .\src\net\OzonCard.Customer.Api\
 
 dotnet ef migrations add InfrastructureContext
 ```shell
-dotnet ef migrations add JobProcessedFixFieldMigration -c InfrastructureContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Operational
+dotnet ef migrations add PropsTableMigration -c InfrastructureContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Operational
 ```
 dotnet ef migrations add SecurityContext
 ```shell
