@@ -11,6 +11,7 @@ using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Domain.Files;
 using OzonCard.Common.Domain.Organizations;
+using OzonCard.Common.Domain.Props;
 using OzonCard.Common.Worker.Data;
 using OzonCard.Common.Worker.Services;
 using OzonCard.Excel;
@@ -102,7 +103,7 @@ public class ReportPaymentsCommandHandler(
                 request, 
                 new ProgramReportDataSet(resultReport.OrderBy(x => x.Name)), 
                 cancellationToken)
-            : await SaveBatchFilesAsync(org, request, resultReport,  cancellationToken);
+            : await SaveBatchFilesAsync(org, batch, request, resultReport,  cancellationToken);
         return file;
     }
 
@@ -110,15 +111,12 @@ public class ReportPaymentsCommandHandler(
 
     private async Task<SaveFile> SaveBatchFilesAsync(
         Organization organization,
+        Property batch,
         ReportPaymentsCommand request, 
         List<ItemProgramReportTable> report, 
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        if (request.Batch == null)
-            throw new BusinessException("Error in id batch pattern");
-        
         UpdateProgress("Выполняется пакетное сохранение..", 90);
-
         
         var tempFolder = Path.Combine(fileManager.GetTempDirectory(), request.Title);
         var offset = TimeSpan.FromMinutes(request.Offset);
@@ -131,8 +129,7 @@ public class ReportPaymentsCommandHandler(
             $"{request.Title} - Общий: в период с {request.DateFrom.Date} по {to.Date.AddSeconds(-1)}"
         );
         
-        var batchProperty = await propertiesRepository.GetItemAsync((Guid)request.Batch, cancellationToken);
-        foreach (var batchProp in batchProperty.GetProperty<IEnumerable<ReportBatchProp>>() ?? ArraySegment<ReportBatchProp>.Empty)
+        foreach (var batchProp in batch.GetProperty<IEnumerable<ReportBatchProp>>() ?? ArraySegment<ReportBatchProp>.Empty)
         {
             var aggregationFilter = organization.Categories
                 .Where(x=>batchProp.Aggregations.Contains(x.Id))

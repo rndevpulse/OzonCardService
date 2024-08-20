@@ -4,12 +4,15 @@ using OzonCard.Biz.Client.Models.Reports;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
+using OzonCard.Common.Application.Properties;
+using OzonCard.Common.Application.Properties.Data;
 using OzonCard.Common.Application.Reports.Commands;
 using OzonCard.Common.Application.Reports.Data;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Domain.Files;
 using OzonCard.Common.Domain.Organizations;
+using OzonCard.Common.Domain.Props;
 using OzonCard.Common.Worker.Data;
 using OzonCard.Common.Worker.Services;
 using OzonCard.Excel;
@@ -25,6 +28,7 @@ public class ReportTransactionsCommandHandler(
     IOrganizationRepository orgRepository,
     ICustomerRepository customerRepository,
     ITrackingBackgroundJobs tracking, 
+    IPropertiesRepository propertiesRepository,
     ILogger<ReportTransactionsCommandHandler> logger
 ) : ICommandHandler<ReportTransactionsCommand, SaveFile>
 {
@@ -101,15 +105,79 @@ public class ReportTransactionsCommandHandler(
             })
             .OrderBy(x=>x.Name)
             .ToList();
+        
+        var file = request.Batch == null 
+                   || await propertiesRepository.GetItemAsync((Guid)request.Batch, cancellationToken) is not {} batch
+            ? await SaveSimpleFileAsync(
+                request, 
+                new TransactionReportDataSet(transactionsReportTable, transactionsSummaryTable), 
+                cancellationToken)
+            : await SaveBatchFilesAsync(org, batch, request, 
+                transactionsReportTable, transactionsSummaryTable,  cancellationToken);
+        return file;
+    }
 
+    private async Task<SaveFile> SaveBatchFilesAsync(
+        Organization organization,
+        Property batch,
+        ReportTransactionsCommand request,
+        List<ItemTransactionsReportTable> transactions,
+        List<ItemTransactionsSummaryTable> summary,
+        CancellationToken ct)
+    {
+        UpdateProgress("Выполняется пакетное сохранение..", 90);
+        
+        var tempFolder = Path.Combine(fileManager.GetTempDirectory(), request.Title);
+        var offset = TimeSpan.FromMinutes(request.Offset);
+        var from = request.DateFrom.ToOffset(offset).Date;
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
+        
+        //сохранить общий файл
+        excelManager.CreateWorkbook(
+            Path.Combine(tempFolder, $"{request.Title} - Общий.xlsx"),
+            new TransactionReportDataSet(transactions, summary),
+            $"{request.Title} - Общий: в период с {from} по {to.Date.AddSeconds(-1)}"
+        );
+        foreach (var batchProp in batch.GetProperty<IEnumerable<ReportBatchProp>>() ??
+                                  ArraySegment<ReportBatchProp>.Empty)
+        {
+            var aggregationFilter = organization.Categories
+                .Where(x => batchProp.Aggregations.Contains(x.Id))
+                .Select(x => x.Name)
+                .ToArray();
+            var aggregationTransactions = transactions.Where(x =>
+                    aggregationFilter.Any(f => x.Categories.Contains(f)))
+                .ToList();
+            var aggregationSummary = summary.Where(x =>
+                    aggregationFilter.Any(f => x.Categories.Contains(f)))
+                .ToList();
+            //сохраняем каждый батч отдельно
+            excelManager.CreateWorkbook(
+                Path.Combine(fileManager.GetDirectory(), $"{request.Title} - {batchProp.Name}.xlsx"),
+                new TransactionReportDataSet(aggregationTransactions, aggregationSummary),
+                $"{request.Title} - {batchProp.Name}: в период с {from} по {to.Date.AddSeconds(-1)}"
+            );
+        }
+        //упаковываем все батчи в архив и кладем его в базу
+        var fileId = await fileManager.SaveAsBatch(tempFolder);
+        var saveFile = new SaveFile(fileId, "zip", request.Title, request.UserId);
+        await fileRepository.AddAsync(saveFile);
+        UpdateProgress("Пакет сохранен..", 100, saveFile);
+        return saveFile;
+    }
+
+    private async Task<SaveFile> SaveSimpleFileAsync(ReportTransactionsCommand request, TransactionReportDataSet dataSet,
+        CancellationToken ct)
+    {
         UpdateProgress("Сохраняем результат..", 95);
+        var offset = TimeSpan.FromMinutes(request.Offset);
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
+        var from = request.DateFrom.ToOffset(offset).Date;
 
         var fileId = Guid.NewGuid();
         excelManager.CreateWorkbook(
             Path.Combine(fileManager.GetDirectory(), $"{fileId}.xlsx"),
-            new TransactionReportDataSet(
-                transactionsReportTable, transactionsSummaryTable
-            ),
+            dataSet,
             $"{request.Title} в период с {from} по {to.Date.AddSeconds(-1)}"
         );
         
@@ -120,6 +188,8 @@ public class ReportTransactionsCommandHandler(
 
         return saveFile;
     }
+
+
 
     private async Task<IEnumerable<ProgramReportDto>> GetProgramReportAsync(BizClient client,
         Organization org, IEnumerable<Guid> categoriesId,
