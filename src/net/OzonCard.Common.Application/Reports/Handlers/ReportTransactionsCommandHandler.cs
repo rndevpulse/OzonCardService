@@ -153,7 +153,7 @@ public class ReportTransactionsCommandHandler(
                 .ToList();
             //сохраняем каждый батч отдельно
             excelManager.CreateWorkbook(
-                Path.Combine(fileManager.GetDirectory(), $"{request.Title} - {batchProp.Name}.xlsx"),
+                Path.Combine(tempFolder, $"{request.Title} - {batchProp.Name}.xlsx"),
                 new TransactionReportDataSet(aggregationTransactions, aggregationSummary),
                 $"{request.Title} - {batchProp.Name}: в период с {from} по {to.Date.AddSeconds(-1)}"
             );
