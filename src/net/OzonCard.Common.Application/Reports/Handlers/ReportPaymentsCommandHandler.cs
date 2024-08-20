@@ -63,6 +63,9 @@ public class ReportPaymentsCommandHandler(
         );
         logger.LogInformation($"Payment report for '{org.Name}' from '{from}' to '{to}' returned '{report.Count()}' rows");
         
+        if (!report.Any())
+            throw new BusinessException("Ошибка в получении отчета по питанию");
+        
         UpdateProgress("Обрабатываем отчет по программе питания..", 65);
         
         var customers = await customerRepository.GetItemsAsync(org.Id, cancellationToken);

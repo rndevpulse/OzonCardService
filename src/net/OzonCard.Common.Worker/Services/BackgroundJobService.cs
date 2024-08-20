@@ -22,6 +22,14 @@ internal class BackgroundJobService(
                 return "Running";
         }
     }
+    private string? CastReason(string reason)
+    {
+        if (string.IsNullOrEmpty(reason)) 
+            return null;
+        if (reason.Contains("Retry attempt"))
+            return reason.Replace("Retry attempt", "Попытка").Replace(" of ", "/");
+        return "Не удалось выполнить задачу, попробуйте позже";
+    }
     public IBackgroundTask AppendSchedule<TResult>(
         string taskId, 
         ICommand<TResult> task, 
@@ -58,6 +66,7 @@ internal class BackgroundJobService(
         var jobs = tasksId.Select(id =>
         {
             var job = JobStorage.Current.GetReadOnlyConnection().GetJobData(id);
+            var state = JobStorage.Current.GetReadOnlyConnection().GetStateData(id);
             var jobTracking = processes.FirstOrDefault(p => p.TaskId == id);
             var jobProgress = jobTracking == null
                 ? null
@@ -67,12 +76,15 @@ internal class BackgroundJobService(
                 CastSate(job?.State ?? "Deleted"))
             {
                 Progress = jobProgress?.Status,
-                Result = jobProgress?.Result
+                Result = jobProgress?.Result,
+                Error = CastReason(state.Reason),
             };
         });
         return jobs.ToList();
         
     }
+
+    
 
     public IBackgroundTask? Cancel(string taskId)
     {
