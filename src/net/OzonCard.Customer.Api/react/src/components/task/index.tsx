@@ -37,8 +37,8 @@ function getTime(time: number) : string{
     return `${padTo2Digits(date.getHours())}:${padTo2Digits(date.getMinutes())}:${padTo2Digits(date.getSeconds())}`;
 }
 function getLocalTime(time:string):string{
-    const date = new Date(time)
-    return date.toLocaleTimeString();
+    let t = new Date(time);
+    return new Date(t.getTime() - (t.getTimezoneOffset() * 60000)).toLocaleTimeString()
 }
 
 const switchTaskDescription = (savedTask: ISavedTask) =>{

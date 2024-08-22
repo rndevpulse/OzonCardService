@@ -63,15 +63,15 @@ public class ReportTransactionsCommandHandler(
             from, 
             to.AddDays(-1), 
             ct:cancellationToken);
-        if (!transactions.Any())
-            throw new BusinessException("Ошибка в получении транзакций");
+        // if (!transactions.Any())
+        //     throw new BusinessException("Ошибка в получении транзакций");
         UpdateProgress("Запрашиваем отчет по программе питания..", 60);
 
         var report = await GetProgramReportAsync(
             client, org, request.CategoriesId, request.ProgramId, from, to, cancellationToken);
         
-        if (!report.Any())
-            throw new BusinessException("Ошибка в получении отчета по питанию");
+        // if (!report.Any())
+        //     throw new BusinessException("Ошибка в получении отчета по питанию");
         var customers = await customerRepository.GetItemsAsync(
             org.Id, cancellationToken);
         
