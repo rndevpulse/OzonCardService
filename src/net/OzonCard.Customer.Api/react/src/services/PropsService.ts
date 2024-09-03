@@ -11,4 +11,8 @@ export default class PropsService {
     static async setBatch(batch: IBatch) : Promise<AxiosResponse<IBatch>>{
         return await api.post<IBatch>(`/props`,batch)
     }
+
+    static async delProps(id: string) : Promise<AxiosResponse<void>> {
+       return  await api.delete(`/props?id=${id}`)
+    }
 }

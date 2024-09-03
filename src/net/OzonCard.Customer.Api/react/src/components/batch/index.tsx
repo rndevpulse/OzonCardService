@@ -4,15 +4,17 @@ import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import {IBatch, IBatchProp} from "../../models/batch";
 import {useToast} from "../toast";
+import "./index.css"
 
 
 interface IBatchesProps{
     organization: IOrganization,
     batches: IBatch[],
-    onBatchesChanged: (batch : IBatch) => void,
+    onBatchesChanged: (batch : IBatch) => Promise<IBatch>,
+    onPropRemove: (id: string) => void,
 }
 
-export function Batches({organization, batches, onBatchesChanged}:IBatchesProps){
+export function Batches({organization, batches, onBatchesChanged, onPropRemove}:IBatchesProps){
 
     const toast = useToast();
     const [lastOrganization, setLastOrganization] = useState<string>('');
@@ -103,13 +105,29 @@ export function Batches({organization, batches, onBatchesChanged}:IBatchesProps)
             toast.show("Не указана организация", "warning")
             return
         }
-        onBatchesChanged({
+        if (batchName.length === 0){
+            toast.show("Не указано наименование шаблона", "warning")
+            return
+        }
+        let temp = await onBatchesChanged({
             id:id,
             organization:organization?.id,
             name:batchName,
             properties:batchProps,
         })
+        if (id === undefined) {
+            selectedBatch(temp)
+        }
 
+    }
+    function removeProp(id: string | undefined) {
+        if (id === undefined) {
+            toast.show("Не указан шаблон для удаления", "warning")
+            return
+        }
+        onPropRemove(id);
+        selectedBatch(undefined)
+        onClear();
     }
 
     useEffect(() => {
@@ -122,18 +140,18 @@ export function Batches({organization, batches, onBatchesChanged}:IBatchesProps)
     });
     return (
         <>
-            <div>
-                <Select
-                    id='batches'
-                    onChange={values => selectedBatch(values as IBatch | undefined)}
-                    value={batch}
-                    options={batches}
-                    getOptionLabel={option => option.name}
-                    getOptionValue={option => option.id ?? "1"}
-                    placeholder='Сохраненный шаблон'
-                    isClearable={true}
-                    ref={selectInputRef as any}
-                />
+            <Select
+                id='batches'
+                onChange={values => selectedBatch(values as IBatch | undefined)}
+                value={batch}
+                options={batches}
+                getOptionLabel={option => option.name}
+                getOptionValue={option => option.id ?? "1"}
+                placeholder='Сохраненный шаблон'
+                isClearable={true}
+                ref={selectInputRef as any}
+            />
+            <div className="batch-container">
                 <div className="container-row-customer container-row-wrap">
                     <label htmlFor="patternName">Наименование шаблона
                         <input
@@ -145,20 +163,26 @@ export function Batches({organization, batches, onBatchesChanged}:IBatchesProps)
                         />
                     </label>
                     <button className="button"
-                            onClick={e=> sendBatch()}
-                        >Создать</button>
+                            onClick={e => sendBatch()}
+                    >Создать
+                    </button>
                     <button className="button"
-                            onClick={e=> sendBatch(batch?.id)}
-                        >Изменить</button>
+                            onClick={e => sendBatch(batch?.id)}
+                    >Изменить
+                    </button>
+                    <button className="button red"
+                            onClick={e => removeProp(batch?.id)}
+                    >Удалить
+                    </button>
                 </div>
-            </div>
-            {batchProps && onViewBatches(batchProps)}
-            <div>
-                <button className="button"
-                        onClick={appendBatch}
-                >
-                    Добавить
-                </button>
+                {batchProps && onViewBatches(batchProps)}
+                <div>
+                    <button className="button"
+                            onClick={appendBatch}
+                    >
+                        Добавить
+                    </button>
+                </div>
             </div>
         </>
 

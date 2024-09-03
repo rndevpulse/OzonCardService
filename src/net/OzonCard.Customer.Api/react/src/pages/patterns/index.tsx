@@ -34,7 +34,7 @@ const PatternsPage: FC = () => {
         init()
     }, []);
 
-    async function onOrganizationBatchesChanged(batch: IBatch) {
+    async function onOrganizationBatchesChanged(batch: IBatch) : Promise<IBatch> {
         const response = await PropsService.setBatch(batch)
         const temp = batches.find(x=>x.id === response.data.id)
         if (temp !== undefined)
@@ -43,11 +43,17 @@ const PatternsPage: FC = () => {
             temp.properties = response.data.properties
             setBatches(batches.map(x=>x))
             toast.info("Шаблон изменен")
-            return
+            return temp;
         }
         setBatches(batches.concat(response.data))
         toast.info("Шаблон добавлен")
+        return response.data;
+    }
 
+    async function onPropRemove(id: string){
+        await PropsService.delProps(id)
+        setBatches(batches.filter(x=>x.id !== id))
+        toast.info("Шаблон удален")
     }
 
     return (
@@ -73,7 +79,8 @@ const PatternsPage: FC = () => {
                     <Batches
                         organization={organization as IOrganization}
                         batches={batches.filter(x=>x.organization === organization?.id)}
-                        onBatchesChanged={async batch=> await onOrganizationBatchesChanged(batch) }
+                        onBatchesChanged={async batch=> await onOrganizationBatchesChanged(batch)}
+                        onPropRemove={async prop => await onPropRemove(prop)}
                     />
 
                 </TabPanel>

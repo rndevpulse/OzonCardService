@@ -2,6 +2,7 @@
 using OzonCard.Common.Application.Properties.Commands;
 using OzonCard.Common.Application.Properties.Queries;
 using OzonCard.Customer.Api.Models.Props;
+using Task = DocumentFormat.OpenXml.Office2021.DocumentTasks.Task;
 
 namespace OzonCard.Customer.Api.Controllers;
 
@@ -29,5 +30,12 @@ public class PropsController : ApiController
                 model.Id),
             ct);
         return Mapper.Map<ReportBatchModel>(result);
-    } 
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Remove(Guid id, CancellationToken ct = default)
+    {
+        await Commands.Send(new RemovePropCommand(id), ct);
+        return Ok();
+    }
 }
