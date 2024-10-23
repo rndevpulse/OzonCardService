@@ -16,6 +16,11 @@ using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Extensions;
 using OzonCard.Common.Logging;
+using OzonCard.Customer.Api.Services;
+using OzonCard.DeferredRequest;
+using OzonCard.DeferredRequest.Handler;
+using OzonCard.DeferredRequest.Manager;
+using OzonCard.DeferredRequest.Processor;
 using OzonCard.Excel;
 using OzonCard.Files;
 using OzonCard.Identity.Domain;
@@ -172,6 +177,12 @@ builder.Services.AddVersionedApiExplorer(o =>
 
 builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<IExcelManager, ExcelManager>();
+
+#endregion
+
+#region DeferredRequests
+
+builder.Services.AddDeferredRequests();
 
 #endregion
 
