@@ -7,7 +7,7 @@ namespace OzonCard.DeferredRequest.Processor;
 
 internal class DeferredRequestProcessors(
     IServiceProvider serviceProvider,
-    ILogger<DeferredRequestProcessors> logger
+    Assembly[] assemblies
 ) : IDeferredRequestProcessors
 {
     private record RequestProcessor(Type Type, IDeferredRequestsHandlerInfo HandlerInfo);
@@ -18,8 +18,7 @@ internal class DeferredRequestProcessors(
 
     private IDictionary<string, RequestProcessor> InitRequestHandlers()
     {
-        var handlerTypes = Assembly.GetExecutingAssembly()
-            .GetTypesAssignableFrom<IDeferredRequestsHandler>();
+        var handlerTypes = assemblies.GetTypesAssignableFrom<IDeferredRequestsHandler>();
         var result = new Dictionary<string, RequestProcessor>();
         foreach (var handler in handlerTypes)
         {
@@ -32,6 +31,7 @@ internal class DeferredRequestProcessors(
             }
             catch (Exception e)
             {
+                var logger = serviceProvider.GetRequiredService<ILogger<DeferredRequestProcessors>>();
                 logger.LogError(e, "Fail registration service '{handlerType}' with key '{key}'",
                     handler.FullName ?? handler.Name,
                     key ?? "unknown");
@@ -44,6 +44,7 @@ internal class DeferredRequestProcessors(
     {
         return Handlers
             .Select(x=>x.Value.HandlerInfo)
+            .OrderBy(x=>x.Key)
             .ToArray();
     }
 

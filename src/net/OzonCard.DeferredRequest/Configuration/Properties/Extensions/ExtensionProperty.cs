@@ -13,6 +13,6 @@ public abstract class ExtensionProperty
     public string Name { get; set; }
     public string Label { get; set; }
     //поведение в UI
-    public PropertyBehaviour Behaviour { get; set; } = PropertyBehaviour.Undefined;
+    public PropertyBehaviour Behaviour { get; set; }
     public abstract string Type { get; }
 }

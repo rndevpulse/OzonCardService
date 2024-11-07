@@ -38,9 +38,7 @@ public class ExtensionPropertyJsonConverter : JsonConverter<ExtensionProperty>
         }
     }
 
-    public override void Write(Utf8JsonWriter writer, ExtensionProperty member, JsonSerializerOptions options)
-    {
-        JsonSerializer.Serialize(writer, (object)member, options);
-    }
+    public override void Write(Utf8JsonWriter writer, ExtensionProperty value, JsonSerializerOptions options) =>
+        JsonSerializer.Serialize(writer, value, value.GetType(), options);
     
 }

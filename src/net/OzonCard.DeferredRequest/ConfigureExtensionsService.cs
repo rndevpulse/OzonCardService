@@ -8,21 +8,23 @@ namespace OzonCard.DeferredRequest;
 
 public static class ConfigureExtensionsService
 {
-    public static IServiceCollection AddDeferredRequests(this IServiceCollection services)
+    public static IServiceCollection AddDeferredRequests(this IServiceCollection services, Assembly[]? assembly = null)
     {
+        assembly ??= [Assembly.GetCallingAssembly()];
         services.AddScoped<IDeferredRequestsManager, DeferredRequestsManager>();
-        services.AddScoped<IDeferredRequestProcessors, DeferredRequestProcessors>();
-        services.AddAssignableScoped<IDeferredRequestsHandler>([Assembly.GetExecutingAssembly()]);
+        services.AddScoped<IDeferredRequestProcessors, DeferredRequestProcessors>(x=> 
+            new DeferredRequestProcessors(x, assembly));
+        services.AddAssignableScoped<IDeferredRequestsHandler>(assembly);
 
         return services;
     }
     
-    public static IServiceCollection AddAssignableScoped<T>(this IServiceCollection services,
+    internal static IServiceCollection AddAssignableScoped<T>(this IServiceCollection services,
         IEnumerable<Assembly> assemblies) =>
         AddAssignableScoped<T>(services, assemblies.ToArray());
     
     
-    public static IServiceCollection AddAssignableScoped<T>(this IServiceCollection services, 
+    internal static IServiceCollection AddAssignableScoped<T>(this IServiceCollection services, 
         Assembly[] assemblies)
     {
         foreach (var assembly in assemblies)
@@ -31,8 +33,11 @@ public static class ConfigureExtensionsService
             );
         return services;
     }
-    
-    public static List<Type> GetTypesAssignableFrom<T>(this Assembly assembly)
+
+    internal static List<Type> GetTypesAssignableFrom<T>(this Assembly[] assemblies) =>
+        assemblies.SelectMany(assembly => assembly.GetTypesAssignableFrom<T>())
+            .ToList();
+    internal static List<Type> GetTypesAssignableFrom<T>(this Assembly assembly)
     {
         var assignableType = typeof(T);
         return assembly.DefinedTypes

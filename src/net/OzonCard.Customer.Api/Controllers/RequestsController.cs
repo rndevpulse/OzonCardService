@@ -16,7 +16,7 @@ public class RequestsController(
     public IEnumerable<IDeferredRequestsHandlerInfo> Index() =>
         manager.GetHandlers();
 
-    [HttpGet("{key:string}/[action]")]
+    [HttpGet("{key}/[action]")]
     public IEnumerable<ExtensionProperty> Properties(string key) =>
         manager.GetPropertiesHandler(key);
 
