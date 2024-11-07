@@ -9,13 +9,13 @@ using OzonCard.DeferredRequest.Handler;
 namespace OzonCard.Customer.Api.Services.DeferredRequests;
 
 
-public class PaymentsReportDeferredRequestHandler(
-    ILogger<PaymentsReportDeferredRequestHandler> logger,
+public class TransactionsReportDeferredRequestHandler(
+    ILogger<TransactionsReportDeferredRequestHandler> logger,
     IBackgroundJobsService jobsService
 ) : IDeferredRequestsHandler
 {
-    public string Key => DRequests.Reports.Payments;
-    public string Name => "Отчет за период";
+    public string Key => DRequests.Reports.Transactions;
+    public string Name => "Отчет по транзакциям";
 
     public IEnumerable<ExtensionProperty> Properties => GetProps();
 
@@ -34,8 +34,8 @@ public class PaymentsReportDeferredRequestHandler(
         RequestConfiguration configuration,
         CancellationToken ct = default)
     {
-        logger.LogDebug("Append new PaymentsReportDeferredRequestHandler");
-        var cmd = new ReportPaymentsCommand()
+        logger.LogDebug("Append new TransactionsReportDeferredRequestHandler");
+        var cmd = new ReportTransactionsCommand()
         {
             Title = configuration.GetProperty<ExtensionStringProperty>("title").Value,
             OrganizationId = configuration.GetProperty<ExtensionGuidProperty>("organization").Value,
