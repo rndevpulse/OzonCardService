@@ -17,7 +17,7 @@ public class DRequests
 
     public class Reports
     {
-        public const string Period = "d.request.report.period";
+        public const string Payments = "d.request.report.payments";
         public const string Transactions = "d.request.report.transactions";
     }
 }

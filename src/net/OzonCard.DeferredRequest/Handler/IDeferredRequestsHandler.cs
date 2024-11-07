@@ -1,11 +1,14 @@
 ﻿using OzonCard.Common.Core;
-using OzonCard.DeferredRequest.Properties.Extensions;
+using OzonCard.DeferredRequest.Configuration;
+using OzonCard.DeferredRequest.Configuration.Properties.Extensions;
 
 namespace OzonCard.DeferredRequest.Handler;
 
 public interface IDeferredRequestsHandler : IDeferredRequestsHandlerInfo
 {
-   List<ExtensionProperty> Properties { get; }
+   IEnumerable<ExtensionProperty> Properties { get; }
     
-    Task<IBackgroundTask> AppendAsync(IEnumerable<ExtensionProperty> args, CancellationToken ct = default); 
+    Task<IBackgroundTask> AppendAsync(
+        RequestConfiguration configuration,
+        CancellationToken ct = default); 
 }

@@ -7,6 +7,7 @@ internal interface IBackgroundJobQueue
 {
     void AppendSchedule<T>(string jobId, Expression<Func<T, Task>> job, string schedule, string queue = "default");
     string Enqueue<T>(Expression<Func<T, Task>> job);
+    string Schedule<T>(Expression<Func<T, Task>> job, DateTimeOffset enqueueAt);
 
     void Dequeue(string jobId);
     void Cancel(string taskId);

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using OzonCard.DeferredRequest.Properties.Extensions;
+using OzonCard.DeferredRequest.Configuration.Properties.Extensions;
 
-namespace OzonCard.DeferredRequest.Properties;
+namespace OzonCard.DeferredRequest.Configuration.Properties;
 
 public class ExtensionPropertyJsonConverter : JsonConverter<ExtensionProperty>
 {
@@ -20,13 +20,16 @@ public class ExtensionPropertyJsonConverter : JsonConverter<ExtensionProperty>
                 {
                     case nameof(ExtensionStringProperty):
                         return jsonDoc.RootElement.Deserialize<ExtensionStringProperty>(options)
-                               ?? new ExtensionStringProperty(string.Empty, string.Empty);
+                               ?? new ExtensionStringProperty();
+                    case nameof(ExtensionGuidProperty):
+                        return jsonDoc.RootElement.Deserialize<ExtensionGuidProperty>(options)
+                               ?? new ExtensionGuidProperty();
                     case nameof(ExtensionBoolProperty):
                         return jsonDoc.RootElement.Deserialize<ExtensionBoolProperty>(options)
-                               ?? new ExtensionBoolProperty(string.Empty, string.Empty);
+                               ?? new ExtensionBoolProperty();
                     case nameof(ExtensionDateTimeProperty):
                         return jsonDoc.RootElement.Deserialize<ExtensionDateTimeProperty>(options)
-                               ?? new ExtensionDateTimeProperty(string.Empty, string.Empty);
+                               ?? new ExtensionDateTimeProperty();
                     default:
                         throw new JsonException($"'Value' doesn't match a known derived type: {jsonDoc.RootElement}");
                 }

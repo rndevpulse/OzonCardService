@@ -1,7 +1,8 @@
 ﻿using OzonCard.Common.Core;
+using OzonCard.DeferredRequest.Configuration;
+using OzonCard.DeferredRequest.Configuration.Properties.Extensions;
 using OzonCard.DeferredRequest.Handler;
 using OzonCard.DeferredRequest.Processor;
-using OzonCard.DeferredRequest.Properties.Extensions;
 
 namespace OzonCard.DeferredRequest.Manager;
 
@@ -16,13 +17,24 @@ internal class DeferredRequestsManager(
 
     public IEnumerable<ExtensionProperty> GetPropertiesHandler(string key)
     {
-        return processors.GetHandler(key).Properties.AsReadOnly();
+        return processors.GetHandler(key).Properties;
     }
 
-    public Task<IBackgroundTask> AppendRequestAsync(string key, IEnumerable<ExtensionProperty> args,
+    public Task<IBackgroundTask> AppendRequestAsync(string key, 
+        DateTimeOffset schedule,
+        int timeOffset,
+        IEnumerable<ExtensionProperty> args,
+        IDictionary<string, object>? features = null,
         CancellationToken ct = default)
 
     {
-        return processors.GetHandler(key).AppendAsync(args, ct);
+        return processors.GetHandler(key).AppendAsync(
+            new RequestConfiguration(
+                schedule,
+                timeOffset,
+                args,
+                features),
+            ct
+            );
     }
 }

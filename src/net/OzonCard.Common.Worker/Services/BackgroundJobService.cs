@@ -47,7 +47,17 @@ internal class BackgroundJobService(
             CastSate(jobData?.State));
     }
 
-
+    public IBackgroundTask Schedule<TResult>(ICommand<TResult> task, DateTimeOffset enqueueAt, Guid? track = null)
+    {
+        var taskId = jobQueue.Schedule<ICommandBus>(
+            commands => commands.Send(task, CancellationToken.None),
+            enqueueAt
+        );
+        var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
+        if (track != null && track != Guid.Empty)
+            tracking.Observe(taskId, (Guid)track);
+        return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, CastSate(jobData.State));
+    }
 
     public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task, Guid? track = null)
     {

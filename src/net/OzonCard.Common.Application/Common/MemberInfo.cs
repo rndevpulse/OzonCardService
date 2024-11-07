@@ -11,9 +11,8 @@ public abstract class MemberInfo
 
     public Guid UseTracking()
     {
-        var tracking  = Guid.NewGuid();
-        Tracking = tracking;
-        return tracking;
+        Tracking = Guid.NewGuid();
+        return (Guid)Tracking;
     } 
 
 }

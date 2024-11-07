@@ -22,18 +22,22 @@ public static class ConfigureExtensionsService
         AddAssignableScoped<T>(services, assemblies.ToArray());
     
     
-    public static IServiceCollection AddAssignableScoped<T>(this IServiceCollection services, Assembly[] assemblies)
+    public static IServiceCollection AddAssignableScoped<T>(this IServiceCollection services, 
+        Assembly[] assemblies)
     {
         foreach (var assembly in assemblies)
-            assembly.GetTypesAssignableFrom(typeof(T)).ForEach(type=>
+            assembly.GetTypesAssignableFrom<T>().ForEach(type=>
                 services.AddScoped(type)
             );
         return services;
     }
     
-    static List<Type> GetTypesAssignableFrom(this Assembly assembly, Type compareType) =>
-        assembly.DefinedTypes
-            .Where(type => compareType.IsAssignableFrom(type) && compareType != type)
+    public static List<Type> GetTypesAssignableFrom<T>(this Assembly assembly)
+    {
+        var assignableType = typeof(T);
+        return assembly.DefinedTypes
+            .Where(type => assignableType.IsAssignableFrom(type) && assignableType != type)
             .Cast<Type>().ToList();
+    }
 
 }

@@ -12,6 +12,8 @@ internal class BackgroundJobQueue(
     public void AppendSchedule<T>(string jobId, Expression<Func<T, Task>> job, string schedule, string queue = "default")=>
         recurring.AddOrUpdate(jobId, queue, job, schedule);
 
+    public string Schedule<T>(Expression<Func<T, Task>> job, DateTimeOffset  enqueueAt) =>
+        client.Schedule(job, enqueueAt);
     
     public string Enqueue<T>(Expression<Func<T, Task>> job) =>
         client.Enqueue(job);

@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OzonCard.DeferredRequest.Attributes;
 using OzonCard.DeferredRequest.Handler;
 
 namespace OzonCard.DeferredRequest.Processor;
@@ -20,22 +19,22 @@ internal class DeferredRequestProcessors(
     private IDictionary<string, RequestProcessor> InitRequestHandlers()
     {
         var handlerTypes = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .Where(x=>x.GetCustomAttributes(typeof(DeferredProcessorAttribute), true).Any());
+            .GetTypesAssignableFrom<IDeferredRequestsHandler>();
         var result = new Dictionary<string, RequestProcessor>();
         foreach (var handler in handlerTypes)
         {
-            var attribute = handler.GetCustomAttribute<DeferredProcessorAttribute>();
-            if (attribute == null) 
-                continue;
+            string? key = null;
             try
             {
                 var service = (IDeferredRequestsHandler)serviceProvider.GetRequiredService(handler);
+                key = service.Key;
                 result.Add(service.Key, new RequestProcessor(handler, service));
             }
             catch (Exception e)
             {
-                logger.LogError(e.Message);
+                logger.LogError(e, "Fail registration service '{handlerType}' with key '{key}'",
+                    handler.FullName ?? handler.Name,
+                    key ?? "unknown");
             }
         }
         return result;
