@@ -1,10 +1,11 @@
 import {ExtensionProps} from "./ExtensionProps";
 import * as React from "react";
+import "./index.css";
 
 
 export function ExtensionStringProperty({property}:ExtensionProps) {
     return (
-            <label id={`ex_${property.name}`} htmlFor={`textbox_${property.name}`}>
+            <label className='extensionString' htmlFor={`textbox_${property.name}`}>
                 {property.label}
                 <input
                     id={`textbox_${property.name}`}
