@@ -20,7 +20,7 @@ public class RequestsController(
     public IEnumerable<ExtensionProperty> Properties(string key) =>
         manager.GetPropertiesHandler(key);
 
-    [HttpPost]
+    [HttpPost("{key}")]
     public async Task<BackgroundTaskModel> AppendRequest(string key, 
         RequestModel model, CancellationToken ct = default)
     {

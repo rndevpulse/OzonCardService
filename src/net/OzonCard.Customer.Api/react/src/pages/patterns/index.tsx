@@ -9,6 +9,7 @@ import {Batches} from "../../components/batch";
 import {IBatch} from "../../models/batch";
 import PropsService from "../../services/PropsService";
 import {toast} from "react-toastify";
+import {RequestHandlers} from "../../components/request";
 
 
 const PatternsPage: FC = () => {
@@ -73,7 +74,7 @@ const PatternsPage: FC = () => {
             <Tabs>
                 <TabList>
                     <Tab>Отчеты</Tab>
-                    <Tab>Задачи</Tab>
+                    <Tab>Запросы</Tab>
                 </TabList>
                 <TabPanel>
                     <Batches
@@ -85,7 +86,9 @@ const PatternsPage: FC = () => {
 
                 </TabPanel>
                 <TabPanel>
-                    <h1>Данный раздел еще находится в разработке</h1>
+                    <RequestHandlers
+                        organization={organization as IOrganization}
+                    />
                 </TabPanel>
             </Tabs>
         </div>

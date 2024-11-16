@@ -2,9 +2,7 @@
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import {ru} from "date-fns/locale/ru";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import DatePicker, {registerLocale} from "react-datepicker";
 import Select from "react-select";
 import {Context} from "../../index";
 import {IOrganization} from "../../models/org/IOrganization";
@@ -18,7 +16,7 @@ import './index.css'
 import {Loader} from "../../components/loader";
 import {IBatch} from "../../models/batch";
 import PropsService from "../../services/PropsService";
-registerLocale("ru", ru)
+import {DatePickerFrom, DatePickerTo} from "../../components/datePicker";
 
 const ReportPage: FC = () => {
     const navigate = useNavigate()
@@ -105,41 +103,6 @@ const ReportPage: FC = () => {
     }
 
 
-    function div_datePickers() {
-        return (
-            <div >
-                <label htmlFor="formDateFrom" className="form-label">Период с</label>
-                <DatePicker
-                    id="formDateFrom"
-                    dateFormat='dd MMMM yyyy'
-                    selected={dateFrom}
-                    selectsStart
-                    startDate={dateFrom}
-                    endDate={dateTo}
-                    onChange={date => setDateFrom(date as Date)}
-                    locale='ru'
-                    placeholderText="Период с"
-                />
-                <label htmlFor="formDateTo" className="form-label">по</label>
-                <DatePicker
-                    id='formDateTo'
-                    dateFormat='dd MMMM yyyy'
-                    selected={dateTo}
-                    selectsEnd
-                    startDate={dateFrom}
-                    endDate={dateTo}
-                    minDate={dateFrom}
-                    onChange={date => setDateTo(date as Date)}
-                    locale='ru'
-                    placeholderText="Период по"
-                />
-
-
-            </div>
-        )
-    }
-
-
     function div_nameFileReport() {
         return (
             <div>
@@ -199,7 +162,9 @@ const ReportPage: FC = () => {
                     getOptionValue={option => option.id ?? "1"}
                     placeholder='Сохраненный шаблон'
                 />
-                {div_datePickers()}
+
+                <DatePickerFrom value={dateFrom} start={dateFrom} end={dateTo} onChange={setDateFrom}/>
+                <DatePickerTo value={dateTo} start={dateFrom} end={dateTo} onChange={setDateTo}/>
                 {div_nameFileReport()}
             </div>
         )
@@ -225,7 +190,7 @@ const ReportPage: FC = () => {
                         <Tab>Отчет по операциям</Tab>
                     </TabList>
                     <TabPanel>
-                    {div_TabItem()}
+                        {div_TabItem()}
                         <button className="button"
                                 onClick={reportFromBiz}>
                             Выгрузить

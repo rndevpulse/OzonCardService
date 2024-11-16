@@ -187,4 +187,4 @@ export function Batches({organization, batches, onBatchesChanged, onPropRemove}:
         </>
 
     )
-};
+}

@@ -2,8 +2,6 @@
 import * as React from 'react'
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
-import {ru} from "date-fns/locale/ru";
-import DatePicker, {registerLocale} from "react-datepicker";
 import Select from "react-select";
 import {Context} from "../../index";
 import {IOrganization} from "../../models/org/IOrganization";
@@ -17,7 +15,7 @@ import {Loader} from "../../components/loader";
 import {useToast} from "../../components/toast";
 import {ModalContext} from "../../context/modal";
 import {Modal} from "../../components/modal";
-registerLocale("ru", ru)
+import {DatePickerFrom, DatePickerTo} from "../../components/datePicker";
 
 
 
@@ -144,40 +142,6 @@ const SearchPage: FC = () => {
 
     }
 
-    function div_OnlineParams() {
-
-        return (
-            <div className="div-datePicker">
-                <label htmlFor="dateFrom" >Период с </label>
-                <DatePicker
-                    dateFormat='dd MMMM yyyy'
-                    selected={dateFrom}
-                    selectsStart
-                    startDate={dateFrom}
-                    endDate={dateTo}
-                    onChange={date => setDateFrom(date as Date)}
-                    id="dateFrom"
-                    locale='ru'
-                    placeholderText="Период с"
-
-                />
-                <label htmlFor="dateTo" > по </label>
-                <DatePicker
-                    dateFormat='dd MMMM yyyy'
-                    selected={dateTo}
-                    selectsEnd
-                    startDate={dateFrom}
-                    endDate={dateTo}
-                    minDate={dateFrom}
-                    onChange={date => setDateTo(date as Date)}
-                    name="dateTo"
-                    locale='ru'
-                    placeholderText="Период по"
-                />
-            </div>
-        )
-    }
-
     useEffect(() => {
         firstInit();
         console.log("time offset", -(new Date().getTimezoneOffset()))
@@ -231,7 +195,9 @@ const SearchPage: FC = () => {
                     Найти
                 </button>
                 <br/>
-                {div_OnlineParams()}
+                <DatePickerFrom value={dateFrom} start={dateFrom} end={dateTo} onChange={setDateFrom}/>
+                <DatePickerTo value={dateTo} start={dateFrom} end={dateTo} onChange={setDateTo}/>
+
 
             </div>
             {getCustomersInfo()}

@@ -16,5 +16,5 @@ public class ExtensionDateTimeProperty : ExtensionProperty
     }
     
     public override string Type => nameof(ExtensionDateTimeProperty);
-    public DateTimeOffset Value { get; set; }
+    public DateTimeOffset Value { get; set; } = DateTimeOffset.Now;
 }
