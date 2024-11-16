@@ -25,7 +25,7 @@ public class TransactionsReportDeferredRequestHandler(
             new ExtensionStringProperty("title", "Наименование"),
             new ExtensionGuidProperty("organization", "Организация", PropertyBehaviour.OrganizationId),
             new ExtensionGuidProperty("batch", "Групповой отчет", PropertyBehaviour.BatchId),
-            new ExtensionGuidProperty("program", "Программа", PropertyBehaviour.BatchId),
+            new ExtensionGuidProperty("program", "Программа", PropertyBehaviour.ProgramId),
             new ExtensionDateTimeProperty("dateFrom", "Дата с", PropertyBehaviour.DateStart),
             new ExtensionDateTimeProperty("dateTo", "Дата по", PropertyBehaviour.DateEnd),
         };
@@ -50,6 +50,6 @@ public class TransactionsReportDeferredRequestHandler(
             Tracking = Guid.NewGuid(),
         };
 
-        return Task.FromResult(jobsService.Schedule(cmd, configuration.Schedule, cmd.Tracking));
+        return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone, cmd.Tracking));
     }
 }

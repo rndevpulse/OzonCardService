@@ -6,5 +6,9 @@ public record RequestConfiguration(
     DateTimeOffset Schedule,
     int TimeOffset,
     IEnumerable<ExtensionProperty> Properties,
-    IDictionary<string, object>? Features 
-);
+    IDictionary<string, object>? Features
+)
+{
+    public DateTimeOffset ScheduleTimeZone => Schedule.ToOffset(TimeSpan.FromMinutes(TimeOffset));
+   
+};

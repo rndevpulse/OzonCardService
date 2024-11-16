@@ -5,19 +5,19 @@ import DatePicker from "react-datepicker";
 import * as React from "react";
 
 
-export function ExtensionDateTimeProperty({property}:ExtensionProps){
+export function ExtensionDateTimeProperty({property, onChangeValue}:ExtensionProps){
 
     const castBehaviour = () => {
         switch (property.behaviour){
             case PropertyBehaviour.DateStart:
                 return <DatePickerFrom
                     value={property.value}
-                    onChange={data => property.value=data}
+                    onChange={data => onChangeValue(property, data)}
                 />
             case PropertyBehaviour.DateEnd:
                 return <DatePickerTo
                     value={property.value}
-                    onChange={data => property.value=data}
+                    onChange={data => onChangeValue(property, data)}
                 />
             default:
                 return <div>
@@ -26,7 +26,7 @@ export function ExtensionDateTimeProperty({property}:ExtensionProps){
                         id={`formDate_${property.name}`}
                         dateFormat='dd MMMM yyyy'
                         selected={property.value}
-                        onChange={date => property.value = date}
+                        onChange={data => onChangeValue(property, data)}
                         locale='ru'
                         placeholderText={property.label}
                     />

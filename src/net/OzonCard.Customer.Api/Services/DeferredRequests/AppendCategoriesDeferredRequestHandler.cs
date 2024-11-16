@@ -34,6 +34,6 @@ public class AppendCategoriesDeferredRequestHandler(
             configuration.GetProperty<ExtensionGuidProperty>("selectedCategory").Value,
             true
         );
-        return Task.FromResult(jobsService.Schedule(cmd, configuration.Schedule));
+        return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone));
     }
 }

@@ -2,12 +2,12 @@ import {ExtensionProps} from "./ExtensionProps";
 import * as React from "react";
 
 
-export function ExtensionBoolProperty({property}:ExtensionProps) {
+export function ExtensionBoolProperty({property, onChangeValue}:ExtensionProps) {
 
 return(
     <label htmlFor={`checkbox_${property.name}`} className="label-checkbox">
         <input id={`checkbox_${property.name}`} type='checkbox' checked={property.value}
-               onChange={e => property.value = e.target.value}
+               onChange={e => onChangeValue(property, e.target.value)}
         />
         {property.label}
         <i className="material-icons red-text">

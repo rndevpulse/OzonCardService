@@ -13,7 +13,7 @@ export function DatePickerFrom({value, end,onChange}: IDatePickerProps) {
                 dateFormat='dd MMMM yyyy'
                 selected={value}
                 selectsStart
-                startDate={value}
+                // startDate={value}
                 endDate={end}
                 onChange={date => onChange(date as Date)}
                 locale='ru'

@@ -14,7 +14,7 @@ export function DatePickerTo({value, start, onChange}: IDatePickerProps) {
                 selected={value}
                 selectsEnd
                 startDate={start}
-                endDate={value}
+                // endDate={value}
                 minDate={start}
                 onChange={date => onChange(date as Date)}
                 locale='ru'
