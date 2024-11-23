@@ -12,15 +12,17 @@ configure({
 export default class TaskStore {
     timer = 0;
     tasks: ISavedTask[] = JSON.parse(localStorage.getItem('tasks') || '[]') as ISavedTask[]
-    
+
+
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
         setInterval(this.increaseTimer, 2000);
     }
+    static continueStatuses = ['Running', 'Scheduled'];
     async increaseTimer() {
         this.timer++;
         const currents = this.tasks
-            .filter(task => task.task.status == "Running")
+            .filter(task => TaskStore.continueStatuses.includes(task.task.status ))
             .map(task=>task.id);
         if (currents.length === 0)
             return
@@ -35,9 +37,8 @@ export default class TaskStore {
         if (response.status === 200 && response.data)
         {
             // console.log("running tasks info", response.data)
-
             this.tasks = this.tasks.map((t,index) => {
-                if (t.task.status !== 'Running') { return t }
+                if (!TaskStore.continueStatuses.includes(t.task.status )) { return t }
                 this.setTaskInfo(t.id, index, response.data)
                 return t
             })
@@ -53,7 +54,11 @@ export default class TaskStore {
         if (task)
         {
             this.tasks[index].task = task
-            this.tasks[index].time += 2
+
+            if ( this.tasks[index].task.status === 'Running'){
+                this.tasks[index].time += 2
+            }
+
         }
         else
             this.tasks[index].task.status = "Failed"

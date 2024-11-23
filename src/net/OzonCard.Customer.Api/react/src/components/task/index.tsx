@@ -94,7 +94,7 @@ const taskDefaultDescription = (savedTask: ISavedTask) => {
     return (
         <dd>
             <ul>
-                <li>Время выполнения: {getTime(savedTask.time)}</li>
+                {savedTask.task.status === "Running"  &&  <li>Время выполнения: {getTime(savedTask.time)}</li>}
             </ul>
             <ul>
                 <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
@@ -123,7 +123,7 @@ const taskCustomerDescription = (savedTask: ISavedTask) => {
     )
 }
 const taskTitle = (props: ITaskProps) => {
-    if (props.saved.task.status === "Running") {
+    if (props.saved.task.status === "Running" || props.saved.task.status === "Scheduled") {
         return (
             <dt>
                 {props.saved.description}

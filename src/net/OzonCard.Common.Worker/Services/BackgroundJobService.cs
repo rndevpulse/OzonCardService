@@ -18,6 +18,8 @@ internal class BackgroundJobService(
             case "Deleted":
             case "Failed":
                 return "Failed";
+            case "Scheduled":
+                return "Scheduled";
             default: 
                 return "Running";
         }

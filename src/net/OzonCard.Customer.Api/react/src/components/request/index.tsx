@@ -57,7 +57,10 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
                 timeOffset: -(new Date().getTimezoneOffset()),
                 properties: handlerProps
             })
-        taskStore.onAddTask(task.data, 'Отложенный запрос: ' + handler?.name)
+        if (task === undefined){
+            return
+        }
+        taskStore.onAddTask(task.data, `Отложенный запрос на ${schedule.toLocaleString()}: ` + handler?.name)
         // navigate(`/tasks`)
         toast.show("Отложенный запрос создан")
 
