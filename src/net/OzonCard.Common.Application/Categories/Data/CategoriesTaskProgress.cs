@@ -13,5 +13,5 @@ public record CategoriesTaskProgress : NamedProgress<CategoriesTaskProgress>
         All = value.All;
         Processed = value.Processed;
     }
-    public void AddLog(string log) => Log += log + "\n";
+    public void AddLog(string log) => Log += $"[{DateTime.Now:dd.MM.yyyy HH:mm:ss}] " + log + "\n";
 }
