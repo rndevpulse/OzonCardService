@@ -27,17 +27,24 @@ public class UpdateRangeCategoriesCommandHandler(
         foreach (var program in org.Programs)
         {
             logger.LogDebug($"Search users in '{program.Name}' with program '{program.Name}'");
-
-            var report = await client.GetProgramReport(
-                org.Id,
-                program.Id,
-                DateTime.Now.AddMonths(-1),
-                DateTime.Now,
-                cancellationToken);
-            customers.AddRange(
-                report.Where(x => x.GuestCategoryNames.Contains(currentCategory.Name))
-                    .Select(x=>x.GuestId)
-            );
+            try
+            {
+                var report = await client.GetProgramReport(
+                    org.Id,
+                    program.Id,
+                    DateTime.Now.AddMonths(-1),
+                    DateTime.Now,
+                    cancellationToken);
+                customers.AddRange(
+                    report.Where(x => x.GuestCategoryNames.Contains(currentCategory.Name))
+                        .Select(x=>x.GuestId)
+                );
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning($"Report not get from biz for program '{program.Name}' in {org.Name}", e);
+            }
+            
         }
         customers = customers.Distinct().ToList();
         logger.LogDebug("Find '{customerCount}' users in '{orgName}'", customers.Count, org.Name);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OzonCard.Common.Application.Categories.Commands;
 using OzonCard.Common.Core;
+using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Worker.Services;
 using OzonCard.DeferredRequest.Configuration;
 using OzonCard.DeferredRequest.Configuration.Properties.Extensions;
@@ -36,6 +37,10 @@ public class RemoveCategoriesDeferredRequestHandler(
             configuration.GetProperty<ExtensionGuidProperty>("selectedCategory").Value,
             true
         );
+        if (Guid.Empty == cmd.CategoryId)
+            throw new BusinessException("Не выбрана текущая категория");
+        if (Guid.Empty == cmd.SelectedCategoryId)
+            throw new BusinessException("Не выбран категория для удаления");
         return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone));
     }
 }

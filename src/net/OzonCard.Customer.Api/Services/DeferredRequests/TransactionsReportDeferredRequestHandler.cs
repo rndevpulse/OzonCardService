@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OzonCard.Common.Application.Reports.Commands;
 using OzonCard.Common.Core;
+using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Worker.Services;
 using OzonCard.DeferredRequest.Configuration;
 using OzonCard.DeferredRequest.Configuration.Properties.Extensions;
@@ -49,6 +50,12 @@ public class TransactionsReportDeferredRequestHandler(
             User = configuration.TryGetFeature<string>("user") is var user ? user ?? string.Empty : string.Empty,
             Tracking = Guid.NewGuid(),
         };
+        if (string.IsNullOrWhiteSpace(cmd.Title))
+            throw new BusinessException("Не указано наименование отчета");
+        if (Guid.Empty == cmd.ProgramId)
+            throw new BusinessException("Не выбрана маркетинговая программа");
+        if (Guid.Empty == cmd.Batch)
+            throw new BusinessException("Не выбран шаблон для сохранения отчетов");
 
         return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone, cmd.Tracking));
     }
