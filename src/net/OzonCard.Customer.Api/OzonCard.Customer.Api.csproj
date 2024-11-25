@@ -56,7 +56,8 @@
     </ItemGroup>
 
 
-    <Target Name="PublishRunWebpack" BeforeTargets="Build">
+    <Target Name="PublishRunWebpack" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+        <Message Text="Configuration is $(Configuration), build npm ......." Importance="high"/>
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" EnvironmentVariables="BUILD_PATH=../wwwroot" />
     </Target>
