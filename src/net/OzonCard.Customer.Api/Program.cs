@@ -17,7 +17,6 @@ using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Extensions;
 using OzonCard.Common.Logging;
 using OzonCard.DeferredRequest;
-using OzonCard.DeferredRequest.Handler;
 using OzonCard.Excel;
 using OzonCard.Files;
 using OzonCard.Identity.Domain;

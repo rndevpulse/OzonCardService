@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.UseDefaultLogging();
 
 
-builder.Services.AddAutoMapper(assemblies);
+// builder.Services.AddAutoMapper(assemblies);
 builder.Services.AddMemoryCache();
 
 builder.Services.AddInfrastructure(opt =>

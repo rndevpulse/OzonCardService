@@ -13,6 +13,12 @@ export default class OrganizationStore {
 
     setLoading(bool: boolean) {
         this.isLoading = bool;
+        if (bool === false){
+            this.organizations = this.organizations.map(org => {
+                org.categories = org.categories.filter(category => category.isActive === true);
+                return org
+            })
+        }
     }
 
     async requestOrganizations() {
@@ -20,6 +26,7 @@ export default class OrganizationStore {
         try {
             const response = await OrganizationService.getMyOrganizations();
             this.organizations = response.data;
+
             //console.log(response);
         }
         catch (e) {
