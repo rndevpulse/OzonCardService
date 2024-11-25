@@ -50,9 +50,13 @@ public class PaymentsReportDeferredRequestHandler(
             User = configuration.TryGetFeature<string>("user") is var user ? user ?? string.Empty : string.Empty,
             Tracking = Guid.NewGuid(),
         };
-        //TODO generate Exceptions
+        
         if (string.IsNullOrWhiteSpace(cmd.Title))
             throw new BusinessException("Не указано наименование отчета");
+        if (Guid.Empty == cmd.ProgramId)
+            throw new BusinessException("Не выбрана маркетинговая программа");
+        if (Guid.Empty == cmd.Batch)
+            throw new BusinessException("Не выбран шаблон для сохранения отчетов");
         return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone, cmd.Tracking));
     }
 }
