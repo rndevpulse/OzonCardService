@@ -33,12 +33,13 @@ public class AppendCategoriesDeferredRequestHandler(
             configuration.GetProperty<ExtensionGuidProperty>("organization").Value,
             configuration.GetProperty<ExtensionGuidProperty>("category").Value,
             configuration.GetProperty<ExtensionGuidProperty>("selectedCategory").Value,
-            true
+            true,
+            Guid.NewGuid()
         );
         if (Guid.Empty == cmd.CategoryId)
             throw new BusinessException("Не выбрана текущая категория");
         if (Guid.Empty == cmd.SelectedCategoryId)
             throw new BusinessException("Не выбран категория для добавления");
-        return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone));
+        return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone, cmd.Tracking));
     }
 }

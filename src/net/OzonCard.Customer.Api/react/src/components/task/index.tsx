@@ -1,4 +1,4 @@
-import {ICustomersTasksProgress, IReportsTasksProgress, ITask} from "../../models/task";
+import {ICategoriesTasksProgress, ICustomersTasksProgress, IReportsTasksProgress, ITask} from "../../models/task";
 import {ISavedTask} from "../../stores/models/ISavedTask";
 import * as React from "react";
 import FileService from "../../services/FileServise";
@@ -49,10 +49,28 @@ const switchTaskDescription = (savedTask: ISavedTask) =>{
             return taskCustomerDescription(savedTask)
         case "ReportsTaskProgress":
             return taskReportDescription(savedTask)
+        case "CategoriesTaskProgress":
+            return taskCategoriesDescription(savedTask)
     }
 
 }
 
+const taskCategoriesDescription = (savedTask: ISavedTask) => {
+    const status = savedTask.task.progress as ICategoriesTasksProgress;
+
+    return (
+        <dd>
+            <div className={"description-simple"}>{status.Log}</div>
+            <ul>
+                <li>Обработано: {status.Processed}</li>
+                <li>Гостей всего: {status.All}</li>
+                {savedTask.task.status === "Running" && <li>Время выполнения: {getTime(savedTask.time)}</li>}
+                <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
+            </ul>
+
+        </dd>
+)
+}
 
 const taskReportDescription = (savedTask: ISavedTask) => {
     const status = savedTask.task.progress as IReportsTasksProgress;

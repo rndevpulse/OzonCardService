@@ -2,5 +2,5 @@
 
 
 export interface IProgress {
-    Type: undefined | "CustomersTaskProgress" | "ReportsTaskProgress"
+    Type: undefined | "CustomersTaskProgress" | "ReportsTaskProgress" | "CategoriesTaskProgress"
 }

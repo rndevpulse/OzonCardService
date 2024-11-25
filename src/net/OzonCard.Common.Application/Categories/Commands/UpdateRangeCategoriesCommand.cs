@@ -6,5 +6,6 @@ public record UpdateRangeCategoriesCommand(
     Guid OrganizationId,
     Guid CategoryId,
     Guid SelectedCategoryId,
-    bool IsAppend
+    bool IsAppend,
+    Guid Tracking
     ) : ICommand<int>;

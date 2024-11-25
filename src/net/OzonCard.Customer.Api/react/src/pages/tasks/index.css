@@ -14,7 +14,7 @@
 }
 .description-simple{
     text-align: start;
-
+    white-space: pre-wrap;
 }
 .task-error {
     background: #df777b;
