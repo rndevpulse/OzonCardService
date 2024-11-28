@@ -8,6 +8,10 @@ import Select from "react-select";
 import {DatePickerWithTime} from "../datePicker";
 import {Extensions} from "../handlerProps";
 import {Context} from "../../index";
+import {Modal} from "../modal";
+import {ModalContext} from "../../context/modal";
+import {RequestConfirm} from "./RequestConfirm";
+import "./index.css"
 
 interface IRequestHandlersProps{
     organization: IOrganization
@@ -27,6 +31,8 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
     const [schedule, setSchedule] = useState<Date>(new Date());
     //-(new Date().getTimezoneOffset())
 
+    const {modal, open, close}=useContext(ModalContext)
+
     const onClear = () => {
         (selectInputRef.current as any).clearValue();
     };
@@ -45,18 +51,28 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
         console.log(property)
 
     }
-    async function appendBatch() {
+    async function tryConfirm(){
         if (handler === null)
         {
             toast.show("Отложенный запрос не указан")
             return
         }
+        if (handler!.key.includes("companies")){
+            open()
+        }
+        else {
+            await appendBatch()
+        }
+    }
+    async function appendBatch() {
+
         let task = await RequestService.append(
             handler!.key,{
                 schedule:schedule,
                 timeOffset: -(new Date().getTimezoneOffset()),
                 properties: handlerProps
             })
+        close()
         if (task === undefined){
             return
         }
@@ -102,11 +118,19 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
                 onChangeValue={onChangePropValue}
             />}
             {handler && handlerProps && <button className="button"
-                    onClick={appendBatch}
+                    onClick={tryConfirm}
             >
                 Добавить
             </button>}
-
+            {modal && handler && handlerProps && <Modal title={'Подтвердите действия'} onClose={close}>
+                <RequestConfirm
+                    handler={handler}
+                    handlerProps={handlerProps}
+                    schedule={schedule}
+                    organization={organization}
+                    onConfirmed={appendBatch}
+                    />
+            </Modal>}
         </>
     )
 }
