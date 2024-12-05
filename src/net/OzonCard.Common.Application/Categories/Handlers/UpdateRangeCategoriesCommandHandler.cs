@@ -30,8 +30,9 @@ public class UpdateRangeCategoriesCommandHandler(
         logger.LogDebug($"Try update category '{newCategory.Name}' to '{currentCategory.Name}' in '{org.Name}'");
         var client = new BizClient(org.Login, org.Password);
         var customers = new List<Guid>();
-
-        _progress.AddLog($"Запрос отчетов с {DateTime.Now.AddMonths(-1):dd.MM.yyyy} по {DateTime.Now.AddMonths(-1):dd.MM.yyyy} для нахождения гостей с требуемой категорией");
+        var dateFrom = DateTime.Now.AddMonths(-1);
+        var dateTo = DateTime.Now.AddDays(1);
+        _progress.AddLog($"Запрос отчетов с {dateFrom:dd.MM.yyyy} по {dateTo:dd.MM.yyyy} для нахождения гостей с требуемой категорией");
         tracking.ReportProgress(task, _progress);
         
         foreach (var program in org.Programs)
@@ -42,8 +43,8 @@ public class UpdateRangeCategoriesCommandHandler(
                 var report = await client.GetProgramReport(
                     org.Id,
                     program.Id,
-                    DateTime.Now.AddMonths(-1),
-                    DateTime.Now.AddDays(1),
+                    dateFrom,
+                    dateTo,
                     cancellationToken);
                 customers.AddRange(
                     report.Where(x => x.GuestCategoryNames.Contains(currentCategory.Name))

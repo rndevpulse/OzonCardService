@@ -23,7 +23,7 @@ public class CompaniesBlockDeferredRequestHandler(
         {
             new ExtensionGuidProperty("organization", "Организация", PropertyBehaviour.OrganizationId),
             new ExtensionGuidProperty("category", "Компания", PropertyBehaviour.CategoryId),
-            new ExtensionGuidProperty("selectedCategory", "Переместить в", PropertyBehaviour.CategoryId),
+            new ExtensionGuidProperty("selectedCategory", "Удалить из", PropertyBehaviour.CategoryId),
             
         };
     

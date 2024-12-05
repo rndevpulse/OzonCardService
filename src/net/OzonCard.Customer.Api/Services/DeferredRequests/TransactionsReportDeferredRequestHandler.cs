@@ -16,7 +16,7 @@ public class TransactionsReportDeferredRequestHandler(
 ) : IDeferredRequestsHandler
 {
     public string Key => DRequests.Reports.Transactions;
-    public string Name => "Отчет по транзакциям";
+    public string Name => "Отчет по операциям";
 
     public IEnumerable<ExtensionProperty> Properties => GetProps();
 
