@@ -139,35 +139,6 @@ namespace OzonCard.Common.Infrastructure.Database.Migrations.Operational
                     b.ToTable("files", (string)null);
                 });
 
-            modelBuilder.Entity("OzonCard.Common.Domain.JobProgresses.JobProgress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TaskId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("Track")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskId");
-
-                    b.ToTable("job_progress", (string)null);
-                });
-
             modelBuilder.Entity("OzonCard.Common.Domain.Organizations.Organization", b =>
                 {
                     b.Property<Guid>("Id")

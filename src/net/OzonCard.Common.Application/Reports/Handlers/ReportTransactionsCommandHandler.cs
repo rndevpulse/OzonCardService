@@ -33,14 +33,12 @@ public class ReportTransactionsCommandHandler(
 ) : ICommandHandler<ReportTransactionsCommand, SaveFile>
 {
     
-    private IJobProgress? _task;
+    private Guid? _track;
     readonly ReportsTaskProgress _status = new();
     
     public async Task<SaveFile> Handle(ReportTransactionsCommand request, CancellationToken cancellationToken)
     {
-        _task = request.Tracking is { } track
-            ? await tracking.GetJobAsync(track, cancellationToken)
-            : null;
+        _track = request.Tracking;
         
         UpdateProgress("Собираем данные..", 3);
         
@@ -226,7 +224,7 @@ public class ReportTransactionsCommandHandler(
     
     private void UpdateProgress(string description, int n, SaveFile? result = null)
     {
-        tracking.ReportProgress(_task, _status with
+        tracking.ReportProgress(_track, _status with
         {
             Description = description,
             Progress = n

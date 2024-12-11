@@ -27,16 +27,16 @@ public class BackgroundTask<TResult>(
 }
 
 
-public class BackgroundTask<TResult, TStatus>(
-    string id, 
-    DateTimeOffset queuedAt, 
-    string status = "Created"
-) : BackgroundTask<TResult>(id, queuedAt, status) where TStatus : NamedProgress<TStatus>
-{
-    public new NamedProgress<TStatus>? Progress { get; init; }
-}
-
-
+// public class BackgroundTask<TResult, TStatus>(
+//     string id, 
+//     DateTimeOffset queuedAt, 
+//     string status = "Created"
+// ) : BackgroundTask<TResult>(id, queuedAt, status) where TStatus : NamedProgress
+// {
+//     public new NamedProgress? Progress { get; init; }
+// }
+//
+//
 
 
 

@@ -6,7 +6,7 @@ using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Infrastructure.Stores;
 
-public class StoreTaskContext : IStoreContext, IAsyncDisposable
+public class StoreTaskContext : IStoreContext, IDisposable
 {
     private readonly DbContext _context;
     private readonly IDbContextTransaction _transaction;
@@ -43,10 +43,9 @@ public class StoreTaskContext : IStoreContext, IAsyncDisposable
         _context.Set<TEntity>();
 
 
-    public ValueTask DisposeAsync()
+    public void Dispose()
     {
         _context.SaveChanges();
         _transaction.Commit();
-        return ValueTask.CompletedTask;
     }
 }

@@ -30,10 +30,6 @@ public class CustomersUploadCommandHandler(
         var timeout = TimeSpan.FromSeconds(5);
         await using (await locks.AcquireLockAsync(token, timeout, cancellationToken))
         {
-            var task = request.Tracking is { } track
-                ? await tracking.GetJobAsync(track, cancellationToken)
-                : null;
-
             var fileCustomers = request.Customer != null
                 ?
                 [
@@ -55,7 +51,7 @@ public class CustomersUploadCommandHandler(
 
             Progress.CountAll = fileCustomers.Count;
             logger.LogInformation($"Try upload by {request.User} '{fileCustomers.Count}' customers");
-            tracking.ReportProgress(task, Progress);
+            tracking.ReportProgress(request.Tracking, Progress);
 
             var customers = (await customerRepository.GetCustomersByCardsAsync(
                 org.Id,
@@ -102,7 +98,7 @@ public class CustomersUploadCommandHandler(
 
                 result.Add(customer);
                 //update progress task
-                tracking.ReportProgress(task, Progress);
+                tracking.ReportProgress(request.Tracking, Progress);
             }
 
             return result;

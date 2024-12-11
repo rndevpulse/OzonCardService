@@ -1,4 +1,5 @@
-﻿using OzonCard.Common.Core;
+﻿using System.Text.Json;
+using OzonCard.Common.Core;
 
 namespace OzonCard.Common.Worker.Domain.Jobs;
 
@@ -16,14 +17,24 @@ public class Job : IWithId
     public string? Result { get; set; }
     
     
-    public Job(Guid id, string number, Guid user)
+    public Job(Guid id, string number, Guid user, string arguments)
     {
         Id = id;
         Status = "Created";
         Number = number;
         User = user;
-        Arguments = string.Empty;
+        Arguments = arguments;
         CreatedAt = DateTimeOffset.UtcNow;
         UpdatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public object? GetJobProgress()
+    {
+        return JsonSerializer.Deserialize<object>(Progress ?? "{}");
+    }
+
+    public object? GetJobResult()
+    {
+        return JsonSerializer.Deserialize<object>(Result ?? "{}");
     }
 }

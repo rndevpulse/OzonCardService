@@ -17,7 +17,6 @@ using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Common.Infrastructure.Services;
 using OzonCard.Common.Infrastructure.Stores;
 using OzonCard.Common.Worker.Extensions;
-using OzonCard.Common.Worker.JobsProgress;
 using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Infrastructure.Extensions;
@@ -63,7 +62,8 @@ public static class InfrastructureBuilderExtension
         
         services.AddDbContext<TaskContext>(b =>
             (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
-                options.Connection), ServiceLifetime.Transient);
+                options.Connection,
+                x=>x.UseCompatibilityLevel(120)), ServiceLifetime.Transient);
         
         services.AddScoped<ITransactionManager>(sp => sp.GetRequiredService<InfrastructureContext>());
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
@@ -78,7 +78,6 @@ public static class InfrastructureBuilderExtension
         services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IVisitRepository, VisitRepository>();
-        services.AddScoped<IJobProgressRepository, JobProgressRepository>();
         services.AddScoped<IPropertiesRepository, PropertiesRepository>();
         
         services.AddTransient<IStoreContext>(sp=> new StoreTaskContext(sp.GetRequiredService<TaskContext>()));

@@ -31,14 +31,11 @@ public class ReportPaymentsCommandHandler(
     ILogger<ReportPaymentsCommandHandler> logger
 ) : ICommandHandler<ReportPaymentsCommand, SaveFile>
 {
-    private IJobProgress? _task;
     readonly ReportsTaskProgress _status = new();
+    private Guid? _track;
     public async Task<SaveFile> Handle(ReportPaymentsCommand request, CancellationToken cancellationToken)
     {
-        _task = request.Tracking is { } track
-            ? await tracking.GetJobAsync(track, cancellationToken)
-            : null;
-        
+        _track = request.Tracking;
         UpdateProgress("Собираем данные..", 3);
         
         var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
@@ -182,7 +179,7 @@ public class ReportPaymentsCommandHandler(
 
     private void UpdateProgress(string description, int n, SaveFile? result = null)
     {
-        tracking.ReportProgress(_task, _status with
+        tracking.ReportProgress(_track, _status with
         {
             Description = description,
             Progress = n

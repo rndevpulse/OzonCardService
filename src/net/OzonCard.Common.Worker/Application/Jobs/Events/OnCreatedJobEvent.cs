@@ -2,7 +2,7 @@
 using OzonCard.Common.Worker.Domain.Jobs;
 using OzonCard.Common.Worker.Stores;
 
-namespace OzonCard.Common.Worker.Jobs.Events;
+namespace OzonCard.Common.Worker.Application.Jobs.Events;
 
 public record OnCreatedJobEvent(
     Guid Aggregate,
@@ -21,11 +21,9 @@ public record OnCreatedJobEvent(
             var job = new Job(
                 notification.Aggregate,
                 notification.Number,
-                notification.User ?? Guid.Empty
-            )
-            {
-                Arguments = notification.Arguments ?? string.Empty
-            };
+                notification.User ?? Guid.Empty,
+                notification.Arguments ?? string.Empty
+            );
             store.Append<Job>(job);
             return Task.CompletedTask;
         }

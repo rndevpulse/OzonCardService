@@ -33,7 +33,7 @@ public class UpdateRangeCategoriesCommandHandler(
         var dateFrom = DateTime.Now.AddMonths(-1);
         var dateTo = DateTime.Now.AddDays(1);
         _progress.AddLog($"Запрос отчетов с {dateFrom:dd.MM.yyyy} по {dateTo:dd.MM.yyyy} для нахождения гостей с требуемой категорией");
-        tracking.ReportProgress(task, _progress);
+        tracking.ReportProgress(request.Tracking, _progress);
         
         foreach (var program in org.Programs)
         {
@@ -52,7 +52,7 @@ public class UpdateRangeCategoriesCommandHandler(
                 );
                 _progress.AddLog($"Отчет по программе '{program.Name}': {customers.Count} искомых гостей");
                 _progress.All = customers.Distinct().Count();
-                tracking.ReportProgress(task, _progress);
+                tracking.ReportProgress(request.Tracking, _progress);
             }
             catch (Exception e)
             {
@@ -74,11 +74,11 @@ public class UpdateRangeCategoriesCommandHandler(
             finally
             {
                 _progress.Processed += 1;
-                tracking.ReportProgress(task, _progress);
+                tracking.ReportProgress(request.Tracking, _progress);
             } 
         }
         _progress.AddLog("Обработка завершена.");
-        tracking.ReportProgress(task, _progress);
+        tracking.ReportProgress(request.Tracking, _progress);
         return customers.Count;
     }
 
