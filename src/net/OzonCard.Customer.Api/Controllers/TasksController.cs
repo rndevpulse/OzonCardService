@@ -12,10 +12,12 @@ public class TasksController(
 {
 
     [HttpGet]
-    public object Index([FromQuery] IEnumerable<string> id, CancellationToken ct = default)
+    public async Task<IEnumerable<BackgroundTaskModel>> Index([FromQuery] IEnumerable<string> id, CancellationToken ct = default)
     {
         // logger.LogDebug("Get tasks:");
-        return Mapper.Map<IEnumerable<BackgroundTaskModel>>(jobsService.GetTasks(UserClaimSid, id.ToArray()));
+        return Mapper.Map<IEnumerable<BackgroundTaskModel>>(
+            await jobsService.GetTasksAsync(UserClaimSid, id.ToArray())
+        );
     }
 
     [HttpGet("[action]")]

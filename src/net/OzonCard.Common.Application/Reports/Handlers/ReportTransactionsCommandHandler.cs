@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OzonCard.Biz.Client;
 using OzonCard.Biz.Client.Models.Reports;
+using OzonCard.Common.Application.Common;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
@@ -27,10 +28,10 @@ public class ReportTransactionsCommandHandler(
     IExcelManager excelManager,
     IOrganizationRepository orgRepository,
     ICustomerRepository customerRepository,
-    ITrackingBackgroundJobs tracking, 
     IPropertiesRepository propertiesRepository,
+    IEventBus events,
     ILogger<ReportTransactionsCommandHandler> logger
-) : ICommandHandler<ReportTransactionsCommand, SaveFile>
+) : BaseCommandHandlerProgress(events), ICommandHandler<ReportTransactionsCommand, SaveFile>
 {
     
     private Guid? _track;
@@ -224,7 +225,7 @@ public class ReportTransactionsCommandHandler(
     
     private void UpdateProgress(string description, int n, SaveFile? result = null)
     {
-        tracking.ReportProgress(_track, _status with
+        ReportProgress(_track, _status with
         {
             Description = description,
             Progress = n

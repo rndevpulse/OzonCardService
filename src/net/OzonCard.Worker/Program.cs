@@ -12,6 +12,7 @@ using OzonCard.Files;
 var assemblies = new[]
 {
     Assembly.GetExecutingAssembly(),
+    Assembly.Load("OzonCard.Common.Worker"), 
     Assembly.Load("OzonCard.Common.Infrastructure"), 
     Assembly.Load("OzonCard.Common.Domain"), 
     Assembly.Load("OzonCard.Common.Application"), 

@@ -1,12 +1,17 @@
+using System.Text.Json;
 using Hangfire;
 using OzonCard.Common.Core;
+using OzonCard.Common.Worker.Application.Jobs.Events;
 using OzonCard.Common.Worker.Data;
+using OzonCard.Common.Worker.Domain.Jobs;
+using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Worker.Services;
 
 internal class BackgroundJobService(
     IBackgroundJobQueue jobQueue,
-    ITrackingBackgroundJobs tracking
+    IEventBus events,
+    IStoreContext store
 ) : IBackgroundJobsService
 {
     private string CastSate(string? state)
@@ -32,6 +37,8 @@ internal class BackgroundJobService(
             return reason.Replace("Retry attempt", "Попытка").Replace(" of ", "/");
         return "Не удалось выполнить задачу, попробуйте позже";
     }
+    
+    
     public IBackgroundTask AppendSchedule<TResult>(
         string taskId, 
         ICommand<TResult> task, 
@@ -57,7 +64,12 @@ internal class BackgroundJobService(
         );
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
         if (track != null && track != Guid.Empty)
-            tracking.Observe(task, taskId, (Guid)track, user);
+            events.Publish(new OnCreatedJobEvent(
+                (Guid)track,
+                taskId,
+                user,
+                $"[{task.GetType().Name}]{JsonSerializer.Serialize(task, task.GetType())}"));
+
         return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, CastSate(jobData.State));
     }
 
@@ -66,15 +78,20 @@ internal class BackgroundJobService(
         var taskId = jobQueue.Enqueue<ICommandBus>(commands => commands.Send(task, CancellationToken.None));
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
         if (track != null && track != Guid.Empty)
-            tracking.Observe(task, taskId, (Guid)track, user);
+            events.Publish(new OnCreatedJobEvent(
+                (Guid)track,
+                taskId,
+                user,
+                $"[{task.GetType().Name}]{JsonSerializer.Serialize(task, task.GetType())}"));
+
         return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, CastSate(jobData.State));
     }
     public void Dequeue(string taskId) => jobQueue.Dequeue(taskId);//TODO добавить событие изменение задачи в самом хангфаере 
 
 
-    public IEnumerable<IBackgroundTask> GetTasks(Guid? user = null, params string[] tasksId)
+    public async Task<IEnumerable<IBackgroundTask>> GetTasksAsync(Guid? user = null, params string[] tasksId)
     {
-        var processes = tracking.GetJobsAsync(tasksId, CancellationToken.None).Result;
+        var processes = await store.GetItemsAsync<Job>(x=>tasksId.Contains(x.Number));
         var jobs = tasksId.Select(id =>
         {
             var job = JobStorage.Current.GetReadOnlyConnection().GetJobData(id);
@@ -100,6 +117,6 @@ internal class BackgroundJobService(
     {
         jobQueue.Cancel(taskId);
         //TODO добавить событие изменение задачи в самом хангфаере 
-        return GetTasks(null, [taskId]).FirstOrDefault();
+        return GetTasksAsync(null, [taskId]).Result.FirstOrDefault();
     } 
 }

@@ -9,8 +9,9 @@ namespace OzonCard.Common.Application.Customers.Handlers;
 
 public class CustomerUpdateBalanceCommandHandler(
     IOrganizationRepository organizations,
-    ICustomerRepository customers
-) : CustomerBaseHandler, ICommandHandler<CustomerUpdateBalanceCommand, decimal>
+    ICustomerRepository customers,
+    IEventBus events
+) : CustomerBaseHandler(events), ICommandHandler<CustomerUpdateBalanceCommand, decimal>
 {
     public async Task<decimal> Handle(CustomerUpdateBalanceCommand request, CancellationToken cancellationToken)
     {

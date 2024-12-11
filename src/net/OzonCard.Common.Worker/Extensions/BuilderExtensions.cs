@@ -14,7 +14,6 @@ public static class BuilderExtensions
         string schema = "hangfire")
     {
         services.AddScoped<IBackgroundJobQueue, BackgroundJobQueue>();
-        services.AddScoped<ITrackingBackgroundJobs, TrackingBackgroundJobsService>();
         services.AddScoped<IBackgroundJobsService, BackgroundJobService>();
    
         

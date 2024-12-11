@@ -1,9 +1,11 @@
 ﻿using OzonCard.Biz.Client;
+using OzonCard.Common.Application.Common;
 using OzonCard.Common.Application.Customers.Data;
+using OzonCard.Common.Core;
 
 namespace OzonCard.Common.Application.Customers.Handlers;
 
-public abstract class CustomerBaseHandler
+public abstract class CustomerBaseHandler(IEventBus events) : BaseCommandHandlerProgress(events)
 {
     protected readonly CustomersTaskProgress Progress = new();
     protected async Task TryRefreshBalance(BizClient client, Guid bizId, Guid orgId, Guid walletId, decimal balance, CancellationToken ct)

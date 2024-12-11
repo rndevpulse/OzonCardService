@@ -2,6 +2,7 @@
 using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Categories.Commands;
 using OzonCard.Common.Application.Categories.Data;
+using OzonCard.Common.Application.Common;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
@@ -12,8 +13,8 @@ namespace OzonCard.Common.Application.Categories.Handlers;
 public class UpdateRangeCategoriesCommandHandler(
     IOrganizationRepository organizations,
     ILogger<UpdateRangeCategoriesCommandHandler> logger,
-    ITrackingBackgroundJobs tracking
-) : ICommandHandler<UpdateRangeCategoriesCommand, int>
+    IEventBus events
+) : BaseCommandHandlerProgress(events), ICommandHandler<UpdateRangeCategoriesCommand, int>
 {
     private CategoriesTaskProgress _progress = new();
     public async Task<int> Handle(UpdateRangeCategoriesCommand request, CancellationToken cancellationToken)
@@ -21,9 +22,7 @@ public class UpdateRangeCategoriesCommandHandler(
         var org = await organizations.GetItemAsync(request.OrganizationId, cancellationToken);
         var currentCategory = org.Categories.FirstOrDefault(x => x.Id == request.CategoryId);
         var newCategory = org.Categories.FirstOrDefault(x => x.Id == request.SelectedCategoryId);
-        var task = request.Tracking is { } track
-            ? await tracking.GetJobAsync(track, cancellationToken)
-            : null;
+       
         
         if (currentCategory is null || newCategory is null)
             throw new BusinessException($"Invalid category id in request with '{org.Name}'");
@@ -33,7 +32,7 @@ public class UpdateRangeCategoriesCommandHandler(
         var dateFrom = DateTime.Now.AddMonths(-1);
         var dateTo = DateTime.Now.AddDays(1);
         _progress.AddLog($"Запрос отчетов с {dateFrom:dd.MM.yyyy} по {dateTo:dd.MM.yyyy} для нахождения гостей с требуемой категорией");
-        tracking.ReportProgress(request.Tracking, _progress);
+        ReportProgress(request.Tracking, _progress);
         
         foreach (var program in org.Programs)
         {
@@ -52,7 +51,7 @@ public class UpdateRangeCategoriesCommandHandler(
                 );
                 _progress.AddLog($"Отчет по программе '{program.Name}': {customers.Count} искомых гостей");
                 _progress.All = customers.Distinct().Count();
-                tracking.ReportProgress(request.Tracking, _progress);
+                ReportProgress(request.Tracking, _progress);
             }
             catch (Exception e)
             {
@@ -74,11 +73,11 @@ public class UpdateRangeCategoriesCommandHandler(
             finally
             {
                 _progress.Processed += 1;
-                tracking.ReportProgress(request.Tracking, _progress);
+                ReportProgress(request.Tracking, _progress);
             } 
         }
         _progress.AddLog("Обработка завершена.");
-        tracking.ReportProgress(request.Tracking, _progress);
+        ReportProgress(request.Tracking, _progress);
         return customers.Count;
     }
 

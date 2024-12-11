@@ -8,11 +8,6 @@ namespace OzonCard.Common.Infrastructure.Database;
 public class TaskContext(DbContextOptions<TaskContext> options) : DbContext(options)
 {
     private const string Schema = "task";
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-    }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);

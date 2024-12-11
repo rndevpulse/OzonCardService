@@ -18,10 +18,10 @@ public class CustomersUploadCommandHandler(
     IDistributedLockProvider locks,
     IOrganizationRepository orgRepository,
     ICustomerRepository customerRepository,
-    ITrackingBackgroundJobs tracking, 
     IExcelManager excelManager,
+    IEventBus events,
     IFileManager fileManager
-) : CustomerBaseHandler, ICommandHandler<CustomersUploadCommand, IEnumerable<Customer>>
+) : CustomerBaseHandler(events), ICommandHandler<CustomersUploadCommand, IEnumerable<Customer>>
 {
 
     public async Task<IEnumerable<Customer>> Handle(CustomersUploadCommand request, CancellationToken cancellationToken)
@@ -51,7 +51,7 @@ public class CustomersUploadCommandHandler(
 
             Progress.CountAll = fileCustomers.Count;
             logger.LogInformation($"Try upload by {request.User} '{fileCustomers.Count}' customers");
-            tracking.ReportProgress(request.Tracking, Progress);
+            ReportProgress(request.Tracking, Progress);
 
             var customers = (await customerRepository.GetCustomersByCardsAsync(
                 org.Id,
@@ -98,7 +98,7 @@ public class CustomersUploadCommandHandler(
 
                 result.Add(customer);
                 //update progress task
-                tracking.ReportProgress(request.Tracking, Progress);
+                ReportProgress(request.Tracking, Progress);
             }
 
             return result;

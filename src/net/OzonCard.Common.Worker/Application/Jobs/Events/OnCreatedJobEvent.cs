@@ -12,9 +12,7 @@ public record OnCreatedJobEvent(
 ) : IEvent
 {
     
-    public class Handler(
-        IStoreContext store
-    ) : IEventHandler<OnCreatedJobEvent>
+    public class Handler(IStoreContext store) : IEventHandler<OnCreatedJobEvent>
     {
         public Task Handle(OnCreatedJobEvent notification, CancellationToken cancellationToken)
         {
