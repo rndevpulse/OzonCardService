@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using OzonCard.Common.Core;
 using OzonCard.Common.Worker.Data;
+using OzonCard.Common.Worker.Jobs.Events;
 using OzonCard.Common.Worker.JobsProgress;
 
 namespace OzonCard.Common.Worker.Services;
@@ -10,13 +12,16 @@ internal class TrackingBackgroundJobsService : ITrackingBackgroundJobs
 {
     
     private readonly IJobProgressRepository _repository;
+    private readonly IEventBus _events;
     private readonly string _path;
 
     public TrackingBackgroundJobsService(
-        IJobProgressRepository repository, 
+        IJobProgressRepository repository,
+        IEventBus events,
         IConfiguration configuration)
     {
         _repository = repository;
+        _events = events;
         _path = Path.Combine(
             configuration.GetValue<string>("content") ?? Directory.GetCurrentDirectory(),
             "jobsTracking");
@@ -25,8 +30,11 @@ internal class TrackingBackgroundJobsService : ITrackingBackgroundJobs
             Directory.CreateDirectory(_path);
     }
 
-    public void Observe(string taskId, Guid track) =>
+    public void Observe<TResult>(ICommand<TResult> task, string taskId, Guid track, Guid? user)
+    {
         _repository.Add(taskId, track, $"{track}.json");
+        _events.Publish(new OnCreatedJobEvent<TResult>(track, taskId, user, task));
+    }
     
 
     public JobProgress<object> GetJobProgress(IJobProgress job) =>

@@ -15,7 +15,7 @@ public class TasksController(
     public object Index([FromQuery] IEnumerable<string> id, CancellationToken ct = default)
     {
         // logger.LogDebug("Get tasks:");
-        return Mapper.Map<IEnumerable<BackgroundTaskModel>>(jobsService.GetTasks(id.ToArray()));
+        return Mapper.Map<IEnumerable<BackgroundTaskModel>>(jobsService.GetTasks(UserClaimSid, id.ToArray()));
     }
 
     [HttpGet("[action]")]

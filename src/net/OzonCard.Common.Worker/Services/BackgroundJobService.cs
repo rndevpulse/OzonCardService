@@ -49,7 +49,7 @@ internal class BackgroundJobService(
             CastSate(jobData?.State));
     }
 
-    public IBackgroundTask Schedule<TResult>(ICommand<TResult> task, DateTimeOffset enqueueAt, Guid? track = null)
+    public IBackgroundTask Schedule<TResult>(ICommand<TResult> task, DateTimeOffset enqueueAt, Guid? track = null, Guid? user = null)
     {
         var taskId = jobQueue.Schedule<ICommandBus>(
             commands => commands.Send(task, CancellationToken.None),
@@ -57,22 +57,22 @@ internal class BackgroundJobService(
         );
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
         if (track != null && track != Guid.Empty)
-            tracking.Observe(taskId, (Guid)track);
+            tracking.Observe(task, taskId, (Guid)track, user);
         return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, CastSate(jobData.State));
     }
 
-    public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task, Guid? track = null)
+    public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task, Guid? track = null, Guid? user = null)
     {
         var taskId = jobQueue.Enqueue<ICommandBus>(commands => commands.Send(task, CancellationToken.None));
         var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
         if (track != null && track != Guid.Empty)
-            tracking.Observe(taskId, (Guid)track);
+            tracking.Observe(task, taskId, (Guid)track, user);
         return new BackgroundTask<TResult>(taskId, jobData.CreatedAt, CastSate(jobData.State));
     }
-    public void Dequeue(string taskId) => jobQueue.Dequeue(taskId);
+    public void Dequeue(string taskId) => jobQueue.Dequeue(taskId);//TODO добавить событие изменение задачи в самом хангфаере 
 
 
-    public IEnumerable<IBackgroundTask> GetTasks(params string[] tasksId)
+    public IEnumerable<IBackgroundTask> GetTasks(Guid? user = null, params string[] tasksId)
     {
         var processes = tracking.GetJobsAsync(tasksId, CancellationToken.None).Result;
         var jobs = tasksId.Select(id =>
@@ -101,6 +101,7 @@ internal class BackgroundJobService(
     public IBackgroundTask? Cancel(string taskId)
     {
         jobQueue.Cancel(taskId);
-        return GetTasks([taskId]).FirstOrDefault();
+        //TODO добавить событие изменение задачи в самом хангфаере 
+        return GetTasks(null, [taskId]).FirstOrDefault();
     } 
 }

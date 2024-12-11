@@ -12,11 +12,13 @@ using OzonCard.Common.Core;
 using OzonCard.Common.Infrastructure.Buses;
 using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Materialization;
-using OzonCard.Common.Infrastructure.Piplines;
+using OzonCard.Common.Infrastructure.Pipelines;
 using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Common.Infrastructure.Services;
+using OzonCard.Common.Infrastructure.Stores;
 using OzonCard.Common.Worker.Extensions;
 using OzonCard.Common.Worker.JobsProgress;
+using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Infrastructure.Extensions;
 
@@ -55,13 +57,22 @@ public static class InfrastructureBuilderExtension
                     optionsBuilder.UseCompatibilityLevel(120);
                 })
             .AddInterceptors(ContextMaterializationInterceptor.Instance));
+        
         services.AddDbContext<SecurityContext>(b =>
             (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
                 options.Connection));
-
+        
+        services.AddDbContext<JobContext>(b =>
+            (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
+                options.Connection));
+        
         services.AddScoped<ITransactionManager>(sp => sp.GetRequiredService<InfrastructureContext>());
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
 
+        services.AddScoped<IEventTransactionManager>(sp => sp.GetRequiredService<JobContext>());
+        services.AddTransient<INotificationPublisher>(sp => sp.GetRequiredService<EventTransactionPipeline>());
+        
+        
         services.AddHostedService<DatabaseBootstrapService>();
         return services;
     }
@@ -74,15 +85,24 @@ public static class InfrastructureBuilderExtension
         services.AddScoped<IVisitRepository, VisitRepository>();
         services.AddScoped<IJobProgressRepository, JobProgressRepository>();
         services.AddScoped<IPropertiesRepository, PropertiesRepository>();
+        
+        services.AddScoped<IStoreContext>(sp=> new StoreJobContext(sp.GetRequiredService<JobContext>()));
+
         return services;
 
     }
     
     private static IServiceCollection AddMediatr(this IServiceCollection services, InfrastructureOptions options)
     {
-        services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(options.Assemblies));
+        services.AddMediatR(configuration =>
+        {
+            configuration.RegisterServicesFromAssemblies(options.Assemblies);
+            configuration.NotificationPublisherType = typeof(EventTransactionPipeline);
+            
+        });
         services.AddScoped<ICommandBus, MediatrCommandBus>();
         services.AddScoped<IQueryBus, MediatrQueryBus>();
+        services.AddScoped<IEventBus, MediatrEventBus>();
         return services;
     }
     

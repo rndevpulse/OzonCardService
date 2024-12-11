@@ -8,7 +8,7 @@ interface IRequestConfirmProps {
     handlerProps: IExtensionProperty[]
     organization: IOrganization
     schedule: Date
-    onConfirmed: () => void
+    onConfirmed: (description: string) => void
 }
 
 export function RequestConfirm({handler, handlerProps, schedule, organization, onConfirmed}:IRequestConfirmProps){
@@ -51,7 +51,7 @@ export function RequestConfirm({handler, handlerProps, schedule, organization, o
 
             </div>
             <button className="button"
-                    onClick={() => onConfirmed()}>
+                    onClick={() => onConfirmed(GetCategory())}>
                 Продолжить
             </button>
         </div>

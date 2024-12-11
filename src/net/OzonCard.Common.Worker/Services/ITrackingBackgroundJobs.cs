@@ -1,11 +1,12 @@
 
+using OzonCard.Common.Core;
 using OzonCard.Common.Worker.Data;
 
 namespace OzonCard.Common.Worker.Services;
 
 public interface ITrackingBackgroundJobs
 {
-    void Observe(string taskId, Guid track);
+    void Observe<TResult>(ICommand<TResult> task, string taskId, Guid track, Guid? user);
     JobProgress<object> GetJobProgress(IJobProgress job);
     Task<IJobProgress?> GetJobAsync(string taskId, CancellationToken ct);
     Task<IJobProgress?> GetJobAsync(Guid track, CancellationToken ct);
