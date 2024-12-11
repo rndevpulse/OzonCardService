@@ -91,7 +91,10 @@ internal class BackgroundJobService(
 
     public async Task<IEnumerable<IBackgroundTask>> GetTasksAsync(Guid? user = null, params string[] tasksId)
     {
-        var processes = await store.GetItemsAsync<Job>(x=>tasksId.Contains(x.Number));
+        var processes = await store.GetItemsAsync<Job>(x=>
+            tasksId.Contains(x.Number) 
+            || (x.User == user && x.User != Guid.Empty)
+        );
         var jobs = tasksId.Select(id =>
         {
             var job = JobStorage.Current.GetReadOnlyConnection().GetJobData(id);

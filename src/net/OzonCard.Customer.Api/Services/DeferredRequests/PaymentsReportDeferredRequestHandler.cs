@@ -57,6 +57,11 @@ public class PaymentsReportDeferredRequestHandler(
             throw new BusinessException("Не выбрана маркетинговая программа");
         if (Guid.Empty == cmd.Batch)
             throw new BusinessException("Не выбран шаблон для сохранения отчетов");
-        return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone, cmd.Tracking));
+        return Task.FromResult(jobsService.Schedule(
+            cmd, 
+            configuration.ScheduleTimeZone, 
+            cmd.Tracking,
+            cmd.UserId
+        ));
     }
 }

@@ -42,6 +42,11 @@ public class CompaniesBlockDeferredRequestHandler(
             throw new BusinessException("Не выбрана компания");
         if (Guid.Empty == cmd.SelectedCategoryId)
             throw new BusinessException("Не выбран категория для удаления");
-        return Task.FromResult(jobsService.Schedule(cmd, configuration.ScheduleTimeZone, cmd.Tracking));
+        return Task.FromResult(jobsService.Schedule(
+            cmd, 
+            configuration.ScheduleTimeZone,
+            cmd.Tracking,
+            configuration.TryGetFeature<Guid>("userId")
+        ));
     }
 }
