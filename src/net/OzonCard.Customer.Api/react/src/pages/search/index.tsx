@@ -77,7 +77,7 @@ const SearchPage: FC = () => {
             offset: -(new Date().getTimezoneOffset()),
             isOffline:false
         })
-        console.log('customers: ', response)
+        // console.log('customers: ', response)
         if (!response){
             toast.show("Ошибка поиска...", "warning")
             return

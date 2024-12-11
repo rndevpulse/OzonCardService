@@ -4,25 +4,28 @@ using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Worker.Jobs.Events;
 
-public record OnCreatedJobEvent<TResult>(
+public record OnCreatedJobEvent(
     Guid Aggregate,
     string Number,
     Guid? User,
-    ICommand<TResult> Job
+    string? Arguments
 ) : IEvent
 {
     
     public class Handler(
         IStoreContext store
-    ) : IEventHandler<OnCreatedJobEvent<TResult>>
+    ) : IEventHandler<OnCreatedJobEvent>
     {
-        public Task Handle(OnCreatedJobEvent<TResult> notification, CancellationToken cancellationToken)
+        public Task Handle(OnCreatedJobEvent notification, CancellationToken cancellationToken)
         {
             var job = new Job(
                 notification.Aggregate,
                 notification.Number,
                 notification.User ?? Guid.Empty
-            );
+            )
+            {
+                Arguments = notification.Arguments ?? string.Empty
+            };
             store.Append<Job>(job);
             return Task.CompletedTask;
         }

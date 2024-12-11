@@ -11,6 +11,10 @@ dotnet ef migrations add SecurityContext
 ```shell
 dotnet ef migrations add InitSecurityMigration -c SecurityContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Security
 ```
+dotnet ef migrations add JobContext
+```shell
+dotnet ef migrations add JobsTableMigration -c JobContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Job
+```
 
 dotnet ef migrations remove
 ```shell

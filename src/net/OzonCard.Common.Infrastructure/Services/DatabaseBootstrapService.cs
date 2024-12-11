@@ -24,6 +24,7 @@ public class DatabaseBootstrapService : BackgroundService
 
         await MigrateContextAsync(provider.GetRequiredService<SecurityContext>(), stoppingToken);
         await MigrateContextAsync(provider.GetRequiredService<InfrastructureContext>(), stoppingToken);
+        await MigrateContextAsync(provider.GetRequiredService<TaskContext>(), stoppingToken);
     }
 
     private async Task MigrateContextAsync(DbContext context, CancellationToken ct)

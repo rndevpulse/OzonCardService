@@ -93,7 +93,7 @@ export default class TaskStore {
         }
         this.tasks.unshift(savedTask)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
-        console.log(this.tasks)
+        // console.log(this.tasks)
     }
     
 }

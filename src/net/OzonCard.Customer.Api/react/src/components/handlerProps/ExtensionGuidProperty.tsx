@@ -21,7 +21,7 @@ export function ExtensionGuidProperty({property, organization, onChangeValue}:Ex
             setBatches(response.data))
     }, []);
     const castBehaviour = () => {
-        console.log(`ExtensionGuidProperty: ${property.behaviour}`)
+        // console.log(`ExtensionGuidProperty: ${property.behaviour}`)
         switch (property.behaviour)
         {
             // case PropertyBehaviour.OrganizationId:

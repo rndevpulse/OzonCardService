@@ -36,7 +36,6 @@ public static class InfrastructureBuilderExtension
         services.AddHangfire(options);
         
         #region Locks
-
         services.AddSingleton<IDistributedLockProvider>(_ =>
             new SqlDistributedSynchronizationProvider(options.Connection!)
         );
@@ -62,16 +61,12 @@ public static class InfrastructureBuilderExtension
             (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
                 options.Connection));
         
-        services.AddDbContext<JobContext>(b =>
+        services.AddDbContext<TaskContext>(b =>
             (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
-                options.Connection));
+                options.Connection), ServiceLifetime.Transient);
         
         services.AddScoped<ITransactionManager>(sp => sp.GetRequiredService<InfrastructureContext>());
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
-
-        services.AddScoped<IEventTransactionManager>(sp => sp.GetRequiredService<JobContext>());
-        services.AddTransient<INotificationPublisher>(sp => sp.GetRequiredService<EventTransactionPipeline>());
-        
         
         services.AddHostedService<DatabaseBootstrapService>();
         return services;
@@ -86,7 +81,7 @@ public static class InfrastructureBuilderExtension
         services.AddScoped<IJobProgressRepository, JobProgressRepository>();
         services.AddScoped<IPropertiesRepository, PropertiesRepository>();
         
-        services.AddScoped<IStoreContext>(sp=> new StoreJobContext(sp.GetRequiredService<JobContext>()));
+        services.AddTransient<IStoreContext>(sp=> new StoreTaskContext(sp.GetRequiredService<TaskContext>()));
 
         return services;
 
@@ -94,12 +89,7 @@ public static class InfrastructureBuilderExtension
     
     private static IServiceCollection AddMediatr(this IServiceCollection services, InfrastructureOptions options)
     {
-        services.AddMediatR(configuration =>
-        {
-            configuration.RegisterServicesFromAssemblies(options.Assemblies);
-            configuration.NotificationPublisherType = typeof(EventTransactionPipeline);
-            
-        });
+        services.AddMediatR(configuration =>  configuration.RegisterServicesFromAssemblies(options.Assemblies));
         services.AddScoped<ICommandBus, MediatrCommandBus>();
         services.AddScoped<IQueryBus, MediatrQueryBus>();
         services.AddScoped<IEventBus, MediatrEventBus>();

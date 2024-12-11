@@ -23,12 +23,12 @@ public class PaymentsReportDeferredRequestHandler(
     private IEnumerable<ExtensionProperty> GetProps() =>
         new List<ExtensionProperty>()
         {
-            new ExtensionStringProperty("title", "Наименование"),
+            new ExtensionStringProperty("title", "Наименование") { Value = "Отчет за период"},
             new ExtensionGuidProperty("organization", "Организация", PropertyBehaviour.OrganizationId),
             new ExtensionGuidProperty("batch", "Групповой отчет", PropertyBehaviour.BatchId),
             new ExtensionGuidProperty("program", "Программа", PropertyBehaviour.ProgramId),
-            new ExtensionDateTimeProperty("dateFrom", "Дата с", PropertyBehaviour.DateStart),
-            new ExtensionDateTimeProperty("dateTo", "Дата по", PropertyBehaviour.DateEnd),
+            new ExtensionDateTimeProperty("dateFrom", "Дата с", PropertyBehaviour.DateStart){ Value = DateTimeOffset.Now.AddDays(-DateTimeOffset.Now.Day + 1)},
+            new ExtensionDateTimeProperty("dateTo", "Дата по", PropertyBehaviour.DateEnd){ Value = DateTimeOffset.Now.AddMonths(1).AddDays(-DateTimeOffset.Now.Day)},
         };
 
     public Task<IBackgroundTask> AppendAsync(

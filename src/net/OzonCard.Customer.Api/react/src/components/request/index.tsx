@@ -44,11 +44,11 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
         }
     }
     function onChangePropValue(property:IExtensionProperty, value:any){
-        console.log(property)
-        console.log(value)
+        // console.log(property)
+        // console.log(value)
         property.value = value
         setHandlerProps(handlerProps.map(x=>x))
-        console.log(property)
+        // console.log(property)
 
     }
     async function tryConfirm(){

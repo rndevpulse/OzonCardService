@@ -69,9 +69,9 @@ export function ChangeCustomer({customer, categories, onChange, onRemove}: IChan
         const selected = selectedCategories.map(x=>x.id)
         const base = customer.categories.map(x=>x.id)
         const removeCategories = base.filter(x=> !selected.includes(x))
-        console.log("need removeCategories", removeCategories)
+        // console.log("need removeCategories", removeCategories)
         const addCategories = selected.filter(x=> !base.includes(x))
-        console.log("need addCategories", addCategories)
+        // console.log("need addCategories", addCategories)
 
         if (removeCategories.length > 0){
             await BizService.ChangeCustomerBizCategory({

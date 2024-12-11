@@ -33,7 +33,11 @@ internal class TrackingBackgroundJobsService : ITrackingBackgroundJobs
     public void Observe<TResult>(ICommand<TResult> task, string taskId, Guid track, Guid? user)
     {
         _repository.Add(taskId, track, $"{track}.json");
-        _events.Publish(new OnCreatedJobEvent<TResult>(track, taskId, user, task));
+        _events.Publish(new OnCreatedJobEvent(
+            track,
+            taskId,
+            user,
+            $"[{task.GetType().Name}]{JsonSerializer.Serialize(task, task.GetType())}"));
     }
     
 
