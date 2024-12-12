@@ -3,21 +3,26 @@ using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Categories.Commands;
 using OzonCard.Common.Application.Categories.Data;
 using OzonCard.Common.Application.Common;
+using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
+using OzonCard.Common.Domain.Files;
 using OzonCard.Common.Worker.Services;
+using OzonCard.Files;
 
 namespace OzonCard.Common.Application.Categories.Handlers;
 
 public class UpdateRangeCategoriesCommandHandler(
     IOrganizationRepository organizations,
+    IFileRepository fileRepository,
+    IFileManager fileManager,
     ILogger<UpdateRangeCategoriesCommandHandler> logger,
     IEventBus events
-) : BaseCommandHandlerProgress(events), ICommandHandler<UpdateRangeCategoriesCommand, int>
+) : BaseCommandHandlerProgress(events), ICommandHandler<UpdateRangeCategoriesCommand, SaveFile>
 {
     private CategoriesTaskProgress _progress = new();
-    public async Task<int> Handle(UpdateRangeCategoriesCommand request, CancellationToken cancellationToken)
+    public async Task<SaveFile> Handle(UpdateRangeCategoriesCommand request, CancellationToken cancellationToken)
     {
         var org = await organizations.GetItemAsync(request.OrganizationId, cancellationToken);
         var currentCategory = org.Categories.FirstOrDefault(x => x.Id == request.CategoryId);
@@ -77,8 +82,25 @@ public class UpdateRangeCategoriesCommandHandler(
             } 
         }
         _progress.AddLog("Обработка завершена.");
-        ReportProgress(request.Tracking, _progress);
-        return customers.Count;
+        
+        
+        var action = request.IsAppend ? "Добавление в {0} для {1}" : "Удаление из {0} для {1}";
+        var fileName = string.Format(action, newCategory.Name, currentCategory.Name);
+        
+        await using var ms = new MemoryStream();
+        await using var sw = new StreamWriter(ms);
+        await sw.WriteAsync(_progress.Log);
+        await sw.FlushAsync(cancellationToken);
+        ms.Position = 0;
+        var fileId = await fileManager.Save(ms, $"{fileName}.txt");
+        var saveFile = new SaveFile(
+            fileId,
+            "txt",
+            fileName,
+            request.UserId);
+        await fileRepository.AddAsync(saveFile);
+        ReportProgress(request.Tracking, _progress, saveFile);
+        return saveFile;
     }
 
 }

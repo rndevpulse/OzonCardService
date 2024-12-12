@@ -67,7 +67,15 @@ const taskCategoriesDescription = (savedTask: ISavedTask) => {
                 {savedTask.task.status === 'Processing' && <li>Время выполнения: {getTime(savedTask.time)}</li>}
                 <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
             </ul>
-
+            {savedTask.task.result
+                && savedTask.task.result?.Id
+                && savedTask.task.result?.Format
+                && savedTask.task.result?.Name
+                && onViewSaveButton(
+                    `${savedTask.task.result.Id}.${savedTask.task.result?.Format}`,
+                    `${savedTask.task.result.Name}.${savedTask.task.result?.Format}`
+                )
+            }
         </dd>
 )
 }

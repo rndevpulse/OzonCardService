@@ -23,7 +23,7 @@ public class CompaniesBlockDeferredRequestHandler(
         {
             new ExtensionGuidProperty("organization", "Организация", PropertyBehaviour.OrganizationId),
             new ExtensionGuidProperty("category", "Компания", PropertyBehaviour.CategoryId),
-            new ExtensionGuidProperty("selectedCategory", "Удалить из", PropertyBehaviour.CategoryId),
+            new ExtensionGuidProperty("selectedCategory", "Добавить в", PropertyBehaviour.CategoryId),
             
         };
     
@@ -36,7 +36,8 @@ public class CompaniesBlockDeferredRequestHandler(
             configuration.GetProperty<ExtensionGuidProperty>("category").Value,
             configuration.GetProperty<ExtensionGuidProperty>("selectedCategory").Value,
             true,
-            Guid.NewGuid()
+            Guid.NewGuid(),
+            configuration.TryGetFeature<Guid>("userId")
         );
         if (Guid.Empty == cmd.CategoryId)
             throw new BusinessException("Не выбрана компания");

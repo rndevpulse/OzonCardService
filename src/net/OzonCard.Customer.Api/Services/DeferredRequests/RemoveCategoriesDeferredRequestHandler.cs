@@ -36,7 +36,8 @@ public class RemoveCategoriesDeferredRequestHandler(
             configuration.GetProperty<ExtensionGuidProperty>("category").Value,
             configuration.GetProperty<ExtensionGuidProperty>("selectedCategory").Value,
             false,
-            Guid.NewGuid()
+            Guid.NewGuid(),
+            configuration.TryGetFeature<Guid>("userId")
         );
         if (Guid.Empty == cmd.CategoryId)
             throw new BusinessException("Не выбрана текущая категория");
