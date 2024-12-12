@@ -2,4 +2,4 @@
 
 namespace OzonCard.Common.Worker.Stores;
 
-public interface IStoreContext :  IEntityStoreWithId<Guid>;
+public interface IStoreContext :  IEntityStoreWithId<Guid>, IDisposable;

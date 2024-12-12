@@ -18,7 +18,7 @@ export default class TaskStore {
         makeAutoObservable(this, {}, { autoBind: true });
         setInterval(this.increaseTimer, 2000);
     }
-    static continueStatuses = ['Running', 'Scheduled'];
+    static continueStatuses = ['Enqueued', 'Processing', 'Scheduled'];
     async increaseTimer() {
         this.timer++;
         const currents = this.tasks
@@ -55,7 +55,7 @@ export default class TaskStore {
         {
             this.tasks[index].task = task
 
-            if ( this.tasks[index].task.status === 'Running'){
+            if ( this.tasks[index].task.status === 'Processing'){
                 this.tasks[index].time += 2
             }
 

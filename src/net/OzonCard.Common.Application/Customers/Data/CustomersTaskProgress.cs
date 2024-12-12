@@ -10,5 +10,8 @@ public record CustomersTaskProgress : NamedProgress
     public int CountBalance { get; set; }
     public int CountCategory { get; set; }
     public int CountProgram { get; set; }
-    
+
+    public override string Type => GetType().Name;
+
+
 }

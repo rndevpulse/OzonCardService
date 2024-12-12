@@ -12,15 +12,18 @@ public record OnProgressJobEvent(
     object? Result
 ) : IEvent
 {
-    public class Handler(IStoreContext context) : IEventHandler<OnProgressJobEvent>
+    public class Handler(IStoreContext store) : IEventHandler<OnProgressJobEvent>
     {
         public async Task Handle(OnProgressJobEvent notification, CancellationToken cancellationToken)
         {
-            var job = await context.GetItemAsync<Job>(notification.Aggregate, cancellationToken);
+            var job = await store.GetItemAsync<Job>(notification.Aggregate, cancellationToken);
             if (job == null)
                 return;
-            job.Progress = JsonSerializer.Serialize(notification.Progress);
-            job.Result = JsonSerializer.Serialize(notification.Result);
+            job.Progress = JsonSerializer.Serialize(notification.Progress, notification.Progress.GetType());
+            if (notification.Result != null)
+                job.Result = JsonSerializer.Serialize(notification.Result, notification.Result.GetType());
+            store.Dispose();
+
         }
     }
     

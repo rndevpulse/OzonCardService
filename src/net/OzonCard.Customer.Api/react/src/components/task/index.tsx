@@ -11,10 +11,10 @@ interface ITaskProps {
 
 export function Task({saved, onCancel, onRemove}: ITaskProps) {
     const classes = ['task']
-    if (saved.task.status === "Completed") {
+    if (saved.task.status === "Succeeded") {
         classes.push('completed')
     }
-    if (saved.task.status === "Failed" || saved.task.status === "Canceled") {
+    if (saved.task.status === "Failed" || saved.task.status === "Deleted") {
         classes.push('canceled')
     }
 
@@ -64,7 +64,7 @@ const taskCategoriesDescription = (savedTask: ISavedTask) => {
             <ul>
                 <li>Обработано: {status.Processed}</li>
                 <li>Гостей всего: {status.All}</li>
-                {savedTask.task.status === "Running" && <li>Время выполнения: {getTime(savedTask.time)}</li>}
+                {savedTask.task.status === 'Processing' && <li>Время выполнения: {getTime(savedTask.time)}</li>}
                 <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
             </ul>
 
@@ -112,7 +112,7 @@ const taskDefaultDescription = (savedTask: ISavedTask) => {
     return (
         <dd>
             <ul>
-                {savedTask.task.status === "Running"  &&  <li>Время выполнения: {getTime(savedTask.time)}</li>}
+                {savedTask.task.status === "Processing"  &&  <li>Время выполнения: {getTime(savedTask.time)}</li>}
             </ul>
             <ul>
                 <li>Время создания: {getLocalTime(savedTask.task.queuedAt)}</li>
@@ -141,7 +141,7 @@ const taskCustomerDescription = (savedTask: ISavedTask) => {
     )
 }
 const taskTitle = (props: ITaskProps) => {
-    if (props.saved.task.status === "Running" || props.saved.task.status === "Scheduled") {
+    if (props.saved.task.status === "Processing" || props.saved.task.status === "Scheduled") {
         return (
             <dt>
                 {props.saved.description}

@@ -9,4 +9,7 @@ public record CategoriesTaskProgress : NamedProgress
     public int Processed { get; set; } = 0;
   
     public void AddLog(string log) => Log += $"[{DateTime.Now:dd.MM.yyyy HH:mm:ss}] " + log + "\n";
+    
+    public override string Type => GetType().Name;
+
 }

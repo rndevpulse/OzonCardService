@@ -8,6 +8,7 @@ public record OnCreatedJobEvent(
     Guid Aggregate,
     string Number,
     Guid? User,
+    string Status,
     string? Arguments
 ) : IEvent
 {
@@ -20,9 +21,11 @@ public record OnCreatedJobEvent(
                 notification.Aggregate,
                 notification.Number,
                 notification.User ?? Guid.Empty,
+                notification.Status,
                 notification.Arguments ?? string.Empty
             );
             store.Append<Job>(job);
+            store.Dispose();
             return Task.CompletedTask;
         }
     }

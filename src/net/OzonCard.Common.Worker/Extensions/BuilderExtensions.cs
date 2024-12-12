@@ -2,6 +2,7 @@ using Hangfire;
 using OzonCard.Common.Worker.Filters;
 using OzonCard.Common.Worker.Services;
 using Microsoft.Extensions.DependencyInjection;
+using OzonCard.Common.Core;
 
 namespace OzonCard.Common.Worker.Extensions;
 
@@ -17,12 +18,12 @@ public static class BuilderExtensions
         services.AddScoped<IBackgroundJobsService, BackgroundJobService>();
    
         
-        services.AddHangfire(hangfire =>
+        services.AddHangfire((sp, hangfire) =>
         {
             hangfire
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UseFilter(new SkipWhenPreviousJobIsRunningAttribute())
+                .UseFilter(new SkipWhenPreviousJobIsRunningAttribute(sp.GetRequiredService<IEventBus>()))
                 .UseFilter(new AutomaticRetryAttribute { Attempts = 3 })
                 .UseSqlServerStorage(connection);
         });

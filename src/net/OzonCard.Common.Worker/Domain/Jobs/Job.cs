@@ -15,12 +15,13 @@ public class Job : IWithId
     public DateTime? Closed { get; set; }
     public string? Progress { get; set; }
     public string? Result { get; set; }
+    public string? Reason { get; set; }
     
     
-    public Job(Guid id, string number, Guid user, string arguments)
+    public Job(Guid id, string number, Guid user, string status, string arguments)
     {
         Id = id;
-        Status = "Created";
+        Status = status;
         Number = number;
         User = user;
         Arguments = arguments;

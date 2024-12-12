@@ -3,6 +3,7 @@ using Medallion.Threading.SqlServer;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
 using OzonCard.Common.Application.Organizations;
@@ -80,7 +81,10 @@ public static class InfrastructureBuilderExtension
         services.AddScoped<IVisitRepository, VisitRepository>();
         services.AddScoped<IPropertiesRepository, PropertiesRepository>();
         
-        services.AddTransient<IStoreContext>(sp=> new StoreTaskContext(sp.GetRequiredService<TaskContext>()));
+        services.AddTransient<IStoreContext>(sp=> 
+            new StoreTaskContext(
+                sp.GetRequiredService<TaskContext>(),
+                sp.GetRequiredService<ILogger<StoreTaskContext>>()));
 
         return services;
 

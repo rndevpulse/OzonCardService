@@ -61,7 +61,7 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
             open()
         }
         else {
-            await appendBatch()
+            await appendBatch(organization.name)
         }
     }
     async function appendBatch(description: string = "") {
@@ -76,7 +76,7 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
         if (task === undefined){
             return
         }
-        taskStore.onAddTask(task.data, `Отложенный запрос на ${schedule.toLocaleString()}: ` + handler?.name + description)
+        taskStore.onAddTask(task.data, `Отложенный запрос на ${schedule.toLocaleString()}: ` + handler?.name + ' ' + description)
         // navigate(`/tasks`)
         toast.show("Отложенный запрос создан")
 

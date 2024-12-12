@@ -2,6 +2,5 @@
 
 public abstract record NamedProgress
 {
-    public string? Type { get; protected set; }
-    public void SetType(string type) => Type = type;
+    public abstract string Type { get; }
 }

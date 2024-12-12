@@ -6,5 +6,6 @@ public record ReportsTaskProgress : NamedProgress
 {
     public string Description { get; set; } = "";
     public int Progress { get; set; }
-   
+
+    public override string Type => GetType().Name;
 }

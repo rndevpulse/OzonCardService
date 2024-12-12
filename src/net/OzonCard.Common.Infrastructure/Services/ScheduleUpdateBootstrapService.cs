@@ -8,18 +8,11 @@ using OzonCard.Common.Worker.Services;
 
 namespace OzonCard.Common.Infrastructure.Services;
 
-public class MyBackgroundJob
-{
-    public string Run()
-    {
-        // Job logic with a return value
-        return "123 Job completed successfullyб уифтн цкще.";
-    }
-}
+
 
 public class ScheduleUpdateBootstrapService(IServiceProvider provider) : BackgroundService
 {
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var scope = provider.CreateScope();
 
@@ -39,10 +32,6 @@ public class ScheduleUpdateBootstrapService(IServiceProvider provider) : Backgro
             
             jobsService.AppendSchedule(token, command, "*/30 * * * *", queue);
         }
-
-        var t = q.Enqueue<MyBackgroundJob>(x => x.Run());
-        q.ContinueJobWith<MyBackgroundJob>(t, x=> x.Run());
-        return Task.CompletedTask;
-
+      
     }
 }

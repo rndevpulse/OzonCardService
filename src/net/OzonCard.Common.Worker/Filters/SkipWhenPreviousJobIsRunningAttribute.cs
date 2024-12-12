@@ -2,10 +2,12 @@ using Hangfire.Client;
 using Hangfire.Common;
 using Hangfire.States;
 using Hangfire.Storage;
+using OzonCard.Common.Core;
+using OzonCard.Common.Worker.Application.Jobs.Events;
 
 namespace OzonCard.Common.Worker.Filters;
 
-public class SkipWhenPreviousJobIsRunningAttribute : JobFilterAttribute, IClientFilter, IApplyStateFilter
+public class SkipWhenPreviousJobIsRunningAttribute(IEventBus events) : JobFilterAttribute, IClientFilter, IApplyStateFilter
 {
     public void OnCreating(CreatingContext context)
     {
@@ -36,6 +38,12 @@ public class SkipWhenPreviousJobIsRunningAttribute : JobFilterAttribute, IClient
 
     public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
     {
+        events.Publish(new OnStateChangeJobEvent(Guid.Empty,
+            context.BackgroundJob.Id,
+            context.NewState.Name,
+            context.NewState.Reason,
+            context.NewState.IsFinal)
+        );
         if (context.NewState is EnqueuedState)
         {
             var recurringJobId =
