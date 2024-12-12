@@ -87,7 +87,7 @@ internal class BackgroundJobService(
             
             return new BackgroundTask(id, 
                 jobTracking?.CreatedAt ?? DateTime.Now,
-                jobTracking?.Status ?? "Deleted")
+                jobTracking?.Status ?? "Enqueued")
             {
                 Progress = jobTracking?.GetJobProgress(),
                 Result = jobTracking?.GetJobResult(),

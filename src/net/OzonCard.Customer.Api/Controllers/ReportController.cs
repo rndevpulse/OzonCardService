@@ -22,7 +22,7 @@ public class ReportController(
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
         cmd.UseTracking();
-        var task = jobsService.Enqueue(cmd, cmd.Tracking);
+        var task = jobsService.Enqueue(cmd, cmd.Tracking, UserClaimSid);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
     
@@ -33,7 +33,7 @@ public class ReportController(
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
         cmd.UseTracking();
-        var task = jobsService.Enqueue(cmd, cmd.Tracking);
+        var task = jobsService.Enqueue(cmd, cmd.Tracking, UserClaimSid);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
 }
