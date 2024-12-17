@@ -35,7 +35,10 @@ internal class BackgroundJobService(
             "Enqueued");
     }
 
-    public IBackgroundTask Schedule<TResult>(ICommand<TResult> task, DateTimeOffset enqueueAt, Guid? track = null, Guid? user = null)
+    public IBackgroundTask Schedule<TResult>(ICommand<TResult> task, DateTimeOffset enqueueAt, 
+        Guid? track = null,
+        Guid? user = null,
+        string title = "")
     {
         var taskId = jobQueue.Schedule<ICommandBus>(
             commands => commands.Send(task, CancellationToken.None),
@@ -48,14 +51,18 @@ internal class BackgroundJobService(
                 taskId,
                 user,
                 "Scheduled",
-                $"[{task.GetType().Name}]{JsonSerializer.Serialize(task, task.GetType())}"
+                $"[{task.GetType().Name}]{JsonSerializer.Serialize(task, task.GetType())}",
+                title
                )
             );
 
         return new BackgroundTask<TResult>(taskId, DateTimeOffset.UtcNow, "Scheduled");
     }
 
-    public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task, Guid? track = null, Guid? user = null)
+    public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task,  
+        Guid? track = null,
+        Guid? user = null,
+        string title = "")
     {
         var taskId = jobQueue.Enqueue<ICommandBus>(commands => commands.Send(task, CancellationToken.None));
         // var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
@@ -65,7 +72,8 @@ internal class BackgroundJobService(
                 taskId,
                 user,
                 "Enqueued",
-                $"[{task.GetType().Name}]{JsonSerializer.Serialize(task, task.GetType())}"
+                $"[{task.GetType().Name}]{JsonSerializer.Serialize(task, task.GetType())}",
+                title
                 )
             );
 
@@ -77,25 +85,25 @@ internal class BackgroundJobService(
     {
         var processes = await store.GetItemsAsync<Job>(x=>
             tasksId.Contains(x.Number) 
-            || (x.User == user && x.User != Guid.Empty)
+            || (x.User != Guid.Empty && x.User == user)
         );
-        var jobs = tasksId.Select(id =>
-        {
-            // var job = JobStorage.Current.GetReadOnlyConnection().GetJobData(id);
-            // var state = JobStorage.Current.GetReadOnlyConnection().GetStateData(id);
-            var jobTracking = processes.FirstOrDefault(p => p.Number == id);
-            
-            return new BackgroundTask(id, 
-                jobTracking?.CreatedAt ?? DateTime.Now,
-                jobTracking?.Status ?? "Enqueued")
+        var from = DateTime.UtcNow.AddMonths(-1);
+        var jobs = processes
+            .Where(x=>x.Closed > from)
+            .Select(job =>
+           new BackgroundTask(job.Number, 
+               job.CreatedAt,
+               job.Status)
             {
-                Progress = jobTracking?.GetJobProgress(),
-                Result = jobTracking?.GetJobResult(),
-                Error = jobTracking?.Reason,
-            };
-        });
+                Progress = job.GetJobProgress(),
+                Result = job.GetJobResult(),
+                Error = job.Reason,
+                CompletedAt = job.Closed,
+                ProcessedAt = job.ProcessedAt,
+                Title = job.Title,
+            }
+        );
         return jobs.ToList();
-        
     }
 
     

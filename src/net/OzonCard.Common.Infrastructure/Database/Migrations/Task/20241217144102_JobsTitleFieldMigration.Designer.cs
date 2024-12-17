@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OzonCard.Common.Infrastructure.Database;
 
 #nullable disable
 
-namespace OzonCard.Common.Infrastructure.Database.Migrations.Job
+namespace OzonCard.Common.Infrastructure.Database.Migrations.Task
 {
     [DbContext(typeof(TaskContext))]
-    partial class JobContextModelSnapshot : ModelSnapshot
+    [Migration("20241217144102_JobsTitleFieldMigration")]
+    partial class JobsTitleFieldMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

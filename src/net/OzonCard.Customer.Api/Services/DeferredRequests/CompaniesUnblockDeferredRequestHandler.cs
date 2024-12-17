@@ -45,7 +45,8 @@ public class CompaniesUnblockDeferredRequestHandler(
             cmd, 
             configuration.ScheduleTimeZone, 
             cmd.Tracking,
-            configuration.TryGetFeature<Guid>("userId")
+            configuration.TryGetFeature<Guid>("userId"),
+            configuration.TryGetFeature<string>("title") ?? ""
         ));
     }
 }

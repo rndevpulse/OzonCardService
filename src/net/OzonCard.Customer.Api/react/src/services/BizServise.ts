@@ -37,12 +37,12 @@ export default class BizService {
     }
 
 
-    static async ReportFromBiz(option: IReportOption): Promise<AxiosResponse<ITask>> {
-        return api.post<ITask>('/report/payments', option)
+    static async ReportFromBiz(option: IReportOption, title: string = ""): Promise<AxiosResponse<ITask>> {
+        return api.post<ITask>(`/report/payments?title=${title}`, option)
     }
 
-    static async TransactionsFromBiz(option: IReportOption): Promise<AxiosResponse<ITask>> {
-        return api.post<ITask>('/report/transactions', option)
+    static async TransactionsFromBiz(option: IReportOption, title: string = ""): Promise<AxiosResponse<ITask>> {
+        return api.post<ITask>(`/report/transactions?title=${title}`, option)
     }
 
 

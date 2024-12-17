@@ -10,10 +10,12 @@ export default class LoginStore {
     public constructor() {
         makeAutoObservable(this);
     }
-
     setIsAuth(bool: boolean) {
         this.IsAuth = bool;
+        LoginStore.isAuthenticated = bool;
     }
+
+    static isAuthenticated : boolean = false;
 
     setLoading(bool: boolean) {
         this.IsLoading = bool;

@@ -1,8 +1,8 @@
 ﻿
 import { makeAutoObservable, observable, configure } from 'mobx';
 import TaskService from '../services/TaskService';
-import {ISavedTask} from "./models/ISavedTask";
 import {ITask} from "../models/task/ITask";
+import LoginStore from "./LoginStore";
 
 configure({
     enforceActions: "never",
@@ -10,22 +10,41 @@ configure({
 
 
 export default class TaskStore {
-    timer = 0;
-    tasks: ISavedTask[] = JSON.parse(localStorage.getItem('tasks') || '[]') as ISavedTask[]
+    // timer = 0;
+    tasks: ITask[] = this.tryGetSavedTasks();
+
+
 
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
         setInterval(this.increaseTimer, 2000);
     }
+
+    tryGetSavedTasks():ITask[]{
+        try {
+            return JSON.parse(localStorage.getItem('tasks') || '[]') as ITask[];
+
+        }
+        catch(error) {
+            console.log(error)
+            localStorage.clear()
+            return [];
+        }
+    }
+
     static continueStatuses = ['Enqueued', 'Processing', 'Scheduled'];
     async increaseTimer() {
-        this.timer++;
-        const currents = this.tasks
-            .filter(task => TaskStore.continueStatuses.includes(task.task.status ))
-            .map(task=>task.id);
-        if (currents.length === 0)
+        // console.log(`TaskStore increaseTimer login status: ${LoginStore.isAuthenticated}`)
+        if (LoginStore.isAuthenticated === false)
             return
+
+        // this.timer++;
+        const currents = this.tasks
+            .filter(task => TaskStore.continueStatuses.includes(task.status ))
+            .map(task=>task.id);
+        // if (currents.length === 0)
+        //     return
         const response = await TaskService.getTasks(currents)
         if (!response)
         {
@@ -36,43 +55,35 @@ export default class TaskStore {
         }
         if (response.status === 200 && response.data)
         {
-            // console.log("running tasks info", response.data)
-            this.tasks = this.tasks.map((t,index) => {
-                if (!TaskStore.continueStatuses.includes(t.task.status )) { return t }
-                this.setTaskInfo(t.id, index, response.data)
-                return t
+            const processed:string[] = []
+            let oldTasks = this.tasks;
+            this.tasks =  response.data.map(response=>{
+                let local = this.tasks.find(t=>t.id === response.id)
+                if (local)
+                {
+                    processed.push(local.id)
+                    response.title = local.title
+                    return response
+                }
+                return response
             })
+            this.tasks.push(...oldTasks.filter(x=>!processed.includes(x.id)))
+            localStorage.setItem('tasks', JSON.stringify(this.tasks))
         }
-
 
     }
 
-    async setTaskInfo(taskId: string, index: number, updatedTasks: ITask[]){
-        // console.log("setTaskInfo", taskId)
-
-        const task = updatedTasks.find(t=>t.id === taskId);
-        if (task)
-        {
-            this.tasks[index].task = task
-
-            if ( this.tasks[index].task.status === 'Processing'){
-                this.tasks[index].time += 2
-            }
-
-        }
-        else
-            this.tasks[index].task.status = "Failed"
-        localStorage.setItem('tasks', JSON.stringify(this.tasks))
-    }
 
     async onCancelTask(taskId: string) {
         const response = await TaskService.cancelTask(taskId)
         if (response.status === 200 && response.data)
         {
-            const t = this.tasks.filter(t => t.id === taskId)[0]
-            t.task = response.data
+            const localTask = this.tasks.filter(t => t.id === taskId)[0]
+            if (response.data && localTask.title !== response.data?.title)
+                response.data.title = localTask.title;
+
             this.tasks = this.tasks.filter(t => t.id !== taskId)
-            this.tasks.push(t)
+            this.tasks.push(response.data)
             localStorage.setItem('tasks', JSON.stringify(this.tasks))
         }
 
@@ -84,14 +95,10 @@ export default class TaskStore {
         this.tasks = this.tasks.filter(t => t.id !== taskId)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
-    onAddTask(task: ITask, description: string) {
-        const savedTask:ISavedTask = {
-            id: task.id,
-            description: description,
-            time:1,
-            task:task
-        }
-        this.tasks.unshift(savedTask)
+    onAddTask(task: ITask, title: string = "") {
+        if (title !== "" && task.title === undefined)
+            task.title = title
+        this.tasks.unshift(task)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
         // console.log(this.tasks)
     }

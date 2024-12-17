@@ -14,7 +14,7 @@ export default class RequestService {
         return api.get<IExtensionProperty[]>(`/requests/${key}/properties`)
     }
 
-    static async append(key:string, props:IRequestModel): Promise<AxiosResponse<ITask>> {
-        return api.post<ITask>(`/requests/${key}`, props)
+    static async append(key:string, props:IRequestModel, title:string =""): Promise<AxiosResponse<ITask>> {
+        return api.post<ITask>(`/requests/${key}?title=${title}`, props)
     }
 }

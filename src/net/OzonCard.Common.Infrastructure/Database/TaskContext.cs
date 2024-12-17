@@ -18,7 +18,7 @@ public class TaskContext(DbContextOptions<TaskContext> options) : DbContext(opti
             e.HasKey(x => x.Id);
         
             e.Property(x => x.CreatedAt);
-            e.Property(x => x.UpdatedAt);
+            e.Property(x => x.ProcessedAt);
             // e.Property(x => x.IsRemoved);
             //
             // e.HasQueryFilter(x => !x.IsRemoved);

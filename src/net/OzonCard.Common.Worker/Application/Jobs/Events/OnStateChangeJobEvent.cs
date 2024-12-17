@@ -32,7 +32,10 @@ public record OnStateChangeJobEvent(
             // Deleted
             // Failed
             logger.LogInformation($"update job with number '{notification.Number}'");
-            job.Status = CastSate(notification.State);
+            var newState = CastSate(notification.State);
+            if (job.Status != "Processing" && newState == "Processing")
+                job.ProcessedAt = DateTimeOffset.UtcNow;
+            job.Status = newState;
             job.Reason = CastReason(notification.Reason);
             if (notification.IsFinal)
                 job.Closed = DateTime.UtcNow;

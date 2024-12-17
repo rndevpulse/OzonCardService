@@ -6,6 +6,9 @@ public interface IBackgroundTask
     DateTimeOffset QueuedAt { get; }
     string Status { get; set; }
     DateTimeOffset? CompletedAt { get; set; }
+    DateTimeOffset? ProcessedAt { get; set; }
+    string? Title { get; set; }
+
     object? Progress{ get; protected set; }
     object? Result { get; protected set; }
     string? Error { get; set; }

@@ -22,12 +22,14 @@ public class RequestsController(
 
     [HttpPost("{key}")]
     public async Task<BackgroundTaskModel> AppendRequest(string key, 
-        RequestModel model, CancellationToken ct = default)
+        RequestModel model, CancellationToken ct = default,
+        [FromQuery] string title = "")
     {
         var features = new Dictionary<string, object>
         {
             { "userId", UserClaimSid },
             { "user", UserClaimEmail ?? "Unknown"},
+            { "title", title }
         };
         var task = await manager.AppendRequestAsync(
             key, 

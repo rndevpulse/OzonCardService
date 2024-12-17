@@ -16,24 +16,27 @@ public class ReportController(
 {
 
     [HttpPost("[action]")]
-    public BackgroundTaskModel Payments(ReportPaymentsCommand cmd, CancellationToken ct = default)
+    public BackgroundTaskModel Payments(ReportPaymentsCommand cmd, CancellationToken ct = default,
+        [FromQuery] string title = "")
     {
         logger.LogInformation("Payments by '{user}': {@cmd}", UserClaimEmail,cmd);
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
         cmd.UseTracking();
-        var task = jobsService.Enqueue(cmd, cmd.Tracking, UserClaimSid);
+        var task = jobsService.Enqueue(cmd, cmd.Tracking, UserClaimSid, title);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
     
     [HttpPost("[action]")]
-    public BackgroundTaskModel Transactions(ReportTransactionsCommand cmd, CancellationToken ct = default)
+    public BackgroundTaskModel Transactions(ReportTransactionsCommand cmd, 
+        CancellationToken ct = default,
+        [FromQuery] string title = "")
     {
         logger.LogInformation("Transactions by '{user}': {@cmd}", UserClaimEmail, cmd);
         cmd.SetUserId(UserClaimSid);
         cmd.SetUser(UserClaimEmail ?? "Unknown");
         cmd.UseTracking();
-        var task = jobsService.Enqueue(cmd, cmd.Tracking, UserClaimSid);
+        var task = jobsService.Enqueue(cmd, cmd.Tracking, UserClaimSid, title);
         return Mapper.Map<BackgroundTaskModel>(task);
     }
 }

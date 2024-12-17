@@ -5,7 +5,7 @@ import {Context} from "../../index";
 import './index.css'
 import {Task} from "../../components/task";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
-import {ISavedTask} from "../../stores/models/ISavedTask";
+import {ITask} from "../../models/task";
 
 
 
@@ -16,7 +16,7 @@ const TasksPage: FC = () => {
     const closed = ["Deleted","Failed","Succeeded"]
 
 
-    function getTasks(tasks: ISavedTask[]){
+    function getTasks(tasks: ITask[]){
         if (tasks.length === 0) {
             return <h4 className="center">Задач нет</h4>
         }
@@ -44,10 +44,10 @@ const TasksPage: FC = () => {
                     {/*<Tab>Выполненные</Tab>*/}
                 </TabList>
                 <TabPanel>
-                    {getTasks(taskStore.tasks.filter(x=>x.task.status !== "Scheduled"))}
+                    {getTasks(taskStore.tasks.filter(x=>x.status !== "Scheduled"))}
                 </TabPanel>
                 <TabPanel>
-                    {getTasks(taskStore.tasks.filter(x=>x.task.status === "Scheduled"))}
+                    {getTasks(taskStore.tasks.filter(x=>x.status === "Scheduled"))}
                 </TabPanel>
 
             </Tabs>

@@ -61,7 +61,8 @@ public class TransactionsReportDeferredRequestHandler(
             cmd,
             configuration.ScheduleTimeZone,
             cmd.Tracking,
-            cmd.UserId
+            cmd.UserId,
+            configuration.TryGetFeature<string>("title") ?? ""
         ));
     }
 }
