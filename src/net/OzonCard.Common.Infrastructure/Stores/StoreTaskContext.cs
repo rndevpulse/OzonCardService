@@ -19,7 +19,7 @@ public class StoreTaskContext : IStoreContext
         _context = context;
         _logger = logger;
         _transaction = _context.Database.BeginTransaction();
-        _logger.LogInformation($"StoreTaskContext start transaction");
+        // _logger.LogInformation($"StoreTaskContext start transaction");
     }
 
     public async Task<TEntity?> GetItemAsync<TEntity>(Guid id, CancellationToken ct = default)
@@ -56,7 +56,7 @@ public class StoreTaskContext : IStoreContext
         {
             _context.SaveChanges();
             _transaction.Commit();
-            _logger.LogInformation($"StoreTaskContext save transaction");
+            // _logger.LogInformation($"StoreTaskContext save transaction");
             _transaction = null;
         }
     }
