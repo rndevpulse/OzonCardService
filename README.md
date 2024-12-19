@@ -1,22 +1,32 @@
 OzonCardService
 ```shell
-cd .\src\net\OzonCard.Customer.Api\
+cd .\src\net\OzonCard.Customer.Api
+```
+**РАЗДЕЛЕНИЕ**
+```shell
+dotnet ef migrations add initInfrastructureMigration -p ../OzonCard.Database.Migrations.SqlServer -c InfrastructureContext -o Migrations/Operational -- --provider sqlserver
+```
+```shell
+dotnet ef migrations add initTaskMigration -p ../OzonCard.Database.Migrations.Postgres -c TaskContext  -o Migrations/Task  -- --provider postgres
 ```
 
-dotnet ef migrations add InfrastructureContext
+**ДО РАЗДЕЛЕНИЯ**
+
+
+*InfrastructureContext*
 ```shell
-dotnet ef migrations add JobPrograssDelTableMigration -c InfrastructureContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Operational
+dotnet ef migrations add JobPrograssDelTableMigration -c InfrastructureContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Operational 
 ```
-dotnet ef migrations add SecurityContext
+*SecurityContext*
 ```shell
 dotnet ef migrations add InitSecurityMigration -c SecurityContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Security
 ```
-dotnet ef migrations add TaskContext
+*TaskContext*
 ```shell
-dotnet ef migrations add JobsReasonFieldMigration -c TaskContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Task
+dotnet ef migrations add JobsTitleFieldMigration -c TaskContext -p ..\OzonCard.Common.Infrastructure -o Database/Migrations/Task
 ```
 
-dotnet ef migrations remove
+**REMOVE migrations**
 ```shell
 dotnet ef migrations remove -c SecurityContext -p ..\OzonCard.Common.Infrastructure
 ```

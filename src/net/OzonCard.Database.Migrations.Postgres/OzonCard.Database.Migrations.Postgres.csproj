@@ -5,8 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
-
+    
     <ItemGroup>
         <ProjectReference Include="..\OzonCard.Common.Infrastructure.Database\OzonCard.Common.Infrastructure.Database.csproj" />
     </ItemGroup>

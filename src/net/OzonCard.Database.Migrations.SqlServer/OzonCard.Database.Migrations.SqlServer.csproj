@@ -7,11 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.21" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\OzonCard.Common.Infrastructure.Database\OzonCard.Common.Infrastructure.Database.csproj" />
     </ItemGroup>
 
