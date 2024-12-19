@@ -1,31 +1,11 @@
 using System.Reflection;
+using OzonCard.Common.Infrastructure.Database.Extensions;
 
 namespace OzonCard.Common.Infrastructure.Extensions;
 
-public class InfrastructureOptions
+public class InfrastructureOptions : InfrastructureDatabaseOptions
 {
-    internal string? Connection;
-    internal bool IsDevelopment = false;
-    internal bool ServerWorker = false;
-    internal Assembly[] Assemblies = [];
-    public InfrastructureOptions SetConnection(string? value)
-    {
-        Connection = value;
-        return this;
-    }
-    public InfrastructureOptions SetDevEnvironment(bool value)
-    {
-        IsDevelopment = value;
-        return this;
-    }
-    public InfrastructureOptions SetServerWorker()
-    {
-        ServerWorker = true;
-        return this;
-    }
-    public InfrastructureOptions SetAssemblies(Assembly[] value)
-    {
-        Assemblies = value;
-        return this;
-    }
+    public bool ServerWorker { get; set; } = false;
+    public Assembly[] Assemblies { get; set; } = [];
+  
 }

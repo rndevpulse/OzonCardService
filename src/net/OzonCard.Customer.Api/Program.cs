@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Infrastructure.Database;
+using OzonCard.Common.Infrastructure.Database.Contexts;
 using OzonCard.Common.Infrastructure.Extensions;
 using OzonCard.Common.Logging;
 using OzonCard.DeferredRequest;
@@ -121,11 +122,11 @@ builder.Services.AddAutoMapper(assemblies);
 builder.Services.AddMemoryCache();
 
 builder.Services.AddInfrastructure(opt =>
-    opt.SetAssemblies(assemblies)
-        .SetConnection(builder.Configuration.GetConnectionString("service"))
-        .SetDevEnvironment(builder.Environment.IsDevelopment())
-);
-
+{
+    opt.Assemblies = assemblies;
+    opt.Connection = builder.Configuration.GetConnectionString("service") ?? "";
+    opt.IsDevelopment = builder.Environment.IsDevelopment();
+});
 
 
 #region Problem details

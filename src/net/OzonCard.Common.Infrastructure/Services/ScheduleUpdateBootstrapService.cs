@@ -12,11 +12,11 @@ namespace OzonCard.Common.Infrastructure.Services;
 
 public class ScheduleUpdateBootstrapService(IServiceProvider provider) : BackgroundService
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var scope = provider.CreateScope();
 
-        var q = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
+        // var q = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
         var repository = scope.ServiceProvider.GetRequiredService<IOrganizationRepository>();
         var jobsService = scope.ServiceProvider.GetRequiredService<IBackgroundJobsService>();
         var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
@@ -32,6 +32,6 @@ public class ScheduleUpdateBootstrapService(IServiceProvider provider) : Backgro
             
             jobsService.AppendSchedule(token, command, "*/30 * * * *", queue);
         }
-      
+        return Task.CompletedTask;
     }
 }

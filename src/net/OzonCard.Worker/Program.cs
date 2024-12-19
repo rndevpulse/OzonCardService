@@ -26,11 +26,13 @@ builder.UseDefaultLogging();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddInfrastructure(opt =>
-    opt.SetAssemblies(assemblies)
-        .SetConnection(builder.Configuration.GetConnectionString("service"))
-        .SetDevEnvironment(builder.Environment.IsDevelopment())
-        .SetServerWorker()
-);
+{
+    opt.Assemblies = assemblies;
+    opt.Connection = builder.Configuration.GetConnectionString("service") ?? "";
+    opt.IsDevelopment = builder.Environment.IsDevelopment();
+    opt.ServerWorker = true;
+});
+ 
 
 
 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);

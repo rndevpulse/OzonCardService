@@ -2,6 +2,7 @@
 using OzonCard.Common.Application.Visits;
 using OzonCard.Common.Domain.Customers;
 using OzonCard.Common.Infrastructure.Database;
+using OzonCard.Common.Infrastructure.Database.Contexts;
 
 namespace OzonCard.Common.Infrastructure.Repositories;
 

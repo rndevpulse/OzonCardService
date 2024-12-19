@@ -45,6 +45,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeferredRequest", "Deferred
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.DeferredRequest", "src\net\OzonCard.DeferredRequest\OzonCard.DeferredRequest.csproj", "{917D8883-3D21-4496-B3A3-7E667B38D908}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Common.Infrastructure.Database", "src\net\OzonCard.Common.Infrastructure.Database\OzonCard.Common.Infrastructure.Database.csproj", "{CF59C2AE-433E-4C10-A79E-0CB7DB84CECC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Database.Migrations.SqlServer", "src\net\OzonCard.Database.Migrations.SqlServer\OzonCard.Database.Migrations.SqlServer.csproj", "{56B6868E-9899-4AAD-9D68-6C2B8E0BE629}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Database.Migrations.Postgres", "src\net\OzonCard.Database.Migrations.Postgres\OzonCard.Database.Migrations.Postgres.csproj", "{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{67F4F9BC-BB1C-4E1A-BBD1-9C487815005E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +111,18 @@ Global
 		{917D8883-3D21-4496-B3A3-7E667B38D908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{917D8883-3D21-4496-B3A3-7E667B38D908}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{917D8883-3D21-4496-B3A3-7E667B38D908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF59C2AE-433E-4C10-A79E-0CB7DB84CECC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF59C2AE-433E-4C10-A79E-0CB7DB84CECC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF59C2AE-433E-4C10-A79E-0CB7DB84CECC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF59C2AE-433E-4C10-A79E-0CB7DB84CECC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56B6868E-9899-4AAD-9D68-6C2B8E0BE629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B6868E-9899-4AAD-9D68-6C2B8E0BE629}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56B6868E-9899-4AAD-9D68-6C2B8E0BE629}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56B6868E-9899-4AAD-9D68-6C2B8E0BE629}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,5 +144,9 @@ Global
 		{D8E33C9C-FD1D-4E67-A100-E91C1D9ED78F} = {CE94DFEF-AD3E-4E79-92E3-7AFC0457B517}
 		{917D8883-3D21-4496-B3A3-7E667B38D908} = {8DEC8EED-AC1E-4F1D-A6D9-8B144B3378FE}
 		{DB073A8B-740F-4348-A9AE-CA06DC12AA23} = {CE94DFEF-AD3E-4E79-92E3-7AFC0457B517}
+		{67F4F9BC-BB1C-4E1A-BBD1-9C487815005E} = {DF6C596F-ED44-4C31-849E-130B8DC6D0E2}
+		{CF59C2AE-433E-4C10-A79E-0CB7DB84CECC} = {67F4F9BC-BB1C-4E1A-BBD1-9C487815005E}
+		{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F} = {67F4F9BC-BB1C-4E1A-BBD1-9C487815005E}
+		{56B6868E-9899-4AAD-9D68-6C2B8E0BE629} = {67F4F9BC-BB1C-4E1A-BBD1-9C487815005E}
 	EndGlobalSection
 EndGlobal

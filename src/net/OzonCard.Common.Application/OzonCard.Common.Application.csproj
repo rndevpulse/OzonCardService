@@ -17,6 +17,7 @@
       <ProjectReference Include="..\OzonCard.Biz.Client\OzonCard.Biz.Client.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Domain\OzonCard.Common.Domain.csproj" />
+      <ProjectReference Include="..\OzonCard.Common.Worker\OzonCard.Common.Worker.csproj" />
       <ProjectReference Include="..\OzonCard.Excel\OzonCard.Excel.csproj" />
       <ProjectReference Include="..\OzonCard.Files\OzonCard.Files.csproj" />
     </ItemGroup>

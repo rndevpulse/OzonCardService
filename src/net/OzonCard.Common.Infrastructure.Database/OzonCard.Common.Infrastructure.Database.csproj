@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OzonCard.Common.Application\OzonCard.Common.Application.csproj" />
+        <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
+        <ProjectReference Include="..\OzonCard.Common.Domain\OzonCard.Common.Domain.csproj" />
+        <ProjectReference Include="..\OzonCard.Common.Worker\OzonCard.Common.Worker.csproj" />
+        <ProjectReference Include="..\OzonCard.Identity\OzonCard.Identity.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
+        <PackageReference Include="DistributedLock.Postgres" Version="1.2.0" />
+        <PackageReference Include="DistributedLock.SqlServer" Version="1.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+</Project>

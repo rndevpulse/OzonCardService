@@ -2,6 +2,7 @@
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Infrastructure.Database;
+using OzonCard.Common.Infrastructure.Database.Contexts;
 
 namespace OzonCard.Common.Infrastructure.Repositories.Abstractions;
 

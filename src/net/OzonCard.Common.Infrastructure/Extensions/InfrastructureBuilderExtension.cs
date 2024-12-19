@@ -1,7 +1,4 @@
-using Medallion.Threading;
-using Medallion.Threading.SqlServer;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OzonCard.Common.Application.Customers;
@@ -11,9 +8,8 @@ using OzonCard.Common.Application.Properties;
 using OzonCard.Common.Application.Visits;
 using OzonCard.Common.Core;
 using OzonCard.Common.Infrastructure.Buses;
-using OzonCard.Common.Infrastructure.Database;
-using OzonCard.Common.Infrastructure.Database.Materialization;
-using OzonCard.Common.Infrastructure.Pipelines;
+using OzonCard.Common.Infrastructure.Database.Contexts;
+using OzonCard.Common.Infrastructure.Database.Extensions;
 using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Common.Infrastructure.Services;
 using OzonCard.Common.Infrastructure.Stores;
@@ -35,43 +31,12 @@ public static class InfrastructureBuilderExtension
         services.AddRepositories(options);
         services.AddHangfire(options);
         
-        #region Locks
-        services.AddSingleton<IDistributedLockProvider>(_ =>
-            new SqlDistributedSynchronizationProvider(options.Connection!)
-        );
-
-        #endregion
+       
         return services;
     }
     
     
-    private static IServiceCollection AddContext(this IServiceCollection services, InfrastructureOptions options)
-    {
-        services.AddDbContext<InfrastructureContext>(b =>
-            (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
-                options.Connection,
-                optionsBuilder =>
-                {
-                    optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
-                    optionsBuilder.UseCompatibilityLevel(120);
-                })
-            .AddInterceptors(ContextMaterializationInterceptor.Instance));
-        
-        services.AddDbContext<SecurityContext>(b =>
-            (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
-                options.Connection));
-        
-        services.AddDbContext<TaskContext>(b =>
-            (options.IsDevelopment ? b.EnableSensitiveDataLogging() : b).UseSqlServer(
-                options.Connection,
-                x=>x.UseCompatibilityLevel(120)), ServiceLifetime.Transient);
-        
-        services.AddScoped<ITransactionManager>(sp => sp.GetRequiredService<InfrastructureContext>());
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
-        
-        services.AddHostedService<DatabaseBootstrapService>();
-        return services;
-    }
+    
 
     private static IServiceCollection AddRepositories(this IServiceCollection services, InfrastructureOptions options)
     {
