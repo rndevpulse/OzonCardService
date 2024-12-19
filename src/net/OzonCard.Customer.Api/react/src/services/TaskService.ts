@@ -15,4 +15,7 @@ export default class TaskService {
     static async cancelTask(task: string): Promise<AxiosResponse<ITask|undefined>> {
         return await api.get<ITask|undefined>(`/tasks/cancel?id=${task}`)
     }
+    static async removeTask(task: string): Promise<AxiosResponse<ITask|undefined>> {
+        return await api.get<ITask|undefined>(`/tasks/remove?id=${task}`)
+    }
 }

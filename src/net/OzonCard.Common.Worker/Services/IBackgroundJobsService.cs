@@ -10,4 +10,5 @@ public interface IBackgroundJobsService
     void Dequeue(string taskId); 
     Task<IEnumerable<IBackgroundTask>> GetTasksAsync(Guid? user = null, params string[] tasksId);
     IBackgroundTask? Cancel(string taskId);
+    IBackgroundTask? Remove(string taskId);
 }

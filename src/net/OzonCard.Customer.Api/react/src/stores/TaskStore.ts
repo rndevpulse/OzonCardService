@@ -62,12 +62,15 @@ export default class TaskStore {
                 if (local)
                 {
                     processed.push(local.id)
-                    response.title = local.title
+                    if (response.title === undefined || response.title === "")
+                        response.title = local.title
                     return response
                 }
                 return response
             })
             this.tasks.push(...oldTasks.filter(x=>!processed.includes(x.id)))
+            this.tasks = this.tasks.sort((x,y,)=>x.id > y.id ? -1 : 1)
+
             localStorage.setItem('tasks', JSON.stringify(this.tasks))
         }
 
@@ -90,13 +93,17 @@ export default class TaskStore {
 
     }
 
-    onRemoveTask(taskId :string) {
-        console.log("onRemoveTask", taskId)
+   async onRemoveTask(taskId :string) {
+        // console.log("onRemoveTask", taskId)
+        const response = await TaskService.removeTask(taskId)
         this.tasks = this.tasks.filter(t => t.id !== taskId)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
+
     onAddTask(task: ITask, title: string = "") {
-        if (title !== "" && task.title === undefined)
+        console.log(`add task: ${task.title}`);
+
+        if (task.title === undefined || task.title === "")
             task.title = title
         this.tasks.unshift(task)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))

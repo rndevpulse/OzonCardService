@@ -35,7 +35,9 @@ public record OnStateChangeJobEvent(
             var newState = CastSate(notification.State);
             if (job.Status != "Processing" && newState == "Processing")
                 job.ProcessedAt = DateTimeOffset.UtcNow;
+            
             job.Status = newState;
+            
             job.Reason = CastReason(notification.Reason);
             if (notification.IsFinal)
                 job.Closed = DateTime.UtcNow;

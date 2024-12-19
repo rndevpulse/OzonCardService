@@ -71,12 +71,13 @@ export function RequestHandlers({organization}:IRequestHandlersProps){
                 schedule:schedule,
                 timeOffset: -(new Date().getTimezoneOffset()),
                 properties: handlerProps
-            })
+            },
+            `${organization.name} отложено на ${schedule.toLocaleString()}: ` + handler?.name + ' ' + description)
         close()
         if (task === undefined){
             return
         }
-        taskStore.onAddTask(task.data, `${organization.name} отложено на ${schedule.toLocaleString()}: ` + handler?.name + ' ' + description)
+        taskStore.onAddTask(task.data)
         // navigate(`/tasks`)
         toast.show("Отложенный запрос создан")
 

@@ -56,7 +56,9 @@ internal class BackgroundJobService(
                )
             );
 
-        return new BackgroundTask<TResult>(taskId, DateTimeOffset.UtcNow, "Scheduled");
+        return new BackgroundTask<TResult>(taskId, DateTimeOffset.UtcNow, "Scheduled"){
+            Title = title,
+        };
     }
 
     public IBackgroundTask Enqueue<TResult>(ICommand<TResult> task,  
@@ -77,7 +79,10 @@ internal class BackgroundJobService(
                 )
             );
 
-        return new BackgroundTask<TResult>(taskId, DateTimeOffset.UtcNow, "Enqueued");
+        return new BackgroundTask<TResult>(taskId, DateTimeOffset.UtcNow, "Enqueued")
+        {
+            Title = title,
+        };
     }
     public void Dequeue(string taskId) => jobQueue.Dequeue(taskId);
 
@@ -89,7 +94,8 @@ internal class BackgroundJobService(
         );
         var from = DateTime.UtcNow.AddMonths(-1);
         var jobs = processes
-            .Where(x=>x.Closed > from)
+            .Where(x=>x.Status != "isDeleted")
+            .Where(x=>x.Closed == null || x.Closed > from)
             .Select(job =>
            new BackgroundTask(job.Number, 
                job.CreatedAt,
@@ -112,5 +118,25 @@ internal class BackgroundJobService(
     {
         jobQueue.Cancel(taskId);
         return GetTasksAsync(null, [taskId]).Result.FirstOrDefault();
-    } 
+    }
+
+    public IBackgroundTask? Remove(string taskId)
+    {
+        jobQueue.Cancel(taskId);
+        var job = store.GetItemAsync<Job>(x=>x.Number == taskId).Result;
+        if (job == null) return null;
+        
+        job.Status = "isDeleted";
+        return new BackgroundTask(job.Number, 
+            job.CreatedAt,
+            job.Status)
+        {
+            Progress = job.GetJobProgress(),
+            Result = job.GetJobResult(),
+            Error = job.Reason,
+            CompletedAt = job.Closed,
+            ProcessedAt = job.ProcessedAt,
+            Title = job.Title,
+        };
+    }
 }

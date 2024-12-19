@@ -42,7 +42,9 @@ function getTimeWork(task: ITask) : string{
         ? new Date(task.completedAt)
         : new Date();
     let result = new Date(closedAt.getTime() - processedAt.getTime());
-    return  `${padTo2Digits(result.getHours() + (result.getDate()-1)*24)}:${padTo2Digits(result.getMinutes())}:${padTo2Digits(result.getSeconds())}`;
+    return  `${padTo2Digits(result.getUTCHours() + (result.getDate()-1)*24)}`
+        +`:${padTo2Digits(result.getUTCMinutes())}`
+        +`:${padTo2Digits(result.getUTCSeconds())}`;
 
     // return  result.toLocaleTimeString();
 }

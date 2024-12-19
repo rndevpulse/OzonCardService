@@ -23,8 +23,14 @@ public class TasksController(
     [HttpGet("[action]")]
     public BackgroundTaskModel Cancel(string id, CancellationToken ct = default)
     {
-        logger.LogDebug($"CancelTask {id}");
         var result = jobsService.Cancel(id);
+        return Mapper.Map<BackgroundTaskModel>(result);
+    }
+    
+    [HttpGet("[action]")]
+    public BackgroundTaskModel Remove(string id, CancellationToken ct = default)
+    {
+        var result = jobsService.Remove(id);
         return Mapper.Map<BackgroundTaskModel>(result);
     }
 }

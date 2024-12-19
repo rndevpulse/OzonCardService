@@ -97,8 +97,8 @@ const ReportPage: FC = () => {
 
     async function transactionsFromBiz() {
         const option = getOptions()
-        const response = await BizService.TransactionsFromBiz(option)
-        taskStore.onAddTask(response.data, 'Отчет: ' + option.title)
+        const response = await BizService.TransactionsFromBiz(option, 'Отчет: ' + option.title)
+        taskStore.onAddTask(response.data)
         navigate(`/tasks`)
     }
 
