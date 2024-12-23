@@ -1,5 +1,3 @@
-﻿using OzonCard.Common.Core;
-
-namespace OzonCard.Common.Worker.Stores;
+﻿namespace OzonCard.Common.Core;
 
 public interface IStoreContext :  IEntityStoreWithId<Guid>, IDisposable;

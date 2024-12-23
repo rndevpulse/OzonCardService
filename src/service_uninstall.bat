@@ -1,2 +1,0 @@
-sc delete ozonWorker
-@pause

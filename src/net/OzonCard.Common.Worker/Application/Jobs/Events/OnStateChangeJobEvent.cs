@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using OzonCard.Common.Core;
 using OzonCard.Common.Worker.Domain.Jobs;
-using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Worker.Application.Jobs.Events;
 
@@ -41,7 +40,8 @@ public record OnStateChangeJobEvent(
             job.Reason = CastReason(notification.Reason);
             if (notification.IsFinal)
                 job.Closed = DateTime.UtcNow;
-            store.Dispose();
+            store.Update(job);
+
         }
 
 
@@ -50,6 +50,7 @@ public record OnStateChangeJobEvent(
             {
                 "Succeeded" => state,
                 "Deleted" => state,
+                "isDeleted" => state,
                 "Failed" => state,
                 "Scheduled" => state,
                 _ => "Processing"

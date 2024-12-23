@@ -1,6 +1,5 @@
 ﻿using OzonCard.Common.Core;
 using OzonCard.Common.Worker.Domain.Jobs;
-using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Worker.Application.Jobs.Events;
 
@@ -29,7 +28,7 @@ public record OnCreatedJobEvent(
                 Title = notification.Title
             };
             store.Append<Job>(job);
-            store.Dispose();
+            // store.Dispose();
             return Task.CompletedTask;
         }
     }

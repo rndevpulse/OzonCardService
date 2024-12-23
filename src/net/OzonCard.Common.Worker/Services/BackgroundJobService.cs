@@ -4,7 +4,6 @@ using OzonCard.Common.Core;
 using OzonCard.Common.Worker.Application.Jobs.Events;
 using OzonCard.Common.Worker.Data;
 using OzonCard.Common.Worker.Domain.Jobs;
-using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Worker.Services;
 
@@ -125,8 +124,13 @@ internal class BackgroundJobService(
         jobQueue.Cancel(taskId);
         var job = store.GetItemAsync<Job>(x=>x.Number == taskId).Result;
         if (job == null) return null;
-        
-        job.Status = "isDeleted";
+        events.Publish(new OnStateChangeJobEvent(
+            job.Id,
+            job.Number,
+            "isDeleted",
+            "Удалена пользователем",
+            true
+        ));
         return new BackgroundTask(job.Number, 
             job.CreatedAt,
             job.Status)

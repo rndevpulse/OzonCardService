@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OzonCard.Common.Infrastructure.Database.Contexts;
 
 namespace OzonCard.Common.Infrastructure.Database.Extensions;
 

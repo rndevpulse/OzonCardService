@@ -1,4 +1,5 @@
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OzonCard.Common.Application.Customers;
@@ -14,7 +15,6 @@ using OzonCard.Common.Infrastructure.Repositories;
 using OzonCard.Common.Infrastructure.Services;
 using OzonCard.Common.Infrastructure.Stores;
 using OzonCard.Common.Worker.Extensions;
-using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Infrastructure.Extensions;
 
@@ -46,9 +46,11 @@ public static class InfrastructureBuilderExtension
         services.AddScoped<IVisitRepository, VisitRepository>();
         services.AddScoped<IPropertiesRepository, PropertiesRepository>();
         
-        services.AddTransient<IStoreContext>(sp=> 
+        services.AddScoped<IStoreContext>(sp=> 
             new StoreTaskContext(
-                sp.GetRequiredService<TaskContext>(),
+                new DbContextOptionsBuilder<TaskContext>()
+                    .ConfigureContext(options)
+                    .Options,
                 sp.GetRequiredService<ILogger<StoreTaskContext>>()));
 
         return services;

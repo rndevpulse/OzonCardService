@@ -16,5 +16,6 @@ public interface IEntityStoreWithId<in TKey> where TKey : struct
     
     void Append<TEntity>(params TEntity[] entities) where TEntity : class, IWithId<TKey>;
     void Remove<TEntity>(params TEntity[] entities) where TEntity : class, IWithId<TKey>;
+    void Update<TEntity>(params TEntity[] entities) where TEntity : class, IWithId<TKey>;
 
 }

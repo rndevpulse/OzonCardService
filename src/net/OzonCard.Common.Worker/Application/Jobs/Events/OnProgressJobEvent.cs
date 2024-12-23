@@ -2,7 +2,6 @@
 using OzonCard.Common.Core;
 using OzonCard.Common.Worker.Data;
 using OzonCard.Common.Worker.Domain.Jobs;
-using OzonCard.Common.Worker.Stores;
 
 namespace OzonCard.Common.Worker.Application.Jobs.Events;
 
@@ -22,7 +21,7 @@ public record OnProgressJobEvent(
             job.Progress = JsonSerializer.Serialize(notification.Progress, notification.Progress.GetType());
             if (notification.Result != null)
                 job.Result = JsonSerializer.Serialize(notification.Result, notification.Result.GetType());
-            store.Dispose();
+            store.Update(job);
 
         }
     }
