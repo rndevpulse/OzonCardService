@@ -8,7 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\OzonCard.Common.Infrastructure.Database\OzonCard.Common.Infrastructure.Database.csproj" />
-      <ProjectReference Include="..\OzonCard.Database.Migrations.Postgres\OzonCard.Database.Migrations.Postgres.csproj" />
+      <ProjectReference Include="..\OzonCard.Database.Migrations.Postgre\OzonCard.Database.Migrations.Postgre.csproj" />
       <ProjectReference Include="..\OzonCard.Database.Migrations.SqlServer\OzonCard.Database.Migrations.SqlServer.csproj" />
     </ItemGroup>
 

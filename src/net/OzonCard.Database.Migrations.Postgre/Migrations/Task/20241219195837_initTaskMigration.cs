@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace OzonCard.Database.Migrations.Postgres.Migrations.Task
+namespace OzonCard.Database.Migrations.Postgre.Migrations.Task
 {
     /// <inheritdoc />
     public partial class initTaskMigration : Migration

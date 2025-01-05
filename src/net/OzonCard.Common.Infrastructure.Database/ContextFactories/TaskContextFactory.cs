@@ -10,7 +10,7 @@ public class TaskContextFactory : IDesignTimeDbContextFactory<TaskContext>
     public TaskContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<TaskContext>();
-        optionsBuilder.ConfigureContext("database connection", "postgres");
+        optionsBuilder.ConfigureContext("database connection", "postgre");
         return new TaskContext(optionsBuilder.Options);
     }
 }

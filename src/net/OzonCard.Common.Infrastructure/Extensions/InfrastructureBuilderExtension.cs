@@ -68,7 +68,7 @@ public static class InfrastructureBuilderExtension
     
     private static IServiceCollection AddHangfire(this IServiceCollection services, InfrastructureOptions options)
     {
-        services.AddHangfireBackgroundJobService(options.Connection ?? string.Empty);
+        services.AddHangfireBackgroundJobService(options.Connection ?? string.Empty, options.Provider);
 
         if (!options.ServerWorker) 
             return services;

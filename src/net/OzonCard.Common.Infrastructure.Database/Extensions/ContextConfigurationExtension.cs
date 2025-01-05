@@ -1,29 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OzonCard.Common.Infrastructure.Database.Contexts;
 
 namespace OzonCard.Common.Infrastructure.Database.Extensions;
 
 public static class ContextConfigurationExtension
 {
-    public static DbContextOptionsBuilder ConfigureContext(
-        this DbContextOptionsBuilder builder, 
-        InfrastructureDatabaseOptions options) =>
-        options.Provider switch
-        {
-            "sqlserver" => builder.AddSqlServerDatabase(options.Connection, options.IsDevelopment),
-            "postgres" => builder.AddPostgresDatabase(options.Connection, options.IsDevelopment),
-            _ => throw new ArgumentOutOfRangeException(nameof(options.Provider), options.Provider,
-                $"Unsupported database provider {options.Provider}")
-        };
+    public static DbContextOptionsBuilder ConfigureContext(this DbContextOptionsBuilder builder, InfrastructureDatabaseOptions options) => 
+        builder.ConfigureContext(options.Connection, options.Provider, options.IsDevelopment);
 
     public static DbContextOptionsBuilder ConfigureContext(
         this DbContextOptionsBuilder builder, 
         string connection,
-        string provider) =>
+        string provider,
+        bool isDevelopment = false) =>
         provider switch
         {
-            "sqlserver" => builder.AddSqlServerDatabase(connection,false),
-            "postgres" => builder.AddPostgresDatabase(connection, false),
+            "sqlserver" => builder.AddSqlServerDatabase(connection,isDevelopment),
+            "postgre" => builder.AddPostgreDatabase(connection, isDevelopment),
             _ => throw new ArgumentOutOfRangeException(nameof(provider), provider,
                 $"Unsupported database provider {provider}")
         };
@@ -42,7 +34,7 @@ public static class ContextConfigurationExtension
             });
     }
 
-    private static DbContextOptionsBuilder AddPostgresDatabase(
+    private static DbContextOptionsBuilder AddPostgreDatabase(
         this DbContextOptionsBuilder builder, 
         string connString,
         bool isDevelopment)
@@ -52,7 +44,7 @@ public static class ContextConfigurationExtension
             optionsBuilder =>
             {
                 optionsBuilder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
-                optionsBuilder.MigrationsAssembly("OzonCard.Database.Migrations.Postgres");
+                optionsBuilder.MigrationsAssembly("OzonCard.Database.Migrations.Postgre");
             });
     }
     

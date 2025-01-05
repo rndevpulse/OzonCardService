@@ -2,21 +2,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OzonCard.Common.Infrastructure.Database.Contexts;
 
 #nullable disable
 
-namespace OzonCard.Database.Migrations.Postgres.Migrations.Task
+namespace OzonCard.Database.Migrations.Postgre.Migrations.Task
 {
     [DbContext(typeof(TaskContext))]
-    [Migration("20241219195837_initTaskMigration")]
-    partial class initTaskMigration
+    partial class TaskContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

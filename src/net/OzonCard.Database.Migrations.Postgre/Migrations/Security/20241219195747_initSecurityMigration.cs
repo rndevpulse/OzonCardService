@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace OzonCard.Database.Migrations.Postgres.Migrations.Security
+namespace OzonCard.Database.Migrations.Postgre.Migrations.Security
 {
     /// <inheritdoc />
     public partial class initSecurityMigration : Migration

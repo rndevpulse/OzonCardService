@@ -1,4 +1,5 @@
 using Hangfire;
+using Hangfire.PostgreSql;
 using OzonCard.Common.Worker.Filters;
 using OzonCard.Common.Worker.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class BuilderExtensions
     public static IServiceCollection AddHangfireBackgroundJobService(
         this IServiceCollection services, 
         string connection, 
+        string provider,
         string schema = "hangfire")
     {
         services.AddScoped<IBackgroundJobQueue, BackgroundJobQueue>();
@@ -24,8 +26,11 @@ public static class BuilderExtensions
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseFilter(new SkipWhenPreviousJobIsRunningAttribute(sp.GetRequiredService<IEventBus>()))
-                .UseFilter(new AutomaticRetryAttribute { Attempts = 3 })
-                .UseSqlServerStorage(connection);
+                .UseFilter(new AutomaticRetryAttribute { Attempts = 3 });
+            if (provider == "sqlserver")
+                hangfire.UseSqlServerStorage(connection);
+            else
+                hangfire.UsePostgreSqlStorage(pgsql => pgsql.UseNpgsqlConnection(connection.UseSchema(schema)));
         });
        
         return services;

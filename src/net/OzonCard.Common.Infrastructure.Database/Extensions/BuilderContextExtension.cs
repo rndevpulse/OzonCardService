@@ -23,7 +23,7 @@ public static class BuilderContextExtension
                     new SqlDistributedSynchronizationProvider(options.Connection!)
                 );
                 break;
-            case "postgres":
+            case "postgre":
                 services.AddSingleton<IDistributedLockProvider>(_ =>
                     new PostgresDistributedSynchronizationProvider(options.Connection!)
                 );

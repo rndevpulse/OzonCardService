@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Common.Infrastruct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Database.Migrations.SqlServer", "src\net\OzonCard.Database.Migrations.SqlServer\OzonCard.Database.Migrations.SqlServer.csproj", "{56B6868E-9899-4AAD-9D68-6C2B8E0BE629}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Database.Migrations.Postgres", "src\net\OzonCard.Database.Migrations.Postgres\OzonCard.Database.Migrations.Postgres.csproj", "{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonCard.Database.Migrations.Postgre", "src\net\OzonCard.Database.Migrations.Postgre\OzonCard.Database.Migrations.Postgre.csproj", "{D4EBC518-96CF-4A14-B54C-EA2D0D74B96F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{67F4F9BC-BB1C-4E1A-BBD1-9C487815005E}"
 EndProject

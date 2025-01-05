@@ -8,7 +8,7 @@ using OzonCard.Common.Infrastructure.Database.Contexts;
 
 #nullable disable
 
-namespace OzonCard.Database.Migrations.Postgres.Migrations.Operational
+namespace OzonCard.Database.Migrations.Postgre.Migrations.Operational
 {
     [DbContext(typeof(InfrastructureContext))]
     partial class InfrastructureContextModelSnapshot : ModelSnapshot

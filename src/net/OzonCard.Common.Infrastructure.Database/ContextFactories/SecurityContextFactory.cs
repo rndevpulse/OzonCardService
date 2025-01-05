@@ -10,7 +10,7 @@ public class SecurityContextFactory : IDesignTimeDbContextFactory<SecurityContex
     public SecurityContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<SecurityContext>();
-        optionsBuilder.ConfigureContext("database connection", "postgres");
+        optionsBuilder.ConfigureContext("database connection", "postgre");
         return new SecurityContext(optionsBuilder.Options);
     }
 }

@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace OzonCard.Database.Migrations.Postgres.Migrations.Operational
+namespace OzonCard.Database.Migrations.Postgre.Migrations.Operational
 {
     /// <inheritdoc />
     public partial class initInfrastructureMigration : Migration

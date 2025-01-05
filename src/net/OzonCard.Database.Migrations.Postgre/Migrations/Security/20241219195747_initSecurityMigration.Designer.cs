@@ -9,7 +9,7 @@ using OzonCard.Common.Infrastructure.Database.Contexts;
 
 #nullable disable
 
-namespace OzonCard.Database.Migrations.Postgres.Migrations.Security
+namespace OzonCard.Database.Migrations.Postgre.Migrations.Security
 {
     [DbContext(typeof(SecurityContext))]
     [Migration("20241219195747_initSecurityMigration")]
