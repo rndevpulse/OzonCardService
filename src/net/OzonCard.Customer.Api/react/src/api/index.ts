@@ -4,10 +4,11 @@ import {Slide, toast} from "react-toastify";
 
 export const API_URL = 'https://localhost:5180/api/v1'
 // export const API_URL = 'https://ozon.pulse2.keenetic.link/api/v1'
-const url =
-    process.env.NODE_ENV || process.env.NODE_ENV  === 'development'
-        ? 'https://localhost:5180/api/v1'
-        : 'https://ozon.pulse2.keenetic.link/api/v1';
+const url ='https://ozon.kolur.keenetic.link/api/v1';
+    // process.env.NODE_ENV || process.env.NODE_ENV  === 'development'
+    //     ? 'https://localhost:5180/api/v1'
+    //     // : 'https://ozon.pulse2.keenetic.link/api/v1';
+    //     : 'https://ozon.kolur.keenetic.link/api/v1';
 const api = axios.create({
     withCredentials: true,
     baseURL: url

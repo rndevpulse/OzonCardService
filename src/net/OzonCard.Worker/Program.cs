@@ -29,6 +29,7 @@ builder.Services.AddInfrastructure(opt =>
 {
     opt.Assemblies = assemblies;
     opt.Connection = builder.Configuration.GetConnectionString("service") ?? "";
+    opt.Provider = builder.Configuration.GetConnectionString("provider") ?? "";
     opt.IsDevelopment = builder.Environment.IsDevelopment();
     opt.ServerWorker = true;
 });
