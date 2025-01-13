@@ -38,7 +38,7 @@ function getTimeWork(task: ITask) : string{
     if (!task.processedAt) return "";
 
     let processedAt = new Date(task.processedAt);
-    let closedAt = task.completedAt !== undefined
+    let closedAt = task.completedAt !== undefined && task.completedAt !== null
         ? new Date(task.completedAt)
         : new Date();
     let result = new Date(closedAt.getTime() - processedAt.getTime());

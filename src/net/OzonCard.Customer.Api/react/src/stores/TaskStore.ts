@@ -40,11 +40,13 @@ export default class TaskStore {
             return
 
         // this.timer++;
+        //берем задачи, которые нужно отследить
         const currents = this.tasks
             .filter(task => TaskStore.continueStatuses.includes(task.status ))
             .map(task=>task.id);
         // if (currents.length === 0)
         //     return
+        //получаем список с нужными и прочими задачами пользователя
         const response = await TaskService.getTasks(currents)
         if (!response)
         {
@@ -53,6 +55,7 @@ export default class TaskStore {
         if (response.status === 200 && response.data.length === 0)
         {
         }
+        //мы все же получили нормальный ответ....
         if (response.status === 200 && response.data)
         {
             const processed:string[] = []
@@ -69,7 +72,7 @@ export default class TaskStore {
                 return response
             })
             this.tasks.push(...oldTasks.filter(x=>!processed.includes(x.id)))
-            this.tasks = this.tasks.sort((x,y,)=>x.id > y.id ? -1 : 1)
+            this.tasks = this.tasks.sort((x,y,)=>x.queuedAt > y.queuedAt ? -1 : 1)
 
             localStorage.setItem('tasks', JSON.stringify(this.tasks))
         }
@@ -93,7 +96,7 @@ export default class TaskStore {
 
     }
 
-   async onRemoveTask(taskId :string) {
+    async onRemoveTask(taskId :string) {
         // console.log("onRemoveTask", taskId)
         const response = await TaskService.removeTask(taskId)
         this.tasks = this.tasks.filter(t => t.id !== taskId)
@@ -108,6 +111,10 @@ export default class TaskStore {
         this.tasks.unshift(task)
         localStorage.setItem('tasks', JSON.stringify(this.tasks))
         // console.log(this.tasks)
+    }
+
+    clearTasks(): void {
+        localStorage.setItem('tasks', '[]')
     }
     
 }

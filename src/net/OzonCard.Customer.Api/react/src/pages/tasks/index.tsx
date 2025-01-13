@@ -12,8 +12,6 @@ import {ITask} from "../../models/task";
 const TasksPage: FC = () => {
     const { taskStore } = useContext(Context)
 
-    const current = ["Enqueued","Processing"]
-    const closed = ["Deleted","Failed","Succeeded"]
 
 
     function getTasks(tasks: ITask[]){
@@ -36,7 +34,19 @@ const TasksPage: FC = () => {
 
     return (
         <div className="center form-group col-md-12">
-            <h1>Мои задачи</h1>
+                <h1>
+                    Мои задачи
+
+                    <span>
+                        <i className="material-icons red-text"
+                           onClick={() => taskStore.clearTasks()}>
+                            delete
+                        </i>
+
+                    </span>
+                </h1>
+
+
             <Tabs>
                 <TabList>
                     <Tab>Текущие</Tab>
