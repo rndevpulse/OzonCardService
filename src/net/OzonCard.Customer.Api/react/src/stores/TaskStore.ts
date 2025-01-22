@@ -18,7 +18,7 @@ export default class TaskStore {
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
-        setInterval(this.increaseTimer, 2000);
+        setInterval(this.increaseTimer, 5000);
     }
 
     tryGetSavedTasks():ITask[]{

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,10 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using OzonCard.Common.Core.Exceptions;
-using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Contexts;
 using OzonCard.Common.Infrastructure.Extensions;
 using OzonCard.Common.Logging;
+using OzonCard.Customer.Api.Authorization;
 using OzonCard.DeferredRequest;
 using OzonCard.Excel;
 using OzonCard.Files;
@@ -111,7 +112,15 @@ builder.Services.AddAuthorization(opt =>
     opt.AddPolicy(UserRole.Admin, policy => policy.RequireRole(UserRole.Admin));
     opt.AddPolicy(UserRole.Report, policy => policy.RequireRole(UserRole.Report));
     opt.AddPolicy(UserRole.Basic, policy => policy.RequireRole(UserRole.Basic));
+    
+    opt.AddPolicy("ApiKeyPolicy", policy =>
+    {
+        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+        policy.Requirements.Add(new ApiKeyRequirement());
+    });
 });
+
+builder.Services.AddScoped<IAuthorizationHandler, ApiKeyHandler>();
 #endregion
 
 builder.Services.AddLocalization();
