@@ -42,8 +42,8 @@ public class CustomersUploadCommandHandler(
                 : excelManager.GetCustomers(fileManager.GetFile(request.FileReport)).ToList();
 
             var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
-            if (org.Members.All(x => x.Name != request.User))
-                throw new BusinessException($"Organization for '{request.User}' not found");
+            // if (org.Members.All(x => x.Name != request.User))
+            //     throw new BusinessException($"Organization for '{request.User}' not found");
             var program = org.Programs.FirstOrDefault(x => x.Id == request.ProgramId)
                           ?? throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
             var wallet = program.Wallets.FirstOrDefault()
