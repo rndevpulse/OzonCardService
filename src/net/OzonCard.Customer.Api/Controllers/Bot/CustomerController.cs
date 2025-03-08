@@ -46,4 +46,13 @@ public class CustomerController(
         return Mapper.Map<IEnumerable<CustomerModel>>(result);
     }
 
+    [HttpPost("[action]")]
+    public async Task<IEnumerable<string>> Categories(CustomerUpdateCategoryCommand cmd, CancellationToken ct = default)
+    {
+        logger.LogInformation("Change category customer by bot");
+        var result = await Commands.Send(cmd, ct);
+        return result;
+    }
+    
+
 }
