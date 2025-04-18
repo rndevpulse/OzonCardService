@@ -47,11 +47,11 @@ public class ReportPaymentsCommandHandler(
 
         var client = new BizClient(org.Login, org.Password);
         var offset = TimeSpan.FromMinutes(request.Offset);
-        var from = request.DateFrom.ToOffset(offset).Date;
-        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
+        var from = request.DateFrom.ToOffset(offset).Date.AddHours(-3);
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1).AddHours(-3);
         
         UpdateProgress("Запрашиваем отчет по программе питания..", 10);
-        
+
         var report = await client.GetProgramReport(
             org.Id,
             request.ProgramId,
@@ -59,7 +59,7 @@ public class ReportPaymentsCommandHandler(
             to,
             cancellationToken
         );
-        logger.LogInformation($"Payment report for '{org.Name}' from '{from}' to '{to}' returned '{report.Count()}' rows");
+        logger.LogInformation($"Payment report for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' returned '{report.Count()}' rows");
         
         // if (!report.Any())
         //     throw new BusinessException("Ошибка в получении отчета по питанию");

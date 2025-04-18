@@ -54,17 +54,21 @@ public class ReportTransactionsCommandHandler(
         var from = request.DateFrom.ToOffset(offset).Date;
         var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
         
-        logger.LogInformation($"TransactionReport for '{org.Name}' from '{from}' to '{to}' offset '{request.Offset}'");
+        logger.LogInformation($"TransactionReport for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' offset '{request.Offset}'");
         UpdateProgress("Запрашиваем отчет по транзакциям..", 10);
 
         var transactions = await client.GetTransactionReport(
             org.Id, 
             from, 
-            to.AddDays(-1), 
+            to, 
             ct:cancellationToken);
         // if (!transactions.Any())
         //     throw new BusinessException("Ошибка в получении транзакций");
         UpdateProgress("Запрашиваем отчет по программе питания..", 60);
+
+        from = from.AddHours(-3);
+        to = to.AddHours(-3);
+        logger.LogInformation($"TransactionReport (ProgramReport) for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' offset '{request.Offset}'");
 
         var report = await GetProgramReportAsync(
             client, org, request.CategoriesId, request.ProgramId, from, to, cancellationToken);
@@ -162,6 +166,7 @@ public class ReportTransactionsCommandHandler(
                 $"{request.Title} - {batchProp.Name}: в период с {from} по {to.Date.AddSeconds(-1)}"
             );
         }
+        UpdateProgress("Упаковываем архив..", 98);
         //упаковываем все батчи в архив и кладем его в базу
         var fileId = await fileManager.SaveAsBatch(tempFolder);
         var saveFile = new SaveFile(fileId, "zip", request.Title, request.UserId);

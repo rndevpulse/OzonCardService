@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Text.Json;
 using System.Web;
 using OzonCard.Biz.Client.Models.Customers;
 using OzonCard.Biz.Client.Models.Organizations;
@@ -150,7 +149,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
         DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
     {
         return await _client.GetFromJsonAsync<IEnumerable<ProgramReportDto>>(
-               $"organization/{orgId}/corporate_nutrition_report?corporate_nutrition_id={programId}&date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
+               $"organization/{orgId}/corporate_nutrition_report?corporate_nutrition_id={programId}&date_from={dateFrom:yyyy-MM-ddTHH:mm:ss}&date_to={dateTo:yyyy-MM-ddTHH:mm:ss}",
                ct)
            ?? throw new Exception($"Cannot load program report");
     }
@@ -159,7 +158,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
         DateTime dateTo, TransactionType type = TransactionType.PayFromWallet, CancellationToken ct = default)
     {
         var result = await _client.GetFromJsonAsync<IEnumerable<TransactionsReportDto>>(
-            $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-dd}&date_to={dateTo:yyyy-MM-dd}",
+            $"organization/{orgId}/transactions_report?date_from={dateFrom:yyyy-MM-ddTHH:mm:ss}&date_to={dateTo:yyyy-MM-ddTHH:mm:ss}",
             ct);
         return result?.Where(x => x.TransactionType == type.ToString())
             ?? throw new Exception($"Cannot load transactions report");
@@ -169,7 +168,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
     public async Task<IEnumerable<ShortGuestInfoDto>> GetShortCustomersReport(Guid orgId, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
     {
         var result = await _client.GetFromJsonAsync<IEnumerable<ShortGuestInfoDto>>(
-            $"customers/get_customers_by_organization_and_by_period?organization={orgId}&dateFrom={dateFrom:yyyy-MM-dd}&dateTo={dateTo:yyyy-MM-dd}",
+            $"customers/get_customers_by_organization_and_by_period?organization={orgId}&dateFrom={dateFrom:yyyy-MM-ddTHH:mm:ss}&dateTo={dateTo:yyyy-MM-ddTHH:mm:ss}",
             ct);
         return result ?? throw new Exception($"Cannot load short customers report");
     }
