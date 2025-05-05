@@ -153,20 +153,29 @@ public class CustomersUploadCommandHandler(
 
     private async Task<Customer?> TryCreateCustomer(BizClient client, Guid orgId, Excel.Models.Customer fileCustomer, CancellationToken ct)
     {
-        var bizCustomer = await client.CreateCustomerAsync(fileCustomer.Name, fileCustomer.Card, orgId, ct);
-        if (bizCustomer != Guid.Empty)
-            Progress.CountNew++;
-        else
+        try
         {
+            var bizCustomer = await client.CreateCustomerAsync(fileCustomer.Name, fileCustomer.Card, orgId, ct);
+            if (bizCustomer != Guid.Empty)
+                Progress.CountNew++;
+            else
+            {
+                Progress.CountFail++;
+                logger.LogError($"Customer {fileCustomer.Name} {fileCustomer.Card} not create in biz");
+                return null;
+            }
+            var customer = new Customer(Guid.NewGuid(), 
+                fileCustomer.Name, bizCustomer, orgId, true,
+                string.Empty, fileCustomer.TabNumber, fileCustomer.Position, fileCustomer.Division
+            );
+            customer.TryAddCard(fileCustomer.Card,fileCustomer.Card);
+            return customer;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error while trying to create customer: {Customer} {Card}", fileCustomer.Name, fileCustomer.Card);
             Progress.CountFail++;
-            logger.LogError($"Customer {fileCustomer.Name} {fileCustomer.Card} not create in biz");
             return null;
         }
-        var customer = new Customer(Guid.NewGuid(), 
-            fileCustomer.Name, bizCustomer, orgId, true,
-            string.Empty, fileCustomer.TabNumber, fileCustomer.Position, fileCustomer.Division
-        );
-        customer.TryAddCard(fileCustomer.Card,fileCustomer.Card);
-        return customer;
     }
 }
