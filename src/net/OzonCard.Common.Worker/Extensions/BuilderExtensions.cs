@@ -49,7 +49,7 @@ public static class BuilderExtensions
         if (string.IsNullOrEmpty(schema))
             schema = "hangfire";
         if (!connectionString.Contains("Search Path"))
-            return connectionString + $"Search Path={schema};";
+            return connectionString + $";Search Path={schema};";
         return string.Join("", 
             connectionString
                 .Split(';')
