@@ -57,8 +57,8 @@ export default class OrganizationStore {
         this.setLoading(true)
         try {
             const response = await OrganizationService.createOrganization(login, password)
-            this.organizations.push(response.data)
-            console.log(response)
+            response.data.forEach((org) => this.organizations.push(org))
+            console.log(response.data)
         }
         catch (e) {
             //console.log(e);

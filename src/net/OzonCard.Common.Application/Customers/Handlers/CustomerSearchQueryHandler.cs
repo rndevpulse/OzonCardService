@@ -32,6 +32,7 @@ public class CustomerSearchQueryHandler(
         var offset = TimeSpan.FromMinutes(request.Offset);
         var from = request.DateFrom.ToOffset(offset).Date;
         var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
+        
         logger.LogInformation($"Search customer for '{org.Name}' from '{from}' to '{to}' offset '{request.Offset}'");
 
         // var report = await client.GetProgramReport(
@@ -56,7 +57,7 @@ public class CustomerSearchQueryHandler(
             logger.LogInformation($"customer success found from biz: {c.BizId}");
 
             // var rep = report.FirstOrDefault(r => r.GuestId == c.BizId);
-            var visits = (await c.Context.GetVisitsAsync(from, to, cancellationToken)).ToList();
+            var visits = (await c.Context.GetVisitsAsync( from.ToUniversalTime(), to.ToUniversalTime(), cancellationToken)).ToList();
             // var shortRep = repTransactions.FirstOrDefault(r => r.Card?.Contains(request.Card) == true);
             var lastVisit = visits.MaxBy(r => r.Date);
             return new CustomerSearch(

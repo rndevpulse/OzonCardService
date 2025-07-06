@@ -29,7 +29,7 @@ public class ScheduleUpdateBootstrapService(IServiceProvider provider) : Backgro
             var queue = "recurring";
             foreach (var org in repository.GetQuery())
             {
-                var token = $"CUSTOMER_VISITS_${org.Id}";
+                var token = $"CUSTOMER_VISITS_{org.Id}";
                 var command = new CustomersVisitsFetchCommand(org.Id, days);
 
                 jobsService.Dequeue(token);

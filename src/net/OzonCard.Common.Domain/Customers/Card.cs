@@ -5,5 +5,5 @@ namespace OzonCard.Common.Domain.Customers;
 public record Card(
     string Track, 
     string Number, 
-    DateTime Created
+    DateTimeOffset Created
 ) : ValueObject;

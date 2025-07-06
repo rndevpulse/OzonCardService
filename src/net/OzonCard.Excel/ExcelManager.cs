@@ -104,6 +104,7 @@ public class ExcelManager(ILogger<ExcelManager> logger) : IExcelManager
     /// <returns></returns>
     IEnumerable<Customer> ReadFromXls(string file)
     {
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         var clientList = new List<Customer>();
         using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
         {
@@ -139,6 +140,7 @@ public class ExcelManager(ILogger<ExcelManager> logger) : IExcelManager
     /// <returns></returns>
     IEnumerable<Customer> ReadFromXlsx(string file)
     {
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         var clientList = new List<Customer>();
         using (var workbook = new XLWorkbook(file))
         {

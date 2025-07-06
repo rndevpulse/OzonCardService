@@ -12,8 +12,8 @@ export default class OrganizationService {
         return api.put<IOrganization>(`/organization/${organizationId}`)
     }
 
-    static async createOrganization(login: string, password: string): Promise<AxiosResponse<IOrganization>> {
-        return api.post<IOrganization>(`/organization?login=${login}&password=${password}`)
+    static async createOrganization(login: string, password: string): Promise<AxiosResponse<IOrganization[]>> {
+        return api.post<IOrganization[]>(`/organization?login=${login}&password=${password}`)
     }
 
 

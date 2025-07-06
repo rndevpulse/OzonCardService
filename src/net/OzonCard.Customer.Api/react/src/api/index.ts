@@ -3,8 +3,8 @@ import {IAuth} from "../models/auth/IAuth";
 import {Slide, toast} from "react-toastify";
 
 const url =
-    // 'https://localhost:5180/api/v1';
-    'https://lp.corpcards.ru/api/v1'
+    'https://localhost:5180/api/v1';
+    // 'https://lp.corpcards.ru/api/v1'
     // process.env.NODE_ENV || process.env.NODE_ENV  === 'development'
     //     ? 'https://localhost:5180/api/v1'
     //     // : 'https://ozon.pulse2.keenetic.link/api/v1';

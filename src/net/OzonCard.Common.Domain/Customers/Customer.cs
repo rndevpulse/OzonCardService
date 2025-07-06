@@ -12,7 +12,7 @@ public class Customer : AggregateRoot
     public string? Position { get; set; }
     public string? Division { get; set; }
     
-    public DateTime? CreatedBiz { get; set; }
+    public DateTimeOffset? CreatedBiz { get; set; }
     public bool IsActive { get; private set; }
     public string? Comment { get; private set; }
     public Guid BizId { get; private set; }
@@ -50,7 +50,7 @@ public class Customer : AggregateRoot
     {
         var card = _cards.FirstOrDefault(x => x.Track == track);
         if (card == null)
-            _cards.Add(new Card(track, number, DateTime.UtcNow));
+            _cards.Add(new Card(track, number, DateTimeOffset.UtcNow));
     }
 
     public void TryAddWallet(

@@ -28,10 +28,9 @@ internal class BackgroundJobService(
             commands => commands.Send(task, CancellationToken.None), 
             schedule,
             queue);
-        var jobData = JobStorage.Current.GetConnection().GetJobData(taskId);
-        return new BackgroundTask<TResult>(taskId, 
-            jobData?.CreatedAt ?? DateTime.Now, 
-            "Enqueued");
+        // using var connection = JobStorage.Current.GetConnection();
+        // var jobData = connection.GetJobData(taskId);
+        return new BackgroundTask<TResult>(taskId, DateTime.UtcNow, "Enqueued");
     }
 
     public IBackgroundTask Schedule<TResult>(ICommand<TResult> task, DateTimeOffset enqueueAt, 

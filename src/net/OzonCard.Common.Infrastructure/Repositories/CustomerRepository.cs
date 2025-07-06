@@ -37,4 +37,9 @@ public class CustomerRepository(
             .Where(x => x.OrgId == organizationId)
             .ToListAsync(ct);
     }
+
+    public Task<Customer?> GetCustomerByCardAsync(Guid organizationId, string card, CancellationToken ct = default)
+    {
+       return GetQuery().FirstOrDefaultAsync(x=>x.OrgId == organizationId && x.Cards.Any(c => c.Number == card), ct);
+    }
 }

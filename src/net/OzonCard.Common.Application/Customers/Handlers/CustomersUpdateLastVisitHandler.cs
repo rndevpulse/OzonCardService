@@ -22,14 +22,13 @@ public class CustomersUpdateLastVisitHandler(
     {
         var org = await organizations.GetItemAsync(request.OrganizationId, cancellationToken);
         var client = new BizClient(org.Login, org.Password);
-        var customers = await repository.GetItemsAsync(request.OrganizationId, cancellationToken);
         var result = new List<Customer>();
         foreach (var visit in request.CardVisits)
         {
             var card = visit.Card?.Split(",").MaxBy(x=>x.Length);
             if (string.IsNullOrEmpty(card))
                 continue;
-            var customer = customers.FirstOrDefault(x => x.Cards.Any(c => c.Number == card));
+            var customer = await repository.GetCustomerByCardAsync(request.OrganizationId,card, cancellationToken);
             if (customer == null)
             {
                 try
@@ -51,13 +50,13 @@ public class CustomersUpdateLastVisitHandler(
                 {
                     CreatedAt = DateTimeOffset.UtcNow,
                     Customer = customer.Id,
-                    Date = v.Date,
+                    Date = v.Date.ToUniversalTime(),
                     Sum = v.Sum
                 }), cancellationToken);
             
             if (customer.CreatedBiz == null
                 && request.Customers.FirstOrDefault(c => c.Id == customer.BizId) is { } visitInfo)
-                customer.CreatedBiz = visitInfo.CreatedAt;
+                customer.CreatedBiz = visitInfo.CreatedAt.ToUniversalTime();
             
             result.Add(customer);
         }

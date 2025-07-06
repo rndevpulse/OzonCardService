@@ -38,7 +38,8 @@ export default class TaskStore {
         // console.log(`TaskStore increaseTimer login status: ${LoginStore.isAuthenticated}`)
         if (LoginStore.isAuthenticated === false)
             return
-
+        if (window.location.pathname !== "/tasks")
+            return;
         // this.timer++;
         //берем задачи, которые нужно отследить
         const currents = this.tasks
