@@ -36,8 +36,8 @@ export default class TaskStore {
     static continueStatuses = ['Enqueued', 'Processing', 'Scheduled'];
     async increaseTimer() {
         // console.log(`TaskStore increaseTimer login status: ${LoginStore.isAuthenticated}`)
-        if (LoginStore.isAuthenticated === false)
-            return
+        // if (LoginStore.isAuthenticated === false)
+        //     return
         if (window.location.pathname !== "/tasks")
             return;
         // this.timer++;

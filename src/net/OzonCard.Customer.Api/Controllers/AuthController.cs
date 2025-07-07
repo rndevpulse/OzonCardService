@@ -9,11 +9,6 @@ namespace OzonCard.Customer.Api.Controllers;
 public class AuthController : ApiController
 {
 
-    [HttpGet("[action]"), Authorize]
-    public IActionResult Check(CancellationToken ct = default) => new OkResult();
-
-    
-    
     [HttpPost("[action]")]
     public async Task<AuthTokenModel> Login(LoginModel model, CancellationToken ct = default)
     {
@@ -35,10 +30,10 @@ public class AuthController : ApiController
 
 
     [HttpGet("[action]")]
-    public async Task Logout(CancellationToken ct = default)
+    public async Task Logout([FromQuery] string token, CancellationToken ct = default)
     {
         if (UserClaimSid is {} userId)
-            await Commands.Send(new LogoutCommand(userId.ToString()), ct);
+            await Commands.Send(new LogoutCommand(userId.ToString(), token), ct);
     }
     
 }

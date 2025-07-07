@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import {useContext} from 'react';
 import './App.css';
 import { observer } from 'mobx-react-lite';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -22,18 +22,13 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
-  const { loginStore } = useContext(Context);
-  useEffect(() => {
-    if (localStorage.getItem('token')) {
-      loginStore.checkAuth()
-    }
-  }, [])
+  const { loginStore: {IsAuth, IsLoading} } = useContext(Context);
 
-  if (loginStore.IsLoading) {
+  if (IsLoading) {
     return <Loader/>
   }
-
-  if (!loginStore.IsAuth) {
+  if (!IsAuth) {
+      console.log('App not logged in');
     return <LoginPage />
   }
 

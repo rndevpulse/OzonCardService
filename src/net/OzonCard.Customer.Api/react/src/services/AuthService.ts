@@ -9,7 +9,7 @@ export default class AuthService {
         return api.post<IAuth>('/auth/login', {email, password})
     }
     static async logout(): Promise<void> {
-        return api.get('/auth/logout')
+        return api.get('/auth/logout?token=' + localStorage.getItem('refresh'));
     }
     static async refresh(): Promise<AxiosResponse<IAuth>> {
         return api.get('/auth/refresh?token=' + localStorage.getItem('refresh'));

@@ -1,6 +1,6 @@
 import axios from 'axios'
-import {IAuth} from "../models/auth/IAuth";
 import {Slide, toast} from "react-toastify";
+import AuthService from "../services/AuthService";
 
 const url =
     'https://localhost:5180/api/v1';
@@ -24,17 +24,21 @@ api.interceptors.response.use(config => {
     return config;
 }, async error => {
     const originalRequest = error.config;
-    if (error.response.status == 401 && error.config && !originalRequest._isRetry) {
+    if (error.response.status === 401 && error.config && !originalRequest._isRetry) {
         originalRequest._isRetry = true;
         try {
-            const response = await api.get<IAuth>('/auth/refresh');
+            // const response = await api.get<IAuth>('/auth/refresh');
             // const response = await axios.post<IAuthResponse>(`${API_URL}/auth/refresh`, { withCredentials: true })
-            localStorage.setItem('token', response.data.access);
+            // localStorage.setItem('token', response.data.access);
             //console.log(response);
+            const response = await AuthService.refresh()
+            localStorage.setItem('token', response.data.access);
+            localStorage.setItem('refresh', response.data.refresh);
             return api.request(originalRequest);
         }
         catch (e) {
-            //console.log('no autorization')
+            console.log('no autorization')
+            localStorage.clear();
         }
 
     }

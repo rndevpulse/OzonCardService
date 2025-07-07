@@ -15,6 +15,6 @@ public class LogoutCommandHandler(
         var user = await userManager.FindByIdAsync(request.UserId);
         if (user == null)
             return;
-        await userManager.RemoveRefreshTokenAsync(user);
+        await userManager.RemoveRefreshTokenAsync(user, request.Refresh);
     }
 }

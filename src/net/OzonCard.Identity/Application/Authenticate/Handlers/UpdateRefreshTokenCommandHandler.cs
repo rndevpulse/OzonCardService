@@ -19,11 +19,10 @@ public class UpdateRefreshTokenCommandHandler(
 
     public async Task<Auth> Handle(UpdateRefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(request.UserId)
-            ?? throw new BusinessException("Токен поврежден");
-        if (!await _userManager.VerifyRefreshTokenAsync(user, HttpUtility.HtmlDecode(request.Refresh)))
-            throw new BusinessException("Рефреш токен поврежден");
-        await _userManager.RemoveRefreshTokenAsync(user);
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user == null || !await _userManager.VerifyRefreshTokenAsync(user, request.Refresh))
+            throw new BusinessException("Необходимо пройти авторизацию для продолжения работы");
+        await _userManager.RemoveRefreshTokenAsync(user, request.Refresh);
 
         return await Authorization(user);
     }
