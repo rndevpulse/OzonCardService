@@ -12,9 +12,11 @@ export default class AuthService {
         return api.get('/auth/logout')
     }
     static async refresh(): Promise<AxiosResponse<IAuth>> {
-        return api.get('/auth/refresh')
+        return api.get('/auth/refresh?token=' + localStorage.getItem('refresh'));
     }
-
+    static async check(): Promise<AxiosResponse<IAuth>> {
+        return api.get('/auth/check');
+    }
     static async create(email: string, password: string, roles:string[]): Promise<AxiosResponse<IUser>>{
         return await api.post<IUser>('/account', { email, password, roles})
     }

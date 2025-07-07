@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Web;
+using Microsoft.AspNetCore.Identity;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Identity.Application.Authenticate.Commands;
@@ -15,16 +16,14 @@ public class UpdateRefreshTokenCommandHandler(
 ) : AuthorizationBaseHandler(userManager, jwtGenerator), ICommandHandler<UpdateRefreshTokenCommand, Auth>
 {
     private readonly UserManager<User> _userManager = userManager;
-    private readonly IJwtGenerator _jwtGenerator = jwtGenerator;
 
     public async Task<Auth> Handle(UpdateRefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var userId = _jwtGenerator.GetUserIdByToken(request.Access);
-        var user = await _userManager.FindByIdAsync(userId)
-            ?? throw new BusinessException("Access token is corrupted");
-        if (!await _userManager.VerifyRefreshTokenAsync(user, request.Refresh, ""))
-            throw new BusinessException("Refresh token is corrupted");
-        await _userManager.RemoveRefreshTokenAsync(user, request.Refresh);
+        var user = await _userManager.FindByIdAsync(request.UserId)
+            ?? throw new BusinessException("Токен поврежден");
+        if (!await _userManager.VerifyRefreshTokenAsync(user, HttpUtility.HtmlDecode(request.Refresh)))
+            throw new BusinessException("Рефреш токен поврежден");
+        await _userManager.RemoveRefreshTokenAsync(user);
 
         return await Authorization(user);
     }

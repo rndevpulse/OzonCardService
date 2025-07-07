@@ -10,6 +10,7 @@
         <LangVersion>default</LangVersion>
         <SpaRoot>react\</SpaRoot>
         <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+        <Version>1.5.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

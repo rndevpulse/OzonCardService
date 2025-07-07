@@ -14,7 +14,8 @@ public abstract class AuthorizationBaseHandler(
 {
     protected async Task<Auth> Authorization(User user)
     {
-        var refreshToken = await userManager.GenerateRefreshTokenAsync(user, "");
+        var refreshToken = await userManager.GenerateRefreshTokenAsync(user);
+        
         var result = await userManager.SetRefreshTokenAsync(user, refreshToken);
         if (!result.Succeeded)
             throw new BusinessException("Error when saving refresh token");

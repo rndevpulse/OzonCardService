@@ -25,7 +25,7 @@ const LoginPage: FC = () => {
 
         <div className="center form-group  col-md-6">
             <ToastContainer/>
-            <h5>Corporate Catering Card Service</h5>
+            <h5>CorpCards</h5>
             <h1>Authorization</h1>
             <br/>
             <div className="autorization">

@@ -36,7 +36,7 @@ public class JwtGenerator : IJwtGenerator
         _settings = new(configuration["jwt:key"],
             configuration["jwt:issuer"],
             configuration["jwt:audience"],
-            configuration.GetValue<int>("jwt:duration", 60));
+            configuration.GetValue<int>("jwt:duration", 3600));
     }
 
     public string CreateToken(string id, string? email, IEnumerable<string> roles)
@@ -63,13 +63,5 @@ public class JwtGenerator : IJwtGenerator
         return tokenHandler.WriteToken(token);
     }
 
-    public string GetUserIdByToken(string access)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var jwt = tokenHandler.ReadJwtToken(access);
-        if (jwt.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sid) is { } claim)
-            return claim.Value;
-        throw new BusinessException("Access token is corrupted");
-    }
 
 }

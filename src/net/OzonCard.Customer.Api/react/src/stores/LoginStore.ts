@@ -1,5 +1,6 @@
 ﻿import { makeAutoObservable } from 'mobx';
 import AuthService from '../services/AuthService';
+import OrganizationService from "../services/OrganizationServise";
 
 
 
@@ -28,6 +29,7 @@ export default class LoginStore {
         try {
             const response = await AuthService.login(email, password);
             localStorage.setItem('token', response.data.access);
+            localStorage.setItem('refresh', response.data.refresh);
             this.setIsAuth(true);
             this.setRules(response.data.roles);
             //console.log(response);
@@ -53,18 +55,19 @@ export default class LoginStore {
     async checkAuth() {
         this.IsLoading = true;
         try {
-            const response = await AuthService.refresh()
-            localStorage.setItem('token', response.data.access);
-            this.setIsAuth(true);
-            this.setRules(response.data.roles);
-            //console.log(response);
+            await AuthService.check()
+            this.setRules(this.Roles);
+
         }
         catch (e) {
-            //console.log(e);
+            const response = await AuthService.refresh()
+            localStorage.setItem('token', response.data.access);
+            localStorage.setItem('refresh', response.data.refresh);
+            this.setRules(response.data.roles);
         }
         finally {
             this.IsLoading = false;
-
+            this.setIsAuth(true);
         }
         
     }
