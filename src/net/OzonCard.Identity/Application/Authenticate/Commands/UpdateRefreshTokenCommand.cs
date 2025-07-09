@@ -3,4 +3,4 @@ using OzonCard.Identity.Application.Authenticate.Data;
 
 namespace OzonCard.Identity.Application.Authenticate.Commands;
 
-public record UpdateRefreshTokenCommand(string UserId, string Refresh):ICommand<Auth>;
+public record UpdateRefreshTokenCommand(string Token, string Refresh):ICommand<Auth>;

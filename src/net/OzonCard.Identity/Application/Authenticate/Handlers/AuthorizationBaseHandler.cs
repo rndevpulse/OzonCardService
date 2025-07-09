@@ -15,10 +15,12 @@ public abstract class AuthorizationBaseHandler(
     {
         var refreshToken = await userManager.GenerateRefreshTokenAsync(user);
         var userRoles = await userManager.GetRolesAsync(user);
+        var jwt = jwtGenerator.CreateToken(user.Id, user.Email, userRoles);
         return new Auth(
-            jwtGenerator.CreateToken(user.Id, user.Email, userRoles),
+            jwt,
             refreshToken,
-            userRoles
+            userRoles,
+            null
         );
     }
 }

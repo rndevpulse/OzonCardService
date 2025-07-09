@@ -14,7 +14,7 @@ public class AuthController : ApiController
     {
         var auth = await Commands.Send(new SigInCommand(model.Email, model.Password), ct);
         // SetTokenCookie(auth.Refresh);
-        return new AuthTokenModel(auth.Access, auth.Refresh, auth.Roles);
+        return new AuthTokenModel(auth.Access, auth.Refresh, auth.Roles, auth.Expired);
     }
 
     [HttpGet("[action]")]
@@ -22,10 +22,10 @@ public class AuthController : ApiController
     {
         var auth = await Commands.Send(
             new UpdateRefreshTokenCommand(
-                UserClaimSid.ToString(),
+                Request.Headers.Authorization[0]?.Split(' ').LastOrDefault() ?? string.Empty,
                 token
             ), ct);
-        return new AuthTokenModel(auth.Access, auth.Refresh, auth.Roles);
+        return new AuthTokenModel(auth.Access, auth.Refresh, auth.Roles, auth.Expired);
     }
 
 

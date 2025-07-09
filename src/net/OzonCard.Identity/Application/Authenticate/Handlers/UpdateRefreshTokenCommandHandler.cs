@@ -1,5 +1,4 @@
-﻿using System.Web;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
 using OzonCard.Identity.Application.Authenticate.Commands;
@@ -18,8 +17,12 @@ public class UpdateRefreshTokenCommandHandler(
     private readonly UserManager<User> _userManager = userManager;
 
     public async Task<Auth> Handle(UpdateRefreshTokenCommand request, CancellationToken cancellationToken)
-    {
-        var user = await _userManager.FindByIdAsync(request.UserId);
+    {       
+        if (string.IsNullOrEmpty(request.Token))
+            throw new BusinessException("Необходимо пройти авторизацию для продолжения работы");
+
+        var sid = jwtGenerator.GetClaimValue(request.Token,"sid");
+        var user = await _userManager.FindByIdAsync(sid);
         if (user == null || !await _userManager.VerifyRefreshTokenAsync(user, request.Refresh))
             throw new BusinessException("Необходимо пройти авторизацию для продолжения работы");
         await _userManager.RemoveRefreshTokenAsync(user, request.Refresh);

@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import './App.css';
 import { observer } from 'mobx-react-lite';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -22,13 +22,14 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
-  const { loginStore: {IsAuth, IsLoading} } = useContext(Context);
+  const { loginStore: {isTokenExpired, IsLoading} } = useContext(Context);
 
   if (IsLoading) {
     return <Loader/>
   }
-  if (!IsAuth) {
+  if (isTokenExpired()) {
       console.log('App not logged in');
+
     return <LoginPage />
   }
 

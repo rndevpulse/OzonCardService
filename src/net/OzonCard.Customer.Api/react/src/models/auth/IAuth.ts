@@ -1,5 +1,6 @@
 export interface IAuth {
     access: string
     refresh: string
-    roles: string[]
+    roles: string[],
+    expired: Date
 }

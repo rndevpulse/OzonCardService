@@ -3,5 +3,5 @@
 public record Auth(
     string Access,
     string Refresh,
-    IEnumerable<string> Roles
-);
+    IEnumerable<string> Roles,
+    DateTime? Expired);

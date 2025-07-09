@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using OzonCard.Common.Core.Exceptions;
 
 
 namespace OzonCard.Identity.Infrastructure.Jwt;
@@ -63,5 +62,10 @@ public class JwtGenerator : IJwtGenerator
         return tokenHandler.WriteToken(token);
     }
 
-
+    public string GetClaimValue(string token, string claim)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = handler.ReadJwtToken(token);
+        return jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == claim)?.Value ?? "";
+    }
 }

@@ -3,5 +3,7 @@
 public record AuthTokenModel(
     string Access,
     string Refresh,
-    IEnumerable<string> Roles
+    IEnumerable<string> Roles,
+    DateTime? Expired
 );
+
