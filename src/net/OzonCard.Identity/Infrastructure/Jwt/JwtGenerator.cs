@@ -64,8 +64,16 @@ public class JwtGenerator : IJwtGenerator
 
     public string GetClaimValue(string token, string claim)
     {
-        var handler = new JwtSecurityTokenHandler();
-        var jwtSecurityToken = handler.ReadJwtToken(token);
-        return jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == claim)?.Value ?? "";
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            return jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == claim)?.Value ?? "";
+        }
+        catch (Exception)
+        {
+           return "";
+        }
+       
     }
 }

@@ -10,7 +10,7 @@ public class InfrastructureContextFactory : IDesignTimeDbContextFactory<Infrastr
     public InfrastructureContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<InfrastructureContext>();
-        optionsBuilder.ConfigureContext("database connection", "postgre");
+        optionsBuilder.ConfigureContext("database connection", "sqlserver");
         return new InfrastructureContext(optionsBuilder.Options);
     }
 }
