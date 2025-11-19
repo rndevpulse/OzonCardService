@@ -26,7 +26,7 @@ public static class BuilderExtensions
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseFilter(new SkipWhenPreviousJobIsRunningAttribute(sp.GetRequiredService<IEventBus>()))
-                .UseFilter(new AutomaticRetryAttribute { Attempts = 3 });
+                .UseFilter(new AutomaticRetryAttribute { Attempts = 6 });
             if (provider == "sqlserver")
                 hangfire.UseSqlServerStorage(connection);
             else

@@ -3,6 +3,7 @@ using OzonCard.Common.Core;
 
 namespace OzonCard.Common.Application.Customers.Commands;
 
+[Obsolete]
 public record CustomersVisitsFetchCommand(
     Guid OrgId,
     int Days

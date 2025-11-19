@@ -1,5 +1,4 @@
-﻿using Hangfire;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,7 +9,7 @@ using OzonCard.Common.Worker.Services;
 namespace OzonCard.Common.Infrastructure.Services;
 
 
-
+[Obsolete]
 public class ScheduleUpdateBootstrapService(IServiceProvider provider) : BackgroundService
 {
     protected override Task ExecuteAsync(CancellationToken stoppingToken)

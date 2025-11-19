@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using System.Web;
 using OzonCard.Biz.Client.Models.Customers;
 using OzonCard.Biz.Client.Models.Organizations;
@@ -8,7 +9,7 @@ namespace OzonCard.Biz.Client;
 
 
 
-public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
+public class BizClient : HttpClientHandler, IAsyncDisposable, IBizClient
 {
     private readonly string _login;
     private readonly string _password;
@@ -23,14 +24,22 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
 
     public string? Reason => _reason;
     public int Status => _status;
-    public BizClient(string login, string password) : base(new HttpClientHandler())
+    
+    
+    public BizClient(string login, string password)
     {
+       
         _login = login;
         _password = password;
+        ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
+        // ServerCertificateCustomValidationCallback = DangerousAcceptAnyServerCertificateValidator; 
+        // ServicePointManager.ServerCertificateValidationCallback = 
+        //     (sender, cert, chain, sslPolicyErrors) => { return true; };
         _client = new HttpClient(this)
         {
             BaseAddress = new Uri(_endpoint, UriKind.RelativeOrAbsolute),
             Timeout = TimeSpan.FromSeconds(360),
+            
         };
     }
     
@@ -185,6 +194,7 @@ public class BizClient : DelegatingHandler, IAsyncDisposable, IBizClient
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
+        
         if (_isLoginProcess)
             return await base.SendAsync(request, cancellationToken);
 

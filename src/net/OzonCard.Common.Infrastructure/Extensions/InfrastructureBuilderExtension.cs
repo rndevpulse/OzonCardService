@@ -72,7 +72,7 @@ public static class InfrastructureBuilderExtension
 
         if (!options.ServerWorker) 
             return services;
-        services.AddHostedService<ScheduleUpdateBootstrapService>();
+        // services.AddHostedService<ScheduleUpdateBootstrapService>();
         services.AddHangfireServer();
 
         return services;

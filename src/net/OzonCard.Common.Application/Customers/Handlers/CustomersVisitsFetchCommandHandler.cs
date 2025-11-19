@@ -7,6 +7,7 @@ using OzonCard.Common.Core;
 
 namespace OzonCard.Common.Application.Customers.Handlers;
 
+[Obsolete]
 public class CustomersVisitsFetchCommandHandler(
     ILogger<CustomersVisitsFetchCommandHandler> logger,
     ICommandBus commands,
