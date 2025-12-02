@@ -6,4 +6,5 @@ namespace OzonCard.Common.Application.Organizations;
 public interface IOrganizationRepository : IRepository<Organization>
 {
     Task<IEnumerable<Organization>> GetOrganizationsUser(string user, CancellationToken ct = default);
+    Task<Organization?> GetOrganizationByTransportId(Guid id, CancellationToken ct = default);
 }

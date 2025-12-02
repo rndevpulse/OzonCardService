@@ -11,7 +11,7 @@ public class DomainObject : IWithId
     public DateTimeOffset CreatedAt { get; protected set; }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public DateTimeOffset UpdatedAt { get; protected set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 
     public uint Version { get; private set; }
 

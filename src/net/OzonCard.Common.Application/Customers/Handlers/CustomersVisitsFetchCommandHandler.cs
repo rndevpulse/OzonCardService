@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Application.Organizations;
@@ -25,30 +24,30 @@ public class CustomersVisitsFetchCommandHandler(
        
         try
         {
-            logger.LogInformation($"CustomerLastVisitJob: for organization '{org.Name}' from '{from}' to '{to}'");
-            var client = new BizClient(org.Login, org.Password);
-            var shortReport = await client.GetShortCustomersReport(org.Id, from, to, cancellationToken);
-            var customers = shortReport.Select(x => 
-                    new CustomerInfoVisit(x.Id, x.Name, x.WhenCreated))
-                .ToArray();
-            if (customers.Length == 0)
-                return new SynchronizeResult();
-            var transactions = await client.GetTransactionReport(org.Id, from, to, ct:cancellationToken);
-            var cardVisits = transactions
-                .GroupBy(x => x.CardNumbers)
-                .Select(x => new CardVisit(
-                    x.Key,
-                    x.Select(r => 
-                        new CardVisitTransaction(
-                            r.CreateDate(offset), 
-                            r.TransactionSum ?? 0)
-                    ).ToArray()
-                ))
-                .ToArray();
-            if (cardVisits.Length == 0)
-                return new SynchronizeResult();
-            var result = await commands.Send(new CustomersUpdateLastVisitCommand(org.Id, cardVisits, customers), cancellationToken);
-            logger.LogInformation($"updated '{result.Count()}' customers in '{org.Name}' from '{from}' to '{to}'");
+            // logger.LogInformation($"CustomerLastVisitJob: for organization '{org.Name}' from '{from}' to '{to}'");
+            // var client = new BizClient(org.Login, org.Password);
+            // var shortReport = await client.GetShortCustomersReport(org.Id, from, to, cancellationToken);
+            // var customers = shortReport.Select(x => 
+            //         new CustomerInfoVisit(x.Id, x.Name, x.WhenCreated))
+            //     .ToArray();
+            // if (customers.Length == 0)
+            //     return new SynchronizeResult();
+            // var transactions = await client.GetTransactionReport(org.Id, from, to, ct:cancellationToken);
+            // var cardVisits = transactions
+            //     .GroupBy(x => x.CardNumbers)
+            //     .Select(x => new CardVisit(
+            //         x.Key,
+            //         x.Select(r => 
+            //             new CardVisitTransaction(
+            //                 r.CreateDate(offset), 
+            //                 r.TransactionSum ?? 0)
+            //         ).ToArray()
+            //     ))
+            //     .ToArray();
+            // if (cardVisits.Length == 0)
+            //     return new SynchronizeResult();
+            // var result = await commands.Send(new CustomersUpdateLastVisitCommand(org.Id, cardVisits, customers), cancellationToken);
+            // logger.LogInformation($"updated '{result.Count()}' customers in '{org.Name}' from '{from}' to '{to}'");
         }
         catch (Exception ex)
         {

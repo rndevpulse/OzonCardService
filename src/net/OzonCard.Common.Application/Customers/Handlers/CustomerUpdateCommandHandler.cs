@@ -1,8 +1,8 @@
-﻿using OzonCard.Biz.Client;
+﻿using OzonCard.Cloud.Client.Data.Customers;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
-using OzonCard.Common.Domain.Customers;
+using Customer = OzonCard.Common.Domain.Customers.Customer;
 
 namespace OzonCard.Common.Application.Customers.Handlers;
 
@@ -21,8 +21,11 @@ public class CustomerUpdateCommandHandler(
             return customer;
         customer.Name = request.Name;
         var org = await organizations.GetItemAsync(customer.OrgId, cancellationToken);
-        var client = new BizClient(org.Login, org.Password);
-        await client.UpdateCustomerAsync(customer.BizId, customer.Name, customer.OrgId, cancellationToken);
+        await org.CloudClient.CreateOrUpdateCustomerAsync(new CreateOrUpdateCustomer(org.TransportId)
+        {
+            Id = customer.BizId,
+            Name = customer.Name,
+        }, cancellationToken);
         return customer;
     }
 }

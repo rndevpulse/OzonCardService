@@ -1,8 +1,6 @@
-﻿using OzonCard.Biz.Client;
-using OzonCard.Common.Application.Customers.Commands;
+﻿using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
-using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Domain.Organizations;
 
 namespace OzonCard.Common.Application.Customers.Handlers;
@@ -17,16 +15,30 @@ public class CustomerUpdateCategoryCommandHandler(
         var customer = await customers.GetItemAsync(request.Id, cancellationToken);
         var org = await organizations.GetItemAsync(customer.OrgId, cancellationToken);
         var selected = org.Categories
-            .Where(x => request.Categories.Contains(x.Id))
+            .Where(x => request.Categories.Contains(x.CategoryId))
             .ToArray();
         // if (org.Categories.All(x=>x.Id != request.CategoryId))
         //     throw EntityNotFoundException.For<Category>(request.CategoryId, $"in org '{org.Name}'");
-        var client = new BizClient(org.Login, org.Password);
-        Func<Guid,Guid,Guid,CancellationToken,Task<bool>> action = request.IsRemove
-            ? client.RemoveCategoryToCustomerAsync
-            : client.AppendCategoryToCustomerAsync;
+        // Func<Guid,Guid,Guid,CancellationToken,Task> action = request.IsRemove
+        //     ? org.CloudClient.RemoveCustomerCategoryAsync
+        //     :  org.CloudClient.AddCustomerCategoryAsync;
         foreach (var category in selected)
-            await action.Invoke(customer.BizId, customer.OrgId, category.Id, cancellationToken);
+            try
+            {
+                // await action.Invoke(customer.BizId, customer.OrgId, category.CategoryId, cancellationToken);
+                if (request.IsRemove)
+                {
+                    await org.CloudClient.RemoveCustomerCategoryAsync(customer.BizId, customer.OrgId, category.CategoryId, cancellationToken);
+                    customer.RemoveCategory(category);
+                    continue;
+                }
+                await org.CloudClient.AddCustomerCategoryAsync(customer.BizId, customer.OrgId, category.CategoryId, cancellationToken);
+                customer.AddCategory(category);
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
         return selected.Select(x=>x.Name);
     }
 }

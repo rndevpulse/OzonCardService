@@ -1,4 +1,6 @@
-﻿using OzonCard.Common.Domain.Abstractions;
+﻿using OzonCard.Cloud.Client;
+using OzonCard.Common.Domain.Abstractions;
+using OzonCard.Rms.Client;
 
 namespace OzonCard.Common.Domain.Organizations;
 
@@ -8,19 +10,31 @@ public class Organization : AggregateRoot
     private readonly ICollection<Program> _programs = new List<Program>();
     private readonly ICollection<Category> _categories = new List<Category>();
     public string Name { get; set; }
+    public string Endpoint { get; private set; }
     public string Login { get; private set; }
     public string Password { get; private set; }
+    public string Token { get; set; }
+    public string PaymentName { get; set; } = "";
+    public Guid TransportId { get; private set; }
     public IEnumerable<Member> Members => _members;
     public IEnumerable<Program> Programs => _programs;
     public IEnumerable<Category> Categories => _categories;
 
-    
+    public CloudClient CloudClient { get; }
+    public RmsClient RmsClient { get; }
 
-    public Organization(Guid id, string name, string login, string password) : base(id)
+
+    public Organization(Guid id, string name, string login, string password, 
+        string endpoint, string token, Guid transportId) : base(id)
     {
         Name = name;
         Login = login;
         Password = password;
+        Endpoint = endpoint;
+        Token = token;
+        TransportId = transportId;
+        CloudClient = new CloudClient(token);
+        RmsClient = new RmsClient(endpoint, login, password);
     }
 
     public Member AddOrUpdateMember(Guid id, string name)
@@ -43,13 +57,14 @@ public class Organization : AggregateRoot
             _members.Remove(member);
     }
 
-    public Category UpdateCategory(Guid id, string name, bool isActive)
+    public Category UpdateCategory(Guid categoryId, string name, bool isActive)
     {
-        var item = _categories.FirstOrDefault(x => x.Id == id);
+        var item = _categories.FirstOrDefault(x => x.CategoryId == categoryId);
         if (item == null)
         {
-            item = new Category(id)
+            item = new Category
             {
+                CategoryId = categoryId,
                 Name = name,
                 IsActive = isActive
             };
@@ -64,15 +79,18 @@ public class Organization : AggregateRoot
     }
     
     
-    public void UpdatePrograms(Guid id, string name, bool isActive, Guid walletId, string walletType)
+    public void UpdatePrograms(Guid programId, string name, bool isActive, Guid? walletId, string walletType)
     {
-        var program = _programs.FirstOrDefault(x => x.Id == id);
+        var program = _programs.FirstOrDefault(x => x.ProgramId == programId);
         if (program == null)
         {
-            program = new Program(id)
+            program = new Program
             {
+                ProgramId = programId,
                 Name = name,
                 IsActive = isActive,
+                WalletId = walletId,
+                WalletType = walletType
             };
             _programs.Add(program);
         }
@@ -81,6 +99,5 @@ public class Organization : AggregateRoot
             program.Name = name;
             program.IsActive = isActive;
         }
-        program.AddOrUpdateWallet(new Wallet(walletId, name, "", walletType));
     }
 }

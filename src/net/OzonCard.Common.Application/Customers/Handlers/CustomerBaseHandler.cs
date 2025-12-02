@@ -1,26 +1,38 @@
-﻿using OzonCard.Biz.Client;
+﻿
+using OzonCard.Cloud.Client.Data.Customers;
 using OzonCard.Common.Application.Common;
 using OzonCard.Common.Application.Customers.Data;
 using OzonCard.Common.Core;
+using OzonCard.Common.Domain.Organizations;
 
 namespace OzonCard.Common.Application.Customers.Handlers;
 
 public abstract class CustomerBaseHandler(IEventBus events) : BaseCommandHandlerProgress(events)
 {
     protected readonly CustomersTaskProgress Progress = new();
-    protected async Task TryRefreshBalance(BizClient client, Guid bizId, Guid orgId, Guid walletId, decimal balance, CancellationToken ct)
+    protected async Task TryRefreshBalance(Organization organization, Guid bizId, Guid walletId, decimal balance, CancellationToken ct)
     {
-        var bizCustomer = await client.GetCustomerAsync(bizId, orgId, ct);
+        var bizCustomer = await organization.CloudClient.GetCustomerAsync(new RequestCustomerInfo(organization.TransportId, CustomerField.Id)
+        {
+            Id = bizId,
+        }, ct);
         var currentBalance = bizCustomer.WalletBalances?.
-            FirstOrDefault(x => x.Wallet.Id == walletId)
+            FirstOrDefault(x => x.Id == walletId)
             ?.Balance ?? null;
        
         if (currentBalance == null || currentBalance == balance)
             return;
         if (currentBalance < balance)
-            await client.IncBalanceForCustomer(bizId, orgId, walletId, balance - (decimal)currentBalance, ct);
+            await organization.CloudClient.IncCustomerBalanceAsync(
+                organization.TransportId,
+                bizId,
+                walletId,
+                balance - (decimal)currentBalance, ct);
         else
-            await client.DecBalanceForCustomer(bizId, orgId, walletId, (decimal)currentBalance - balance, ct);
+            await organization.CloudClient.DecCustomerBalanceAsync(
+                organization.TransportId,
+                bizId,
+                walletId, (decimal)currentBalance - balance, ct);
         Progress.CountBalance++;
     }
 }

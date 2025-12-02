@@ -18,6 +18,7 @@ public class CoreCustomerContext(
     public async Task<IEnumerable<CustomerVisit>> UpdateAsync(IEnumerable<CustomerVisit> times, CancellationToken ct = default)
     {
         var result = new List<CustomerVisit>();
+        var lastVisit = DateTimeOffset.MinValue;
         foreach (var time in times)
         {
             var visit = await repository.GetVisitAsync(customer.Id, time.Date, ct);
@@ -25,8 +26,12 @@ public class CoreCustomerContext(
                 continue;
             visit = time;
             result.Add(visit);
+            lastVisit = lastVisit < visit.Date ? visit.Date : lastVisit;
         }
 
+        customer.LastVisit = lastVisit;
+        customer.UpdatedAt = DateTimeOffset.UtcNow;
+        
         await repository.AddAsync(result.ToArray());
         return result;
     }

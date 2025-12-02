@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Organizations.Commands;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
@@ -26,24 +25,23 @@ public class UpdateOrganizationCommandHandler : ICommandHandler<UpdateOrganizati
         if (organization == null)
             throw EntityNotFoundException.For<Organization>(request.Id);
         _logger.LogDebug($"Update organization '{organization.Name}'");
-
-        var client = new BizClient(organization.Login, organization.Password);
-        var orgs = await client.GetOrganizationsAsync(cancellationToken);
-        if (orgs.FirstOrDefault(x => x.Id == request.Id) is { } org)
+        
+        var organizations = await organization.CloudClient.GetOrganizationsAsync(cancellationToken);
+        if (organizations.FirstOrDefault(x => x.Id == organization.TransportId) is { } org)
             organization.Name = org.Name;
-
-        var categories = await client.GetCategoriesAsync(organization.Id, cancellationToken);
-        foreach (var category in categories)
+        
+        
+        foreach (var category in await organization.CloudClient.GetCategoriesAsync(organization.Id, cancellationToken))
             organization.UpdateCategory(category.Id, category.Name, category.IsActive);
-
-        var programs = await client.GetProgramsAsync(organization.Id, cancellationToken);
-        foreach (var program in programs)
+        
+        foreach (var program in await organization.CloudClient.GetProgramsAsync(organization.Id, cancellationToken))
             organization.UpdatePrograms(
                 program.Id,
                 program.Name,
                 program.ServiceTo == null || program.ServiceTo > DateTime.UtcNow,
-                program.Wallets.FirstOrDefault()?.Id ?? Guid.Empty,
-                program.Wallets.FirstOrDefault()?.Type ?? "");
+                program.WalletId ?? Guid.Empty,
+                program.ProgramType.ToString());
+      
         return organization;
     }
 }

@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,7 +11,6 @@ using OzonCard.Common.Infrastructure.Buses;
 using OzonCard.Common.Infrastructure.Database.Contexts;
 using OzonCard.Common.Infrastructure.Database.Extensions;
 using OzonCard.Common.Infrastructure.Repositories;
-using OzonCard.Common.Infrastructure.Services;
 using OzonCard.Common.Infrastructure.Stores;
 using OzonCard.Common.Worker.Extensions;
 

@@ -7,7 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\OzonCard.Cloud.Client\OzonCard.Cloud.Client.csproj" />
       <ProjectReference Include="..\OzonCard.Common.Core\OzonCard.Common.Core.csproj" />
+      <ProjectReference Include="..\OzonCard.Rms.Client\OzonCard.Rms.Client.csproj" />
     </ItemGroup>
 
 </Project>

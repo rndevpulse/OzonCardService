@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using OzonCard.Biz.Client;
 using OzonCard.Common.Application.Common;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Application.Files;
@@ -13,8 +12,6 @@ using OzonCard.Common.Core.Exceptions;
 using OzonCard.Common.Domain.Files;
 using OzonCard.Common.Domain.Organizations;
 using OzonCard.Common.Domain.Props;
-using OzonCard.Common.Worker.Data;
-using OzonCard.Common.Worker.Services;
 using OzonCard.Excel;
 using OzonCard.Excel.DataSets.ProgramsReport;
 using OzonCard.Files;
@@ -42,24 +39,18 @@ public class ReportPaymentsCommandHandler(
         var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
         if (org.Members.All(x => x.Name != request.User))
             throw new BusinessException($"Organization for '{request.User}' not found");
-        if (org.Programs.All(x => x.Id != request.ProgramId))
+        if (org.Programs.All(x => x.ProgramId != request.ProgramId))
             throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
 
-        var client = new BizClient(org.Login, org.Password);
         var offset = TimeSpan.FromMinutes(request.Offset);
         var from = request.DateFrom.ToOffset(offset).Date.AddHours(-3);
         var to = request.DateTo.ToOffset(offset).Date.AddDays(1).AddHours(-3);
         
         UpdateProgress("Запрашиваем отчет по программе питания..", 10);
-
-        var report = await client.GetProgramReport(
-            org.Id,
-            request.ProgramId,
-            from,
-            to,
-            cancellationToken
-        );
-        logger.LogInformation($"Payment report for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' returned '{report.Count()}' rows");
+        var response = await org.RmsClient.GetShortReportAsync(
+            from, to, org.PaymentName, cancellationToken);
+        
+        logger.LogInformation($"Payment report for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' returned '{response.Data.Count()}' rows");
         
         // if (!report.Any())
         //     throw new BusinessException("Ошибка в получении отчета по питанию");
@@ -70,31 +61,39 @@ public class ReportPaymentsCommandHandler(
        
         UpdateProgress("Фильтруем и собираем результат..", 80);
 
-        var usedCategoryFilter = org.Categories
-            .Where(x=>request.CategoriesId.Contains(x.Id))
-            .Select(x=>x.Name)
-            .ToArray();
+        // var usedCategoryFilter = org.Categories
+        //     .Where(x=>request.CategoriesId.Contains(x.CategoryId))
+        //     .Select(x=>x.Name)
+        //     .ToArray();
         var resultReport = new List<ItemProgramReportTable>();
         
 
-        foreach (var rowReport in report)
+        foreach (var rowReport in response.Data)
         {
-            if (rowReport.PaidOrdersCount == 0)
+            if (rowReport.Count == 0)
                 continue;
             //include filter category
-            if (usedCategoryFilter.Length != 0
-                && usedCategoryFilter.Any(c=>!rowReport.GuestCategoryNames.Contains(c)))
+            // if (usedCategoryFilter.Length != 0
+            //     && usedCategoryFilter.Any(c=>!rowReport.GuestCategoryNames.Contains(c)))
+            //     continue;
+            
+            var customer = customers.FirstOrDefault(x => x.Cards.Any(c=>c.Number == rowReport.Card));
+            if (request.CategoriesId.Except(
+                    customer?.Categories.Select(c => c.CategoryId) ?? []
+                ).Any())
                 continue;
             
-            var customer = customers.FirstOrDefault(x => x.BizId == rowReport.GuestId);
+            var categories = org.Categories.Where(x=>
+                customer?.Categories.Any(c=>c.CategoryId ==x.CategoryId) == true)
+                .ToArray();
             resultReport.Add(new ItemProgramReportTable()
             {
-                Name = rowReport.GuestName,
-                Card = rowReport.GuestCardTrack,
-                Categories = rowReport.GuestCategoryNames,
+                Name = customer?.Name ?? rowReport.Name,
+                Card = rowReport.Card,
+                Categories = string.Join(",",categories.Select(x=>x.Name)),
                 TabNumber = customer?.TabNumber ?? "",
                 Position = customer?.Position ?? "",
-                PaidOrders = rowReport.PaidOrdersCount,
+                PaidOrders = rowReport.Count,
             });
         }
 
@@ -133,7 +132,7 @@ public class ReportPaymentsCommandHandler(
         foreach (var batchProp in batch.GetProperty<IEnumerable<ReportBatchProp>>() ?? ArraySegment<ReportBatchProp>.Empty)
         {
             var aggregationFilter = organization.Categories
-                .Where(x=>batchProp.Aggregations.Contains(x.Id))
+                .Where(x=>batchProp.Aggregations.Contains(x.CategoryId))
                 .Select(x=>x.Name)
                 .ToArray();
             var aggregationReport = report.Where(x =>

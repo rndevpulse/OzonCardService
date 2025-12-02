@@ -22,9 +22,9 @@ public class CustomerDomainObjectConfiguration : DomainObjectConfiguration<Custo
         builder.Property(x => x.Phone);
         builder.Property(x => x.Comment);
         builder.Property(x => x.CreatedBiz);
+        builder.Property(x => x.LastVisit);
 
         builder.Ignore(x => x.Context);
-        // builder.Property(x => x.LastVisit);
 
         builder.OwnsMany(x => x.Cards, cards =>
         {
@@ -34,14 +34,24 @@ public class CustomerDomainObjectConfiguration : DomainObjectConfiguration<Custo
             cards.Property(x => x.Created);
         });
 
-        builder.OwnsMany(x => x.Wallets, wallets =>
+        builder.OwnsMany(x => x.Categories, categories =>
         {
-            wallets.ToTable("customers_wallets");
-            wallets.Property(x => x.WalletId);
-            wallets.Property(x => x.Balance);
-            wallets.Property(x => x.Name);
-            wallets.Property(x => x.ProgramType);
-            wallets.Property(x => x.Type);
+            categories.ToTable("customer_categories");
+            
+            categories.Property(c=>c.CategoryId);
+            
+            categories.Property(typeof(int), "Id");
+            categories.HasKey("Id");
         });
+
+        // builder.OwnsMany(x => x.Wallets, wallets =>
+        // {
+        //     wallets.ToTable("customers_wallets");
+        //     wallets.Property(x => x.WalletId);
+        //     wallets.Property(x => x.Balance);
+        //     wallets.Property(x => x.Name);
+        //     wallets.Property(x => x.ProgramType);
+        //     wallets.Property(x => x.Type);
+        // });
     }
 }

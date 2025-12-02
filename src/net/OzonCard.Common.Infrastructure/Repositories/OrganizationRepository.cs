@@ -19,4 +19,10 @@ public class OrganizationRepository(
             .Where(x => x.Members.Any(m => m.Name == user))
             .ToListAsync(ct);
     }
+
+    public async Task<Organization?> GetOrganizationByTransportId(Guid id, CancellationToken ct = default)
+    {
+        return await GetQuery()
+            .FirstOrDefaultAsync(x => x.TransportId == id, ct);
+    }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OzonCard.Common.Application.Customers;
 using OzonCard.Common.Domain.Customers;
-using OzonCard.Common.Infrastructure.Database;
 using OzonCard.Common.Infrastructure.Database.Contexts;
 using OzonCard.Common.Infrastructure.Repositories.Abstractions;
 
@@ -41,5 +40,14 @@ public class CustomerRepository(
     public Task<Customer?> GetCustomerByCardAsync(Guid organizationId, string card, CancellationToken ct = default)
     {
        return GetQuery().FirstOrDefaultAsync(x=>x.OrgId == organizationId && x.Cards.Any(c => c.Number == card), ct);
+    }
+
+    public async Task<IEnumerable<Customer>> GetCustomersInCategoryAsync(Guid organizationId, Guid categoryId, CancellationToken ct = default)
+    {
+        return await GetQuery().Where(x =>
+                x.OrgId == organizationId
+                && x.Categories.Any(c => c.CategoryId == categoryId))
+            .ToListAsync(ct);
+
     }
 }

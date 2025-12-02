@@ -11,15 +11,25 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
     {
         base.Configure(builder);
         builder.ToTable("organizations");
+        builder.Property(x => x.PaymentName);
         builder.Property(x => x.Name);
+        builder.Property(x => x.Endpoint);
         builder.Property(x => x.Login);
         builder.Property(x => x.Password);
+        builder.Property(x => x.Token);
+        builder.Property(x => x.TransportId);
+        
+        builder.Ignore(x => x.CloudClient);
 
         builder.OwnsMany(x => x.Categories, categories =>
         {
             categories.ToTable("organizations_categories");
             categories.Property(x => x.Name);
+            categories.Property(x => x.CategoryId);
             categories.Property(x => x.IsActive);
+            
+            builder.Property(typeof(int), "Id");
+            builder.HasKey("Id");
         });
         
         builder.OwnsMany(x => x.Members, members =>
@@ -27,23 +37,22 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
             members.ToTable("organizations_members");
             members.Property(x => x.Name);
             members.Property(x => x.UserId);
+            
+            builder.Property(typeof(int), "Id");
+            builder.HasKey("Id");
         });
         
         builder.OwnsMany(x => x.Programs, programs =>
         {
             programs.ToTable("organizations_programs");
-            programs.HasKey(x => x.Id);
             programs.Property(x => x.Name);
             programs.Property(x => x.IsActive);
-            programs.OwnsMany(x => x.Wallets, wallets =>
-            {
-                wallets.ToTable("organizations_programs_wallets");
-                wallets.HasKey(x => x.Id);
-                wallets.Property(x => x.Name);
-                wallets.Property(x => x.ProgramType);
-                wallets.Property(x => x.Type);
-            });
-
+            programs.HasKey(x => x.ProgramId);
+            programs.HasKey(x => x.WalletId);
+            programs.HasKey(x => x.WalletType);
+            
+            builder.Property(typeof(int), "Id");
+            builder.HasKey("Id");
         });
 
     }

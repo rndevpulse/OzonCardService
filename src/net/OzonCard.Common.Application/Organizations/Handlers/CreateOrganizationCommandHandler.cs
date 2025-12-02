@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using OzonCard.Biz.Client;
+using OzonCard.Cloud.Client;
 using OzonCard.Common.Application.Organizations.Commands;
 using OzonCard.Common.Application.Resources;
 using OzonCard.Common.Core;
@@ -29,35 +29,43 @@ public class CreateOrganizationCommandHandler : ICommandHandler<CreateOrganizati
         
         _logger.LogDebug("Create new organizations");
         
-        var client = new BizClient(request.Login, request.Password);
-        var organizations = new List<Organization>();
-        foreach (var org in await client.GetOrganizationsAsync(cancellationToken))
+        
+        var client = new CloudClient(request.Token);
+        var cloudOrganizations = await client.GetOrganizationsAsync(cancellationToken);
+        var cloudOrganization = cloudOrganizations.FirstOrDefault();
+        if (cloudOrganization == null)
+            throw new Exception("Organizations not found");
+        var organization = await _repository.GetOrganizationByTransportId(cloudOrganization.Id, cancellationToken);
+        if (organization == null)
         {
-            
-            var organization = await _repository.TryGetItemAsync(org.Id, cancellationToken);
-            if (organization == null)
-            {
-                _logger.LogDebug($"Create new organization {org.Name}");
-                organization = new Organization(org.Id, org.Name, request.Login, request.Password);
-                await _repository.AddAsync(organization);
-            }
-
-            organization.Name = org.Name;
-            
-            organization.AddOrUpdateMember(request.UserId, request.User);
-
-            foreach (var category in await client.GetCategoriesAsync(organization.Id, cancellationToken))
-                organization.UpdateCategory(category.Id, category.Name, category.IsActive);
-            
-            foreach (var program in await client.GetProgramsAsync(organization.Id, cancellationToken))
-                organization.UpdatePrograms(
-                    program.Id,
-                    program.Name,
-                    program.ServiceTo == null || program.ServiceTo > DateTime.UtcNow,
-                    program.Wallets.FirstOrDefault()?.Id ?? Guid.Empty,
-                    program.Wallets.FirstOrDefault()?.Type ?? "");
-            organizations.Add(organization);
+            organization = new Organization(
+                Guid.NewGuid(), 
+                string.Empty,
+                request.Login, 
+                request.Password,
+                request.Endpoint,
+                request.Token,
+                cloudOrganization.Id
+            );
+            await _repository.AddAsync(organization);
         }
-        return organizations;
+            
+        organization.Name = cloudOrganization.Name;
+        organization.Token = request.Token;
+       
+        organization.AddOrUpdateMember(request.UserId, request.User);
+        
+        foreach (var category in await client.GetCategoriesAsync(organization.Id, cancellationToken))
+            organization.UpdateCategory(category.Id, category.Name, category.IsActive);
+        
+        foreach (var program in await client.GetProgramsAsync(organization.Id, cancellationToken))
+            organization.UpdatePrograms(
+                program.Id,
+                program.Name,
+                program.ServiceTo == null || program.ServiceTo > DateTime.UtcNow,
+                program.WalletId ?? Guid.Empty,
+                program.ProgramType.ToString());
+       
+        return [organization];
     }
 }

@@ -13,6 +13,10 @@
       <ProjectReference Include="..\OzonCard.Database.Migrations.SqlServer\OzonCard.Database.Migrations.SqlServer.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\" />
+    </ItemGroup>
+
 
    
 </Project>

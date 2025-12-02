@@ -1,5 +1,4 @@
-﻿using OzonCard.Biz.Client;
-using OzonCard.Common.Application.Customers.Commands;
+﻿using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
@@ -17,12 +16,10 @@ public class CustomerUpdateBalanceCommandHandler(
     {
         var customer = await customers.GetItemAsync(request.Id, cancellationToken);
         var org = await organizations.GetItemAsync(customer.OrgId, cancellationToken);
-        var program = org.Programs.FirstOrDefault(x => x.Id == request.ProgramId)
+        var program = org.Programs.FirstOrDefault(x => x.ProgramId == request.ProgramId)
             ?? throw EntityNotFoundException.For<Program>(request.ProgramId);
-        var wallet = program.Wallets.FirstOrDefault()
-            ?? throw EntityNotFoundException.For<Wallet>("");
-        var client = new BizClient(org.Login, org.Password);
-        await TryRefreshBalance(client, customer.BizId, org.Id, wallet.Id, request.Balance, cancellationToken);
+        if (program.WalletId is {} walletId)
+            await TryRefreshBalance(org, customer.BizId, walletId, request.Balance, cancellationToken);
         return request.Balance;
     }
 }

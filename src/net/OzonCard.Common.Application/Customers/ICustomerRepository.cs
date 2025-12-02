@@ -9,4 +9,7 @@ public interface ICustomerRepository : IRepository<Customer>
     Task<IEnumerable<Customer>> SearchCustomersAsync(Guid organizationId, string name, string card, CancellationToken ct = default);
     Task<IEnumerable<Customer>> GetItemsAsync(Guid organizationId, CancellationToken ct = default);
     Task<Customer?> GetCustomerByCardAsync(Guid organizationId, string card, CancellationToken ct = default);
+    
+    Task<IEnumerable<Customer>> GetCustomersInCategoryAsync(Guid organizationId, Guid categoryId, CancellationToken ct = default);
+
 }

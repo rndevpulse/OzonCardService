@@ -15,13 +15,15 @@ public class OrganizationController : ApiController
 {
 
     [HttpPost, Authorize(UserRole.Admin)]
-    public async Task<IEnumerable<OrganizationModel>> Create(string login, string password,
+    public async Task<IEnumerable<OrganizationModel>> Create(string login, string password, string endpoint, string token,
         CancellationToken ct = default)
     {
         var organizations = await Commands.Send(
             new CreateOrganizationsCommand(
+                endpoint,
                 login,
                 password,
+                token,
                 UserClaimSid,
                 UserClaimEmail),
             ct);

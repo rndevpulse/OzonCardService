@@ -1,15 +1,14 @@
 ﻿using Medallion.Threading;
 using Microsoft.Extensions.Logging;
-using OzonCard.Biz.Client;
+using OzonCard.Cloud.Client.Data.Customers;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Core;
 using OzonCard.Common.Core.Exceptions;
-using OzonCard.Common.Domain.Customers;
 using OzonCard.Common.Domain.Organizations;
-using OzonCard.Common.Worker.Services;
 using OzonCard.Excel;
 using OzonCard.Files;
+using Customer = OzonCard.Common.Domain.Customers.Customer;
 
 namespace OzonCard.Common.Application.Customers.Handlers;
 
@@ -44,10 +43,8 @@ public class CustomersUploadCommandHandler(
             var org = await orgRepository.GetItemAsync(request.OrganizationId, cancellationToken);
             // if (org.Members.All(x => x.Name != request.User))
             //     throw new BusinessException($"Organization for '{request.User}' not found");
-            var program = org.Programs.FirstOrDefault(x => x.Id == request.ProgramId)
+            var program = org.Programs.FirstOrDefault(x => x.ProgramId == request.ProgramId)
                           ?? throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
-            var wallet = program.Wallets.FirstOrDefault()
-                         ?? throw new BusinessException($"Program '{program.Name}' not contains wallet");
 
             Progress.CountAll = fileCustomers.Count;
             logger.LogInformation($"Try upload by {request.User} '{fileCustomers.Count}' customers");
@@ -57,7 +54,7 @@ public class CustomersUploadCommandHandler(
                 org.Id,
                 fileCustomers.Select(x => x.Card),
                 cancellationToken)).ToList();
-            var client = new BizClient(org.Login, org.Password);
+           
             var result = new List<Customer>();
 
             foreach (var fileCustomer in fileCustomers)
@@ -68,7 +65,7 @@ public class CustomersUploadCommandHandler(
                 {
                     //create if new customer
                     isNewCustomer = true;
-                    customer = await TryCreateCustomer(client, org.Id, fileCustomer, cancellationToken);
+                    customer = await TryCreateCustomer(org, fileCustomer, cancellationToken);
                     if (customer == null)
                         continue;
                     await customerRepository.AddAsync(customer);
@@ -78,7 +75,14 @@ public class CustomersUploadCommandHandler(
                 if (request.Options.Rename && !isNewCustomer)
                 {
                     customer.Name = fileCustomer.Name;
-                    await client.UpdateCustomerAsync(customer.BizId, customer.Name, org.Id, cancellationToken);
+                    await org.CloudClient.CreateOrUpdateCustomerAsync(
+                        new CreateOrUpdateCustomer(org.TransportId)
+                        {
+                            Id = customer.BizId,
+                            Name = fileCustomer.Name,
+                            CardNumber = fileCustomer.Card,
+                            CardTrack = fileCustomer.Card
+                        }, cancellationToken);
                 }
 
                 //update second fields
@@ -87,13 +91,25 @@ public class CustomersUploadCommandHandler(
                 customer.Division = fileCustomer.Division;
 
                 //update customers categories
-                await UpdateCategories(client, customer, org, request.CategoriesId, cancellationToken);
+                await UpdateCategories(org, customer, org, request.CategoriesId, cancellationToken);
 
                 //try create wallet
-                await TryCreateWallet(client, customer, wallet, org.Id, program.Id, cancellationToken);
+                try
+                {
+                    await org.CloudClient.AddToProgramAsync(
+                        customer.BizId,
+                        program.ProgramId,
+                        org.TransportId,
+                        cancellationToken);
+                    // customer.TryAddWallet(wallet.Id, wallet.Name, wallet.ProgramType, wallet.Type);
+                }
+                finally
+                {
+                    Progress.CountProgram++;
+                }
 
-                if (request.Options.RefreshBalance)
-                    await TryRefreshBalance(client, customer.BizId, org.Id, wallet.Id, request.Balance,
+                if (request.Options.RefreshBalance && program.WalletId is {} walletId)
+                    await TryRefreshBalance(org, customer.BizId, walletId, request.Balance,
                         cancellationToken);
 
                 result.Add(customer);
@@ -107,33 +123,16 @@ public class CustomersUploadCommandHandler(
 
 
 
-    private async Task TryCreateWallet(BizClient client, Customer customer, Wallet wallet, Guid orgId, Guid programId, CancellationToken ct)
-    {
-        if (customer.Wallets.All(x => x.WalletId != wallet.Id))
-        {
-            try
-            {
-                if (await client.AddCustomerToProgramAsync(customer.BizId, orgId, programId, ct))
-                {
-                    customer.TryAddWallet(wallet.Id, wallet.Name, wallet.ProgramType, wallet.Type);
-                }
-            }
-            finally
-            {
-                Progress.CountProgram++;
-            }
-            
-        }
-    }
+   
 
    
 
-    private async Task UpdateCategories(BizClient client, Customer customer, Organization org, 
+    private async Task UpdateCategories(Organization organization, Customer customer, Organization org, 
         IEnumerable<Guid> categoriesId, CancellationToken ct)
     {
         foreach (var categoryId in categoriesId)
         {
-            var category = org.Categories.FirstOrDefault(x=>x.Id == categoryId);
+            var category = org.Categories.FirstOrDefault(x=>x.CategoryId == categoryId);
             if (category == null)
             {
                 logger.LogError($"Category '{categoryId}' not found in '{org.Name}'");
@@ -141,7 +140,13 @@ public class CustomersUploadCommandHandler(
             }
             try
             {
-                await client.AppendCategoryToCustomerAsync(customer.BizId, org.Id, categoryId, ct);
+                await organization.CloudClient.AddCustomerCategoryAsync(
+                    organization.TransportId,
+                    customer.BizId,
+                    category.CategoryId,
+                    ct
+                );
+                customer.AddCategory(category);
             }
             finally
             {
@@ -151,11 +156,17 @@ public class CustomersUploadCommandHandler(
     }
 
 
-    private async Task<Customer?> TryCreateCustomer(BizClient client, Guid orgId, Excel.Models.Customer fileCustomer, CancellationToken ct)
+    private async Task<Customer?> TryCreateCustomer(Organization organization, Excel.Models.Customer fileCustomer, CancellationToken ct)
     {
         try
         {
-            var bizCustomer = await client.CreateCustomerAsync(fileCustomer.Name, fileCustomer.Card, orgId, ct);
+            var bizCustomer = await organization.CloudClient.CreateOrUpdateCustomerAsync(
+                new CreateOrUpdateCustomer(organization.TransportId)
+                {
+                    Name = fileCustomer.Name,
+                    CardNumber = fileCustomer.Card,
+                    CardTrack = fileCustomer.Card
+                }, ct);
             if (bizCustomer != Guid.Empty)
                 Progress.CountNew++;
             else
@@ -166,7 +177,7 @@ public class CustomersUploadCommandHandler(
             }
 
             var customer = new Customer(Guid.NewGuid(),
-                fileCustomer.Name, bizCustomer, orgId, true,
+                fileCustomer.Name, bizCustomer, organization.Id, true,
                 string.Empty, fileCustomer.TabNumber, fileCustomer.Position, fileCustomer.Division
             );
             customer.TryAddCard(fileCustomer.Card, fileCustomer.Card);

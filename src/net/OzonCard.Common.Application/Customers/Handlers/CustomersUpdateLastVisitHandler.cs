@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Logging;
-using OzonCard.Biz.Client;
+using OzonCard.Cloud.Client.Data.Customers;
 using OzonCard.Common.Application.Customers.Commands;
 using OzonCard.Common.Application.Organizations;
 using OzonCard.Common.Application.Visits;
 using OzonCard.Common.Core;
 using OzonCard.Common.Domain.Customers;
 using OzonCard.Common.Domain.Organizations;
+using Customer = OzonCard.Common.Domain.Customers.Customer;
 
 namespace OzonCard.Common.Application.Customers.Handlers;
 
@@ -21,7 +22,6 @@ public class CustomersUpdateLastVisitHandler(
     public async Task<IEnumerable<Customer>> Handle(CustomersUpdateLastVisitCommand request, CancellationToken cancellationToken)
     {
         var org = await organizations.GetItemAsync(request.OrganizationId, cancellationToken);
-        var client = new BizClient(org.Login, org.Password);
         var result = new List<Customer>();
         foreach (var visit in request.CardVisits)
         {
@@ -33,13 +33,13 @@ public class CustomersUpdateLastVisitHandler(
             {
                 try
                 {
-                    customer = await CreateCustomer(client, org, card, cancellationToken);
+                    customer = await CreateCustomer(org, card, cancellationToken);
                     await repository.AddAsync(customer);
                     customer.Context = new CoreCustomerContext(customer, visitRepository);
                 }
                 catch (Exception e)
                 {
-                    logger.LogError(e,$"Not success create customer with card '{card}' in organization '{org.Id}': {client.Reason}");
+                    logger.LogError(e,$"Not success create customer with card '{card}' in organization '{org.Id}'");
                     continue;
                 }
                 
@@ -63,23 +63,27 @@ public class CustomersUpdateLastVisitHandler(
         return result;
     }
     
-    private async Task<Customer> CreateCustomer(BizClient client, Organization org, string card, CancellationToken ct)
+    private async Task<Customer> CreateCustomer(Organization org, string card, CancellationToken ct)
     {
-        var bizCustomer = await client.GetCustomerAsync(card, org.Id, ct);
+        var bizCustomer = await org.CloudClient.GetCustomerAsync(
+            new RequestCustomerInfo(org.TransportId, CustomerField.CardNumber)
+            {
+                CardNumber = card
+            }, ct);
         
         var customer = new Customer(Guid.NewGuid(), 
             bizCustomer.Name, bizCustomer.Id, org.Id, true,
             string.Empty, string.Empty, string.Empty, string.Empty
         );
         customer.TryAddCard(card,card);
-        foreach (var valletDto in bizCustomer.WalletBalances)
-        {
-            var program = org.Programs.FirstOrDefault(x => x.Name == valletDto.Wallet.Name);
-            if (program == null)
-                continue;
-            var wallet = program.Wallets.First();
-            customer.TryAddWallet(wallet.Id, wallet.Name, wallet.ProgramType, wallet.Type);
-        }
+        // foreach (var valletDto in bizCustomer.WalletBalances)
+        // {
+        //     var program = org.Programs.FirstOrDefault(x => x.Name == valletDto.Name);
+        //     if (program == null)
+        //         continue;
+        //     var wallet = program.Wallets.First();
+        //     customer.TryAddWallet(wallet.Id, wallet.Name, wallet.ProgramType, wallet.Type);
+        // }
         return customer;
     }
 }
