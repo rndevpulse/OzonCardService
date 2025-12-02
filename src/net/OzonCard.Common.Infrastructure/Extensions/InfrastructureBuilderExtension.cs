@@ -11,6 +11,7 @@ using OzonCard.Common.Infrastructure.Buses;
 using OzonCard.Common.Infrastructure.Database.Contexts;
 using OzonCard.Common.Infrastructure.Database.Extensions;
 using OzonCard.Common.Infrastructure.Repositories;
+using OzonCard.Common.Infrastructure.Services;
 using OzonCard.Common.Infrastructure.Stores;
 using OzonCard.Common.Worker.Extensions;
 
@@ -70,7 +71,7 @@ public static class InfrastructureBuilderExtension
 
         if (!options.ServerWorker) 
             return services;
-        // services.AddHostedService<ScheduleUpdateBootstrapService>();
+        services.AddHostedService<ScheduleUpdateBootstrapService>();
         services.AddHangfireServer();
 
         return services;

@@ -4,7 +4,7 @@ cd .\src\net\OzonCard.Customer.Api
 ```
 **РАЗДЕЛЕНИЕ**
 ```shell
-dotnet ef migrations add DateTimeOffsetMigration -p ../OzonCard.Database.Migrations.SqlServer -c InfrastructureContext -o Migrations/Operational -- --provider sqlserver
+dotnet ef migrations add RestructuringMigration -p ../OzonCard.Database.Migrations.SqlServer -c InfrastructureContext -o Migrations/Operational -- --provider sqlserver
 ```
 ```shell
 dotnet ef migrations add initTaskMigration -p ../OzonCard.Database.Migrations.Postgres -c TaskContext  -o Migrations/Task  -- --provider postgres

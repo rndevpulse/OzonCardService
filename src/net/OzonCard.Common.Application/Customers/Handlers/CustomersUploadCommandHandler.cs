@@ -165,7 +165,7 @@ public class CustomersUploadCommandHandler(
                 {
                     Name = fileCustomer.Name,
                     CardNumber = fileCustomer.Card,
-                    CardTrack = fileCustomer.Card
+                    CardTrack = fileCustomer.Card,
                 }, ct);
             if (bizCustomer != Guid.Empty)
                 Progress.CountNew++;
@@ -179,7 +179,10 @@ public class CustomersUploadCommandHandler(
             var customer = new Customer(Guid.NewGuid(),
                 fileCustomer.Name, bizCustomer, organization.Id, true,
                 string.Empty, fileCustomer.TabNumber, fileCustomer.Position, fileCustomer.Division
-            );
+            )
+            {
+                CreatedBiz = DateTimeOffset.Now
+            };
             customer.TryAddCard(fileCustomer.Card, fileCustomer.Card);
             return customer;
         }

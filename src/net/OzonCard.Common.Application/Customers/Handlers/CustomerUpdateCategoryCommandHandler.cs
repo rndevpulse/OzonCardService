@@ -28,11 +28,11 @@ public class CustomerUpdateCategoryCommandHandler(
                 // await action.Invoke(customer.BizId, customer.OrgId, category.CategoryId, cancellationToken);
                 if (request.IsRemove)
                 {
-                    await org.CloudClient.RemoveCustomerCategoryAsync(customer.BizId, customer.OrgId, category.CategoryId, cancellationToken);
+                    await org.CloudClient.RemoveCustomerCategoryAsync(org.TransportId, customer.BizId, category.CategoryId, cancellationToken);
                     customer.RemoveCategory(category);
                     continue;
                 }
-                await org.CloudClient.AddCustomerCategoryAsync(customer.BizId, customer.OrgId, category.CategoryId, cancellationToken);
+                await org.CloudClient.AddCustomerCategoryAsync(org.TransportId, customer.BizId, category.CategoryId, cancellationToken);
                 customer.AddCategory(category);
             }
             catch (Exception)

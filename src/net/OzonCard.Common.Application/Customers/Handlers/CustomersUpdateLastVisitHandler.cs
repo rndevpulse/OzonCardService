@@ -44,7 +44,6 @@ public class CustomersUpdateLastVisitHandler(
                 }
                 
             }
-            // customer.LastVisit = visit.LastVisitDate;
             await customer.Context.UpdateAsync(
                 visit.Visits.Select(v=>new CustomerVisit()
                 {
@@ -53,10 +52,6 @@ public class CustomersUpdateLastVisitHandler(
                     Date = v.Date.ToUniversalTime(),
                     Sum = v.Sum
                 }), cancellationToken);
-            
-            if (customer.CreatedBiz == null
-                && request.Customers.FirstOrDefault(c => c.Id == customer.BizId) is { } visitInfo)
-                customer.CreatedBiz = visitInfo.CreatedAt.ToUniversalTime();
             
             result.Add(customer);
         }
@@ -76,14 +71,11 @@ public class CustomersUpdateLastVisitHandler(
             string.Empty, string.Empty, string.Empty, string.Empty
         );
         customer.TryAddCard(card,card);
-        // foreach (var valletDto in bizCustomer.WalletBalances)
-        // {
-        //     var program = org.Programs.FirstOrDefault(x => x.Name == valletDto.Name);
-        //     if (program == null)
-        //         continue;
-        //     var wallet = program.Wallets.First();
-        //     customer.TryAddWallet(wallet.Id, wallet.Name, wallet.ProgramType, wallet.Type);
-        // }
+        foreach (var category in bizCustomer.Categories)
+            customer.AddCategory(category.Id);
+        
+        customer.CreatedBiz = bizCustomer.WhenRegistered;
+        
         return customer;
     }
 }

@@ -31,10 +31,10 @@ public class UpdateOrganizationCommandHandler : ICommandHandler<UpdateOrganizati
             organization.Name = org.Name;
         
         
-        foreach (var category in await organization.CloudClient.GetCategoriesAsync(organization.Id, cancellationToken))
+        foreach (var category in await organization.CloudClient.GetCategoriesAsync(organization.TransportId, cancellationToken))
             organization.UpdateCategory(category.Id, category.Name, category.IsActive);
         
-        foreach (var program in await organization.CloudClient.GetProgramsAsync(organization.Id, cancellationToken))
+        foreach (var program in await organization.CloudClient.GetProgramsAsync(organization.TransportId, cancellationToken))
             organization.UpdatePrograms(
                 program.Id,
                 program.Name,

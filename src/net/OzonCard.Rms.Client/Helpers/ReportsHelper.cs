@@ -40,13 +40,12 @@ public class ReportsHelper(DateTime from, DateTime to, string paymentName)
         });
     
     public RequestOlap TransactionSales => new RequestOlap(
-        new[]
-        {
+        [
             "CloseTime",
             "Delivery.CustomerCardNumber",
             "Delivery.CustomerName"
-        },
-        [],
+        ],
+        ["DishDiscountSumInt"],
         new Dictionary<string, object>()
         {
             {"OpenDate.Typed", new {

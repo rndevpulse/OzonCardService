@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OzonCard.Common.Infrastructure.Database.Contexts;
 
@@ -11,9 +12,11 @@ using OzonCard.Common.Infrastructure.Database.Contexts;
 namespace OzonCard.Database.Migrations.SqlServer.Migrations.Operational
 {
     [DbContext(typeof(InfrastructureContext))]
-    partial class InfrastructureContextModelSnapshot : ModelSnapshot
+    [Migration("20251202121231_restructuringMigration")]
+    partial class restructuringMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace OzonCard.Database.Migrations.SqlServer.Migrations.Operational
                     b.Property<bool>("IsRemoved")
                         .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LastVisit")
+                    b.Property<DateTimeOffset>("LastVisit")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")

@@ -36,7 +36,7 @@ public class CustomerDomainObjectConfiguration : DomainObjectConfiguration<Custo
 
         builder.OwnsMany(x => x.Categories, categories =>
         {
-            categories.ToTable("customer_categories");
+            categories.ToTable("customers_categories");
             
             categories.Property(c=>c.CategoryId);
             

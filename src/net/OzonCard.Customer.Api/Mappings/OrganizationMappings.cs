@@ -9,7 +9,9 @@ public class OrganizationMappings : Profile
     public OrganizationMappings()
     {
         CreateMap<Organization, OrganizationModel>();
-        CreateMap<Category, CategoryModel>();
-        CreateMap<Common.Domain.Organizations.Program, ProgramModel>();
+        CreateMap<Category, CategoryModel>()
+            .ConstructUsing(x=> new CategoryModel(x.CategoryId, x.Name, x.IsActive));
+        CreateMap<Common.Domain.Organizations.Program, ProgramModel>()
+            .ConstructUsing(x=>new ProgramModel(x.ProgramId,x.Name));
     }
 }

@@ -19,6 +19,7 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
         builder.Property(x => x.Token);
         builder.Property(x => x.TransportId);
         
+        builder.HasKey(x => x.Id);
         builder.Ignore(x => x.CloudClient);
 
         builder.OwnsMany(x => x.Categories, categories =>
@@ -28,8 +29,8 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
             categories.Property(x => x.CategoryId);
             categories.Property(x => x.IsActive);
             
-            builder.Property(typeof(int), "Id");
-            builder.HasKey("Id");
+            categories.Property(typeof(int), "Id");
+            categories.HasKey("Id");
         });
         
         builder.OwnsMany(x => x.Members, members =>
@@ -38,8 +39,8 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
             members.Property(x => x.Name);
             members.Property(x => x.UserId);
             
-            builder.Property(typeof(int), "Id");
-            builder.HasKey("Id");
+            members.Property(typeof(int), "Id");
+            members.HasKey("Id");
         });
         
         builder.OwnsMany(x => x.Programs, programs =>
@@ -51,8 +52,8 @@ public class OrganizationDomainObjectConfiguration : DomainObjectConfiguration<O
             programs.HasKey(x => x.WalletId);
             programs.HasKey(x => x.WalletType);
             
-            builder.Property(typeof(int), "Id");
-            builder.HasKey("Id");
+            programs.Property(typeof(int), "Id");
+            programs.HasKey("Id");
         });
 
     }

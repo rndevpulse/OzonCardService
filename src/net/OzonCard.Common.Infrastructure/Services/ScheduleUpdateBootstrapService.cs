@@ -9,7 +9,6 @@ using OzonCard.Common.Worker.Services;
 namespace OzonCard.Common.Infrastructure.Services;
 
 
-[Obsolete]
 public class ScheduleUpdateBootstrapService(IServiceProvider provider) : BackgroundService
 {
     protected override Task ExecuteAsync(CancellationToken stoppingToken)

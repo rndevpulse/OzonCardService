@@ -134,13 +134,13 @@ public class RmsClient : DelegatingHandler, IAsyncDisposable
 
     public Task<ReportResponse<CustomerRowReport>> GetShortReportAsync(DateTime from, DateTime to, string paymentType, CancellationToken ct = default)
     {
-        return CallMethodAsync<ReportResponse<CustomerRowReport>>("/api/v2/reports/olap",
+        return CallMethodAsync<ReportResponse<CustomerRowReport>>("api/v2/reports/olap",
             new ReportsHelper(from, to, paymentType).ShortSales,
             ct);
     }
     public Task<ReportResponse<TransactionRowReport>> GetTransactionsReportAsync(DateTime from, DateTime to, string paymentType, CancellationToken ct = default)
     {
-        return CallMethodAsync<ReportResponse<TransactionRowReport>>("/api/v2/reports/olap",
+        return CallMethodAsync<ReportResponse<TransactionRowReport>>("api/v2/reports/olap",
             new ReportsHelper(from, to, paymentType).TransactionSales,
             ct);
     }
@@ -150,7 +150,8 @@ public class RmsClient : DelegatingHandler, IAsyncDisposable
         if (response.IsSuccessStatusCode
             && await response.Content.ReadFromJsonAsync<T>(ct) is {} result)
             return result;
-        throw new Exception("Report wos failed");
+        var error = await response.Content.ReadAsStringAsync(ct);
+        throw new Exception($"Report wos failed: {error}");
     }
     
 }

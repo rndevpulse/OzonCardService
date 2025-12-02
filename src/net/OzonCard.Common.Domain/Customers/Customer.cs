@@ -19,7 +19,7 @@ public class Customer : AggregateRoot
     public string? Comment { get; private set; }
     public Guid BizId { get; private set; }
     public Guid OrgId { get; private set; }
-    public DateTimeOffset LastVisit { get; set; }
+    public DateTimeOffset? LastVisit { get; set; }
     public ICustomerContext Context { get; set; } = null!;
 
     public IEnumerable<Card> Cards => _cards;
@@ -56,6 +56,12 @@ public class Customer : AggregateRoot
             _cards.Add(new Card(track, number, DateTimeOffset.UtcNow));
     }
 
+    public void AddCategory(Guid categoryId)
+    {
+        if (_categories.Any(x => x.CategoryId == categoryId))
+            return;
+        _categories.Add(new CustomerCategory(categoryId));
+    }
     public void AddCategory(Category category)
     {
         if (_categories.Any(x => x.CategoryId == category.CategoryId))

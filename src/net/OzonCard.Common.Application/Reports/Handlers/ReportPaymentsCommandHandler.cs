@@ -42,13 +42,16 @@ public class ReportPaymentsCommandHandler(
         if (org.Programs.All(x => x.ProgramId != request.ProgramId))
             throw EntityNotFoundException.For<Program>(request.ProgramId, $"in org '{org.Name}'");
 
-        var offset = TimeSpan.FromMinutes(request.Offset);
-        var from = request.DateFrom.ToOffset(offset).Date.AddHours(-3);
-        var to = request.DateTo.ToOffset(offset).Date.AddDays(1).AddHours(-3);
+        // var offset = TimeSpan.FromMinutes(request.Offset);
+        // var from = request.DateFrom.ToOffset(offset).Date.AddHours(-3);
+        // var to = request.DateTo.ToOffset(offset).Date.AddDays(1).AddHours(-3);
+
+        var from = request.DateFrom;
+        var to = request.DateTo.AddDays(1);
         
         UpdateProgress("Запрашиваем отчет по программе питания..", 10);
         var response = await org.RmsClient.GetShortReportAsync(
-            from, to, org.PaymentName, cancellationToken);
+            from.Date, to.Date, org.PaymentName, cancellationToken);
         
         logger.LogInformation($"Payment report for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' returned '{response.Data.Count()}' rows");
         

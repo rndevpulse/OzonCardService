@@ -12,4 +12,7 @@ public class TransactionRowReport
     
     [JsonPropertyName("Delivery.CustomerName")]
     public string Name { get; set; } = string.Empty;
+    
+    [JsonPropertyName("DishDiscountSumInt")]
+    public decimal Sum { get; set; }
 }
