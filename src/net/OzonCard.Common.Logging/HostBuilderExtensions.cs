@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -20,6 +22,10 @@ public static class HostBuilderExtensions
         builder.Services.AddSerilog(lConfig => lConfig.ReadFrom.Configuration(builder.Configuration));
         return builder;
     }
-
+    public static IServiceCollection UseDefaultLogging(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSerilog(lConfig => lConfig.ReadFrom.Configuration(configuration));
+        return services;
+    }
   
 }

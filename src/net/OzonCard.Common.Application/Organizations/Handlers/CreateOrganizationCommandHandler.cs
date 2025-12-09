@@ -29,43 +29,46 @@ public class CreateOrganizationCommandHandler : ICommandHandler<CreateOrganizati
         
         _logger.LogDebug("Create new organizations");
         
-        
+        var result = new List<Organization>();
         var client = new CloudClient(request.Token);
         var cloudOrganizations = await client.GetOrganizationsAsync(cancellationToken);
-        var cloudOrganization = cloudOrganizations.FirstOrDefault();
-        if (cloudOrganization == null)
-            throw new Exception("Organizations not found");
-        var organization = await _repository.GetOrganizationByTransportId(cloudOrganization.Id, cancellationToken);
-        if (organization == null)
+        foreach (var cloudOrganization in cloudOrganizations)
         {
-            organization = new Organization(
-                Guid.NewGuid(), 
-                string.Empty,
-                request.Login, 
-                request.Password,
-                request.Endpoint,
-                request.Token,
-                cloudOrganization.Id
-            );
-            await _repository.AddAsync(organization);
-        }
+            var organization = await _repository.GetOrganizationByTransportId(cloudOrganization.Id, cancellationToken);
+            if (organization == null)
+            {
+                organization = new Organization(
+                    Guid.NewGuid(), 
+                    string.Empty,
+                    request.Login, 
+                    request.Password,
+                    request.Endpoint,
+                    request.Token,
+                    cloudOrganization.Id
+                );
+                await _repository.AddAsync(organization);
+            }
             
-        organization.Name = cloudOrganization.Name;
-        organization.Token = request.Token;
+            organization.Name = cloudOrganization.Name;
+            organization.Token = request.Token;
        
-        organization.AddOrUpdateMember(request.UserId, request.User);
+            organization.AddOrUpdateMember(request.UserId, request.User);
         
-        foreach (var category in await client.GetCategoriesAsync(organization.Id, cancellationToken))
-            organization.UpdateCategory(category.Id, category.Name, category.IsActive);
+            foreach (var category in await client.GetCategoriesAsync(organization.Id, cancellationToken))
+                organization.UpdateCategory(category.Id, category.Name, category.IsActive);
         
-        foreach (var program in await client.GetProgramsAsync(organization.Id, cancellationToken))
-            organization.UpdatePrograms(
-                program.Id,
-                program.Name,
-                program.ServiceTo == null || program.ServiceTo > DateTime.UtcNow,
-                program.WalletId ?? Guid.Empty,
-                program.ProgramType.ToString());
+            foreach (var program in await client.GetProgramsAsync(organization.Id, cancellationToken))
+                organization.UpdatePrograms(
+                    program.Id,
+                    program.Name,
+                    program.ServiceTo == null || program.ServiceTo > DateTime.UtcNow,
+                    program.WalletId ?? Guid.Empty,
+                    program.ProgramType.ToString());
+            result.Add(organization);
+        }
+        
        
-        return [organization];
+       
+        return result;
     }
 }

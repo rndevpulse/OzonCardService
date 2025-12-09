@@ -36,6 +36,7 @@ public class CustomersUpdateLastVisitHandler(
                     customer = await CreateCustomer(org, card, cancellationToken);
                     await repository.AddAsync(customer);
                     customer.Context = new CoreCustomerContext(customer, visitRepository);
+                    logger.LogInformation($"Created customer '{card}' in organization '{org.Name}'");
                 }
                 catch (Exception e)
                 {

@@ -1,12 +1,12 @@
 import axios from 'axios'
 import {Slide, toast} from "react-toastify";
 import AuthService from "../services/AuthService";
-import {useNavigate} from "react-router-dom";
 import {IAuth} from "../models/auth/IAuth";
 
 const url =
-    'https://localhost:5180/api/v1';
+    //'https://localhost:5180/api/v1';
     //'https://lp.corpcards.ru/api/v1'
+    'https://dev.corpcards.ru/api/v1'
     // process.env.NODE_ENV || process.env.NODE_ENV  === 'development'
     //     ? 'https://localhost:5180/api/v1'
     //     // : 'https://ozon.pulse2.keenetic.link/api/v1';
@@ -25,6 +25,7 @@ api.interceptors.response.use(config => {
     return config;
 }, async error => {
     const originalRequest = error.config;
+
     if (error.response.status === 401 && error.config && !originalRequest._isRetry) {
         originalRequest._isRetry = true;
         try {
@@ -44,11 +45,11 @@ api.interceptors.response.use(config => {
         catch (e) {
             console.log('no authorization')
             localStorage.clear();
-            return api.request(originalRequest);
+            // return api.request(originalRequest);
         }
 
     }
-    console.log(error.response.data.detail)
+    console.log(error.response.data.detail);
     toast.error(error.response.data.detail, {
         position: "bottom-right",
         autoClose: 3000,
