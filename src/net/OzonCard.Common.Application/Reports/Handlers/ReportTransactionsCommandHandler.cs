@@ -55,7 +55,6 @@ public class ReportTransactionsCommandHandler(
         var response = await org.RmsClient.GetTransactionsReportAsync(
             from, to, org.PaymentName, cancellationToken);
        
-        UpdateProgress("Запрашиваем отчет по программе питания..", 60);
 
         from = from.AddHours(-3);
         to = to.AddHours(-3);
@@ -64,33 +63,55 @@ public class ReportTransactionsCommandHandler(
         var customers = await customerRepository.GetItemsAsync(
             org.Id, cancellationToken);
         
-        UpdateProgress("Обрабатываем отчеты..", 80);
+        UpdateProgress("Обрабатываем отчет по транзакциям..", 50);
 
         var transactions = new List<ItemTransactionsReportTable>();
+        
+        var reportCustomers = response.Data
+            .GroupBy(x=>x.Card)
+            .ToDictionary(
+                x => x.Key, 
+                x =>
+                {
+                    var customer = customers.FirstOrDefault(c => c.Cards.Any(card => card.Number == x.Key));
+                    var skipped = request.CategoriesId.Except(
+                        customer?.Categories.Select(c => c.CategoryId) ?? []
+                    ).Any();
+
+                    return new
+                    {
+                        Customer = customer,
+                        Skipped = skipped,
+                        Categories = skipped
+                            ? []
+                            : org.Categories
+                                .Where(category =>
+                                    customer?.Categories.Any(c => c.CategoryId == category.CategoryId) == true)
+                                .ToArray(),
+                    };
+                }
+            );
+        
+        UpdateProgress("Формируем отчет..", 80);
+        
         foreach (var t in response.Data)
         {
-            var customer = customers.FirstOrDefault(x => x.Cards.Any(c=>c.Number == t.Card));
-            
-            if (request.CategoriesId.Except(
-                    customer?.Categories.Select(c => c.CategoryId) ?? []
-                ).Any())
+            if (!reportCustomers.TryGetValue(t.Card, out var rowCustomer)
+                || rowCustomer.Skipped)
                 continue;
-            
-            var categories = org.Categories.Where(x=>
-                    customer?.Categories.Any(c=>c.CategoryId ==x.CategoryId) == true)
-                .ToArray();
             transactions.Add(new ItemTransactionsReportTable
             {
                 Created = t.CloseTime,
                 Date = t.CloseTime.ToString("yyyy-MM-dd"),
                 Time = t.CloseTime.ToString("HH:mm.ss"),
-                Name = customer?.Name ?? t.Name,
-                TabNumber = customer?.TabNumber ?? "",
-                Division = customer?.Position ?? customer?.Division ?? "",
-                Categories = string.Join(",", categories.Select(x => x.Name)),
+                Name = rowCustomer.Customer?.Name ?? t.Name,
+                TabNumber = rowCustomer.Customer?.TabNumber ?? "",
+                Division = rowCustomer.Customer?.Position ?? rowCustomer.Customer?.Division ?? "",
+                Categories = string.Join(",", rowCustomer.Categories.Select(x => x.Name)),
                 Eating = TimeOfDay.GetNameEating(t.CloseTime),
                 Cards = t.Card,
             });
+           
         }
 
         var transactionsSummaryTable = transactions

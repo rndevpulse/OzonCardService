@@ -18,6 +18,7 @@ public record OnProgressJobEvent(
             var job = await store.GetItemAsync<Job>(notification.Aggregate, cancellationToken);
             if (job == null)
                 return;
+            job.ProcessedAt ??= DateTimeOffset.UtcNow;
             job.Progress = JsonSerializer.Serialize(notification.Progress, notification.Progress.GetType());
             if (notification.Result != null)
                 job.Result = JsonSerializer.Serialize(notification.Result, notification.Result.GetType());
