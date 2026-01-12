@@ -138,6 +138,7 @@ public class CustomersUploadCommandHandler(
                 logger.LogError($"Category '{categoryId}' not found in '{org.Name}'");
                 continue;
             }
+
             try
             {
                 await organization.CloudClient.AddCustomerCategoryAsync(
@@ -147,6 +148,10 @@ public class CustomersUploadCommandHandler(
                     ct
                 );
                 customer.AddCategory(category);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Customer fail update category: {ex.Message}");
             }
             finally
             {
