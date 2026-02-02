@@ -69,8 +69,9 @@ public class ReportTransactionsCommandHandler(
         
         var reportCustomers = response.Data
             .GroupBy(x=>x.Card)
+            .Where(x=>x.Key != null)
             .ToDictionary(
-                x => x.Key, 
+                x => x.Key ?? "", 
                 x =>
                 {
                     var customer = customers.FirstOrDefault(c => c.Cards.Any(card => card.Number == x.Key));
@@ -96,7 +97,7 @@ public class ReportTransactionsCommandHandler(
         
         foreach (var t in response.Data)
         {
-            if (!reportCustomers.TryGetValue(t.Card, out var rowCustomer)
+            if (!reportCustomers.TryGetValue(t.Card ?? "", out var rowCustomer)
                 || rowCustomer.Skipped)
                 continue;
             transactions.Add(new ItemTransactionsReportTable
@@ -109,7 +110,7 @@ public class ReportTransactionsCommandHandler(
                 Division = rowCustomer.Customer?.Position ?? rowCustomer.Customer?.Division ?? "",
                 Categories = string.Join(",", rowCustomer.Categories.Select(x => x.Name)),
                 Eating = TimeOfDay.GetNameEating(t.CloseTime),
-                Cards = t.Card,
+                Cards = t.Card ?? "",
             });
            
         }
