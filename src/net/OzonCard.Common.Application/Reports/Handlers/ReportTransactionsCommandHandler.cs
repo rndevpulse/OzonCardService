@@ -47,19 +47,14 @@ public class ReportTransactionsCommandHandler(
         
         var offset = TimeSpan.FromMinutes(request.Offset);
         var from = request.DateFrom.ToOffset(offset).Date;
-        var to = request.DateTo.ToOffset(offset).Date.AddDays(1).AddSeconds(-1);
+        var to = request.DateTo.ToOffset(offset).Date.AddDays(1);
         
         logger.LogInformation($"TransactionReport for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' offset '{request.Offset}'");
         UpdateProgress("Запрашиваем отчет по транзакциям..", 10);
 
         var response = await org.RmsClient.GetTransactionsReportAsync(
             from, to, org.PaymentName, cancellationToken);
-       
-
-        from = from.AddHours(-3);
-        to = to.AddHours(-3);
-        logger.LogInformation($"TransactionReport (ProgramReport) for '{org.Name}' from '{from:yyyy-MM-ddTHH:mm:ss}' to '{to:yyyy-MM-ddTHH:mm:ss}' offset '{request.Offset}'");
-
+        
         var customers = await customerRepository.GetItemsAsync(
             org.Id, cancellationToken);
         
